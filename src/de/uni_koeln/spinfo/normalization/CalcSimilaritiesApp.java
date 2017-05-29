@@ -10,6 +10,12 @@ import java.util.Set;
 import de.uni_koeln.spinfo.information_extraction.data.IEType;
 import de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
 
+/**
+ * @author geduldia
+ * 
+ * creates a new table in the inputDB (Competences.db or Tools.db) with all different entities and their similar entities 
+ *
+ */
 public class CalcSimilaritiesApp {
 	
 	public static String inputDB = "C:/sqlite/Competences.db";
