@@ -1,0 +1,2 @@
+number of types found in database: 0
+

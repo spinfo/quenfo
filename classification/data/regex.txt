@@ -1,0 +1,77 @@
+3	(wünschenswert|erforderlich|vorausgesetzt|gewünscht|erwünscht) * (ist|sind|wird|wäre(n)?)
+3	anforderungsprofil
+3	ihr profil
+3	zwingend erforderlich
+3	(ist|sind|wird|wäre(n)?) * (wünschenswert|erforderlich|vorausgesetzt|gewünscht|ideal|erwünscht)
+3	(wir setzen|setzen wir )*(voraus[\s|\.])
+3	(führerschein*| fs )
+3	voraussetzung(en)? (ist|sind)
+3	(wird |ist )?vorausgesetzt( wird| ist)?
+3	teamfähig
+3	belastbar
+3	vermögen 
+3	bereitschaft (zu|\\.|\n|\r|\r\n)
+3	sprachkenntnis(se)?
+3	(sind|wären|ist) von vorteil
+3	von vorteil (sind|wären|ist)
+3	(einschlägige|mehrjährige) berufserfahrung
+3	abgeschlossene ausbildung
+3	auffassungsgabe
+3	wir wünschen
+3	kenntnis(se)? (von|in|im|der|des)
+#3	berufserfahrung ---------------> schlechte precision
+3	wir erwarten
+3	das erwarten wir
+3	anforderung(en)? an ((den |die )?bewerber|sie)
+#1	wir sind ein
+#1	marktführe(r)?(nd)?
+#1	wir über uns
+2	das erwartet sie
+#	wir bieten
+#	suchen wir
+#	wir suchen
+#2	wir benötigen
+#	ihre aufgabe(n)?
+#	aufgabenbereich
+#	vergütung
+#	arbeitszeit
+2	zur verstärkung unseres team
+2	tätigkeitsbereich
+3	realschulabschluss
+3	hauptschulabschluss
+#2	aufgabenstellung
+3	wir setzen voraus
+3	setzen wir voraus
+2	aufgabenprofil
+#2	aufgabengebiet
+#3	qualifikation
+3	abitur 
+3	gute note
+3	befriedigende note
+2	unsere leistung
+2	(ausbildungs|studien|studiums)inhalt
+2	einsatzgebiet
+2	hauptaufgabe
+2	vergütung
+2	weiterbildungsmöglichkeit
+3	mittlere(n)? reife
+3	auffassungsgabe
+2	(un)?befristet
+2	tätigkeitsbereich
+2	arbeitsbeginn
+2	stellenbeschreibung
+2	ausbildungsdauer
+2	dauer der ausbildung
+2	(voll|teil)zeit
+2	einsatz erfolgt
+2	tarif
+2	sozialleistung
+2	zuständig für
+2	aufgabengebiet
+2	aufgabenfeld
+2	tätigkeitsprofil
+2	tätigkeitsbeschreibung
+2	aufgabenbeschreibung
+2	(ab|per) sofort
+2	zum nächstmöglichen zeitpunkt
+3	sie sind:
