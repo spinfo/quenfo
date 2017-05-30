@@ -9,7 +9,7 @@ import java.sql.Statement;
 
 import de.uni_koeln.spinfo.information_extraction.data.IEType;
 import de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
-import de.uni_koeln.spinfo.information_extraction.workflow.Extractor_or;
+import de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
 
 public class ExtractNewCompetences {
 
@@ -87,7 +87,7 @@ public static void main(String[] args) throws ClassNotFoundException, SQLExcepti
 	}
 
 	
-	Extractor_or extractor = new Extractor_or(outputConnection, competences, noCompetences, contextFile, importanceTerms, IEType.COMPETENCE);	
+	Extractor extractor = new Extractor(outputConnection, competences, noCompetences, contextFile, importanceTerms, IEType.COMPETENCE);	
 	//extractor.extract(startPos, maxCount, tableSize, inputConnection, potentialCompetences, potentialCompetencesWithContext);
 	extractor.extract(startPos, maxCount, tableSize, inputConnection, outputConnection);
 }

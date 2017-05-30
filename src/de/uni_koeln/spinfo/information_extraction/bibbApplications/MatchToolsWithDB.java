@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 import de.uni_koeln.spinfo.information_extraction.data.IEType;
 import de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
-import de.uni_koeln.spinfo.information_extraction.workflow.Extractor_or;
+import de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
 
 public class MatchToolsWithDB {
 
@@ -66,7 +66,7 @@ public class MatchToolsWithDB {
 //		}
 
 		// start matching
-		Extractor_or extractor = new Extractor_or(null, tools, noTools, contextFile, IEType.TOOL);
+		Extractor extractor = new Extractor(null, tools, noTools, contextFile, IEType.TOOL);
 		extractor.finalStringMatch(statisticsFile, inputConnection, outputConnection);
 		
 
