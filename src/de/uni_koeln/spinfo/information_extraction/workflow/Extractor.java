@@ -381,28 +381,28 @@ public class Extractor {
 		return toReturn;
 	}
 
-	private void readAnnotatedEntitiesFromFile() throws IOException {
-
-		if (entitiesFile.exists()) {
-			BufferedReader in = new BufferedReader(new FileReader(entitiesFile));
-			String line = in.readLine();
-			while (line != null) {
-				knownEntities.add(line);
-				line = in.readLine();
-			}
-			in.close();
-		}
-
-		if (noEntitiesFile.exists()) {
-			BufferedReader in = new BufferedReader(new FileReader(noEntitiesFile));
-			String line = in.readLine();
-			while (line != null) {
-				noEntities.add(line);
-				line = in.readLine();
-			}
-			in.close();
-		}
-	}
+//	private void readAnnotatedEntitiesFromFile() throws IOException {
+//
+//		if (entitiesFile.exists()) {
+//			BufferedReader in = new BufferedReader(new FileReader(entitiesFile));
+//			String line = in.readLine();
+//			while (line != null) {
+//				knownEntities.add(line);
+//				line = in.readLine();
+//			}
+//			in.close();
+//		}
+//
+//		if (noEntitiesFile.exists()) {
+//			BufferedReader in = new BufferedReader(new FileReader(noEntitiesFile));
+//			String line = in.readLine();
+//			while (line != null) {
+//				noEntities.add(line);
+//				line = in.readLine();
+//			}
+//			in.close();
+//		}
+//	}
 
 	private void writeOutputFile() throws IOException {
 
@@ -441,54 +441,54 @@ public class Extractor {
 		out.close();
 	}
 
-	private void writeOutputFiles(Map<ExtractionUnit, Map<InformationEntity, List<Context>>> allExtractions,
-			File potentialComps, File potentialCompsWithContext) throws IOException {
-		Set<String> extracted = new HashSet<String>();
-		PrintWriter out;
-		// write entities with contexts
-		if (potentialCompsWithContext != null) {
-			out = new PrintWriter(new FileWriter(potentialCompsWithContext));
-			for (ExtractionUnit iePhrase : allExtractions.keySet()) {
-				out.write("\n" + iePhrase.getSentence() + "\n");
-				for (int t = 1; t < iePhrase.getTokenObjects().size() - 1; t++) {
-					Token token = iePhrase.getTokenObjects().get(t);
-					out.write(token.getLemma() + " " + " [" + token.getPosTag() + "]  ");
-				}
-				out.write("\n");
-				Map<InformationEntity, List<Context>> iesWithContext = allExtractions.get(iePhrase);
-				for (InformationEntity ie : iesWithContext.keySet()) {
-					out.write("\n--> " + ie.toString());
-					boolean knowledge = false;
-					List<Context> contexts = iesWithContext.get(ie);
-					for (Context context : contexts) {
-						if (context.getDescription().contains("KNOWLEDGE")) {
-							knowledge = true;
-							break;
-						}
-					}
-					if (knowledge) {
-						extracted.add("[KNOWLEDGE] " + ie.toString());
-					} else {
-						extracted.add(ie.toString());
-					}
-				}
-				out.write("\n");
-			}
-			out.close();
-		}
-		// write entities
-		if (potentialComps != null) {
-			List<String> sorted = new ArrayList<String>(extracted);
-			Collections.sort(sorted);
-			out = new PrintWriter(new FileWriter(potentialComps));
-			for (String string : sorted) {
-				out.write(string + "\n");
-			}
-			out.close();
-		}
-		// rewrite/ reorder knowledge lists
-		// jobs.writeEntitieLists(entitiesFile, noEntitiesFile);
-	}
+//	private void writeOutputFiles(Map<ExtractionUnit, Map<InformationEntity, List<Context>>> allExtractions,
+//			File potentialComps, File potentialCompsWithContext) throws IOException {
+//		Set<String> extracted = new HashSet<String>();
+//		PrintWriter out;
+//		// write entities with contexts
+//		if (potentialCompsWithContext != null) {
+//			out = new PrintWriter(new FileWriter(potentialCompsWithContext));
+//			for (ExtractionUnit iePhrase : allExtractions.keySet()) {
+//				out.write("\n" + iePhrase.getSentence() + "\n");
+//				for (int t = 1; t < iePhrase.getTokenObjects().size() - 1; t++) {
+//					Token token = iePhrase.getTokenObjects().get(t);
+//					out.write(token.getLemma() + " " + " [" + token.getPosTag() + "]  ");
+//				}
+//				out.write("\n");
+//				Map<InformationEntity, List<Context>> iesWithContext = allExtractions.get(iePhrase);
+//				for (InformationEntity ie : iesWithContext.keySet()) {
+//					out.write("\n--> " + ie.toString());
+//					boolean knowledge = false;
+//					List<Context> contexts = iesWithContext.get(ie);
+//					for (Context context : contexts) {
+//						if (context.getDescription().contains("KNOWLEDGE")) {
+//							knowledge = true;
+//							break;
+//						}
+//					}
+//					if (knowledge) {
+//						extracted.add("[KNOWLEDGE] " + ie.toString());
+//					} else {
+//						extracted.add(ie.toString());
+//					}
+//				}
+//				out.write("\n");
+//			}
+//			out.close();
+//		}
+//		// write entities
+//		if (potentialComps != null) {
+//			List<String> sorted = new ArrayList<String>(extracted);
+//			Collections.sort(sorted);
+//			out = new PrintWriter(new FileWriter(potentialComps));
+//			for (String string : sorted) {
+//				out.write(string + "\n");
+//			}
+//			out.close();
+//		}
+//		// rewrite/ reorder knowledge lists
+//		// jobs.writeEntitieLists(entitiesFile, noEntitiesFile);
+//	}
 
 	private void writeStatistics(Map<String, Integer> counts, File statisticsFile) throws IOException {
 		Map<Integer, Set<String>> statistics = new TreeMap<Integer, Set<String>>();
