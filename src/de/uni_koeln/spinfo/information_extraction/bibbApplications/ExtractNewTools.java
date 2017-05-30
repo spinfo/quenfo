@@ -9,7 +9,7 @@ import java.sql.Statement;
 
 import de.uni_koeln.spinfo.information_extraction.data.IEType;
 import de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
-import de.uni_koeln.spinfo.information_extraction.workflow.Extractor_or;
+import de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
 
 public class ExtractNewTools {
 
@@ -81,7 +81,7 @@ public static void main(String[] args) throws ClassNotFoundException, SQLExcepti
 	else{
 		outputConnection = IE_DBConnector.connect(outputDB);
 	}
-	Extractor_or extractor = new Extractor_or(outputConnection, tools, noTools, contextFile, IEType.TOOL);
+	Extractor extractor = new Extractor(outputConnection, tools, noTools, contextFile, IEType.TOOL);
 	extractor.extract(startPos, maxCount, tableSize, inputConnection, outputConnection);
 }
 
