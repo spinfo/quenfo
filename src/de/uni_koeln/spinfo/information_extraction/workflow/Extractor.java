@@ -445,7 +445,6 @@ public class Extractor {
 			File potentialComps, File potentialCompsWithContext) throws IOException {
 		Set<String> extracted = new HashSet<String>();
 		PrintWriter out;
-		// write entities with contexts
 		if (potentialCompsWithContext != null) {
 			out = new PrintWriter(new FileWriter(potentialCompsWithContext));
 			for (ExtractionUnit iePhrase : allExtractions.keySet()) {
