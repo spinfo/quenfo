@@ -16,10 +16,10 @@ public class MatchToolsWithDB {
 	/////////////////////////////
 
 	// path to input database
-	static String inputDB =    "D:/Daten/sqlite/CorrectableParagraphs.db"; //"C:/sqlite/CorrectableParagraphs.db"; //
+	static String inputDB =    /*"D:/Daten/sqlite/CorrectableParagraphs.db"; */"C:/sqlite/CorrectableParagraphsBig.db"; //
 
 	// folder for output database
-	static String outputFolder = "D:/Daten/sqlite/"; // "C:/sqlite/"; //
+	static String outputFolder = /*"D:/Daten/sqlite/"; */ "C:/sqlite/"; //
 
 	// name of output database
 	static String outputDB = "Tools.db";
