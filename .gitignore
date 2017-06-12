@@ -3,3 +3,5 @@ information_extraction/data/openNLPmodels
 information_extraction/data/sentencedata_models
 
 classification/output
+
+src/de/uni_koeln/spinfo/information_extraction/bibbApplications/CreateBigDB.java
