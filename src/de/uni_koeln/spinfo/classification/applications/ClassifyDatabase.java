@@ -31,7 +31,7 @@ public class ClassifyDatabase {
 	// path to the output folder for classified paragraphs
 	static String outputFolder = /*"D:/Daten/sqlite/";*/ "C:/sqlite/";
 
-	// Path to the trainingdata-file annotated by Spinfo
+	// Path to the trainingdata-file
 	static String trainingdataFile = "classification/data/trainingSets/mergedTD.csv";
 
 	// path to the training-database annotated by BIBB

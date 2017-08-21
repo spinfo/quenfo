@@ -334,26 +334,32 @@ public class Extractor {
 			// init. ExtractionUnits
 			List<ExtractionUnit> extractionUnits = ExtractionUnitBuilder.initializeIEUnits(allUnits, true, false, false);
 			jobs.annotateTokens(extractionUnits);
-			Map<ExtractionUnit, Map<InformationEntity, List<Context>>> contextMatches = new HashMap<ExtractionUnit, Map<InformationEntity, List<Context>>>();
+			Map<ExtractionUnit, Map<InformationEntity, List<Context>>> contextMatches = jobs.extractByPatterns(extractionUnits);
+			contextMatches = jobs.mergeInformationEntities(contextMatches);
+			jobs.updateEntitiesList(contextMatches);
+			
 			Map<ExtractionUnit, Map<InformationEntity, List<Context>>> stringMatches = jobs
 					.extractByStringMatch(extractionUnits, contextMatches);
 
 			stringMatches = jobs.mergeInformationEntities(stringMatches);
+			
 			// setImportances
 			if (jobs.type == IEType.COMPETENCE) {
 				jobs.setImportances(stringMatches);
-				//jobs.setImportances(contextMatches);
+				jobs.setImportances(contextMatches);
 			}
 
 			// write in DB
 			if (jobs.type == IEType.COMPETENCE) {
-				//IE_DBConnector.writeCompetences(contextMatches, outputConnection, false);
+				IE_DBConnector.writeCompetences(contextMatches, outputConnection, false);
 				IE_DBConnector.writeCompetences(stringMatches, outputConnection, false);
 			}
 			if (jobs.type == IEType.TOOL) {
-				//IE_DBConnector.writeTools(contextMatches, outputConnection, false);
+				IE_DBConnector.writeTools(contextMatches, outputConnection, false);
 				IE_DBConnector.writeTools(stringMatches, outputConnection, false);
 			}
+			count(statisticsFile, stringMatches, counts);
+			count(statisticsFile, contextMatches, counts);
 		}
 		// write statisticsFile
 		writeStatistics(counts, statisticsFile);
@@ -514,6 +520,24 @@ public class Extractor {
 		}
 		out.close();
 	}
+	
+	private void count(File statisticsFile, Map<ExtractionUnit, Map<InformationEntity, List<Context>>> stringMatches,
+			Map<String, Integer> counts) {
+		for (ExtractionUnit iePhrase : stringMatches.keySet()) {
+			List<InformationEntity> ies = new ArrayList<InformationEntity>(stringMatches.get(iePhrase).keySet());
+
+			for (InformationEntity e : stringMatches.get(iePhrase).keySet()) {
+				String exp = e.toString();
+				Integer c = counts.get(exp);
+				if (c == null) {
+					c = 0;
+				}
+				c++;
+				counts.put(exp, c);
+			}
+		}
+	}
+
 
 
 
