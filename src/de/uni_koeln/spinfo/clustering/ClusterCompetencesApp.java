@@ -64,10 +64,10 @@ public class ClusterCompetencesApp {
 		//write elki-file
 		PrintWriter out = new PrintWriter(new FileWriter(new File("clustering/elki-file.txt")));
 		for (String string : vectors.keySet()){
-			out.write("\n"+string);
 			for (double d : vectors.get(string)) {
 				out.write(d+" ");
 			}
+			out.write(string+"\n");
 		}
 	}
 

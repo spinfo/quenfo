@@ -17,7 +17,6 @@ public class TFIDFFeatureQuantifier<E> extends AbstractFeatureQuantifier<E> {
 		Map<E,double[]> vectors = new HashMap<E, double[]>();
 		
 		for (E key : documentsByKey.keySet()) {
-			System.out.println(key);
 			double[] vector = new double[featureUnitOrder.size()];
 			for (int i = 0; i < featureUnitOrder.size(); i++) {
 				String feature = featureUnitOrder.get(i);
