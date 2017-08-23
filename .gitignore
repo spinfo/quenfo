@@ -8,4 +8,4 @@ classification/output
 
 src/de/uni_koeln/spinfo/information_extraction/bibbApplications/CreateBigDB.java
 
-clustering/elki-file.txt
+clustering/vectors.arff
