@@ -41,23 +41,38 @@ public class TFIDFFeatureQuantifier extends AbstractFeatureQuantifier{
 			unitToClassify.setFeatureVector(vector);
 		}
 	}
-	
-	
 
 	private Map<String, Integer> calcDocFrequencies(List<String> featureUnitOrder) {
 		Map<String, Integer> toReturn = new TreeMap<String, Integer>();
-		
-			for (String featureUnit : featureUnitOrder) {
-				if (toReturn.containsKey(featureUnit)) {
-					int df = toReturn.get(featureUnit);
-					toReturn.put(featureUnit, df + 1);
-				} else {
-					toReturn.put(featureUnit, 1);
-				}
+		int df = 0;
+		for (String string : featureUnitOrder) {
+			if(toReturn.containsKey(string)){
+				df = toReturn.get(string);
 			}
-
+			toReturn.put(string, df++);
+		}
 		return toReturn;
 	}
+	
+	
+	
+	
+//
+//	private Map<String, Integer> calcDocFrequencies(List<String> featureUnitOrder, List<ClassifyUnit> classifyUnits) {
+//		Map<String, Integer> toReturn = new TreeMap<String, Integer>();
+//		
+//			for (String featureUnit : featureUnitOrder) {
+//				int df = 0;
+//				for (ClassifyUnit cu : classifyUnits) {
+//					if(cu.getFeatureUnits().contains(featureUnit)){
+//						df++;
+//					}
+//				}
+//				System.out.println(df);
+//				toReturn.put(featureUnit, df);
+//			}
+//		return toReturn;
+//	}
 
 
 
