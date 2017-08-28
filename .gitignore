@@ -2,10 +2,13 @@ information_extraction/data/openNLPmodels
 
 information_extraction/data/sentencedata_models
 
-information_extraction/data/competences/Schlagwortliste_Kompetenzen.xls
+information_extraction/data/competences
+
+information_extraction/data/tools
 
 classification/output
 
-src/de/uni_koeln/spinfo/information_extraction/bibbApplications/CreateBigDB.java
+clustering/vectors.arff
 
-clustering
+
+
