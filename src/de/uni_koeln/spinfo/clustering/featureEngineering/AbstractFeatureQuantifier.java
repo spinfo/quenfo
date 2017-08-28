@@ -13,7 +13,7 @@ public abstract class AbstractFeatureQuantifier<E> {
 	int maxTF = 0;
 	List<String> featureUnitOrder;
 	
-	public abstract Map<E,double[]> getFeatureVectors(Map<E,List<String>> documentsByKey);
+	public abstract Map<E,double[]> getFeatureVectors(Map<E,List<String>> documentsByKey, List<String> featureUnitOrder);
 	
 	protected List<String> getFeatureUnitOrder(Collection<List<String>> documents ) {
 		Set<String> uniqueFeatures = new HashSet<String>();

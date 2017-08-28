@@ -337,26 +337,21 @@ public class IE_DBConnector {
 
 
 	
-	public static void createSimilarityTable(Connection connection) throws SQLException{
+	public static void createCluserTable(Connection connection) throws SQLException{
 		connection.setAutoCommit(false);
 		Statement stmt = connection.createStatement();
-		String sql = "DROP TABLE IF EXISTS Similarities";
+		String sql = "DROP TABLE IF EXISTS Clusters";
 		stmt.executeUpdate(sql);
-		sql = "CREATE TABLE Similarities (ID INTEGER PRIMARY KEY AUTOINCREMENT, Comp TEXT NOT NULL, similar TEXT)";
+		sql = "CREATE TABLE Clusters (ID INTEGER PRIMARY KEY AUTOINCREMENT, Competence TEXT NOT NULL,  ClusterID INT NOT NULL)";
 		stmt.executeUpdate(sql);
 		stmt.close();
 		connection.commit();
 	}
 
-	public static void writeSimilarities(String string, List<String> sims, Connection connection) throws SQLException {
-		StringBuffer sb = new StringBuffer();
-		for (String s : sims) {
-			sb.append(s+" | ");
-		}
-		//sb.delete(sb.length()-3, sb.length());
+	public static void writeClusterResult(int clusterID, String comp, Connection connection) throws SQLException {
 		connection.setAutoCommit(false);
 		Statement stmt = connection.createStatement();
-		String sql = "INSERT INTO Similarities(Comp, similar) VALUES('"+string+"', '"+sb.toString()+"')";
+		String sql = "INSERT INTO Clusters (Competence, ClusterID) VALUES('"+comp+"', '"+clusterID+"')";
 		stmt.executeUpdate(sql);
 		stmt.close();
 		connection.commit();

@@ -12,7 +12,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.uni_koeln.spinfo.classification.core.featureEngineering.featureWeighting.AbsoluteFrequencyFeatureQuantifier;
+import de.uni_koeln.spinfo.clustering.featureEngineering.AbsoluteFrequencyQuantifier;
 import de.uni_koeln.spinfo.clustering.featureEngineering.AbstractFeatureQuantifier;
+import de.uni_koeln.spinfo.clustering.featureEngineering.LoglikeliHoodQuantifier;
+import de.uni_koeln.spinfo.clustering.featureEngineering.RelativeFrequencyQuantifier;
 import de.uni_koeln.spinfo.clustering.featureEngineering.TFIDFFeatureQuantifier;
 import de.uni_koeln.spinfo.clustering.weka.ArffFileCreator;
 import de.uni_koeln.spinfo.clustering.weka.WekaClusterer;
@@ -30,14 +34,19 @@ import weka.core.SelectedTag;
 
 public class ClusterCompetencesApp {
 
-	private static String inputdb = "C:/sqlite/Competences.db";
+	private static String inputDB = "C:/sqlite/Competences.db";
+	
+	private static String outputDB = "C:/sqlite/ClusteredCompetences.db";
 
-	private static AbstractFeatureQuantifier<String> quantifier = new TFIDFFeatureQuantifier<>();
+	//private static AbstractFeatureQuantifier<String> quantifier = new LoglikeliHoodQuantifier<String>();
+	//private static AbstractFeatureQuantifier<String> quantifier = new RelativeFrequencyQuantifier<String>();
+	//private static AbstractFeatureQuantifier<String> quantifier = new AbsoluteFrequencyQuantifier<String>();/
+	private static AbstractFeatureQuantifier<String> quantifier = new TFIDFFeatureQuantifier<String>();
 
 	public static void main(String[] args) throws Exception {
 
 		// read Competences (and Contexts) from DB
-		Connection inputConnection = IE_DBConnector.connect(inputdb);
+		Connection inputConnection = IE_DBConnector.connect(inputDB);
 		Map<ExtractionUnit, List<String>> extractionUnits = IE_DBConnector.readTrainingData(inputConnection);
 
 		// sort contexts by competence
@@ -68,25 +77,28 @@ public class ClusterCompetencesApp {
 		System.out.println("");
 
 		// calc featureVectors
-		Map<String, double[]> vectors = quantifier.getFeatureVectors(lemmatasByCompetence);
+		Map<String, double[]> vectors = quantifier.getFeatureVectors(lemmatasByCompetence, null);
+		
 
 		//create Clusterer
 		SimpleKMeans kmeans = new SimpleKMeans(); // new instance of clusterer
 		kmeans.setNumClusters(5);
 		kmeans.setPreserveInstancesOrder(true);
-		kmeans.setInitializationMethod(new SelectedTag(SimpleKMeans.RANDOM, SimpleKMeans.TAGS_SELECTION));
-		kmeans.setDistanceFunction(new ManhattanDistance());
-		kmeans.setMaxIterations(1000);
+		kmeans.setInitializationMethod(new SelectedTag(SimpleKMeans.KMEANS_PLUS_PLUS, SimpleKMeans.TAGS_SELECTION));
+		kmeans.setDistanceFunction(new EuclideanDistance());
+		kmeans.setMaxIterations(100);
 		WekaClusterer clusterer = new WekaClusterer(kmeans, vectors);
 		clusterer.cluster();
 		
+		//write results in db
+		Connection outputConnection = IE_DBConnector.connect(outputDB);
+		IE_DBConnector.createCluserTable(outputConnection);
 		int i = 0;
 		for (String comp : vectors.keySet()) {
 			int clusterID = clusterer.getClusterForInstance(i);
-			System.out.println(clusterID+" "+comp);
+			IE_DBConnector.writeClusterResult(clusterID, comp, outputConnection);
 			i++;
 		}
-	
 	}
 
 }
