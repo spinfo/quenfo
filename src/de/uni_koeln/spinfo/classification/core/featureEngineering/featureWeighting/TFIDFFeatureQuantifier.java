@@ -38,10 +38,8 @@ public class TFIDFFeatureQuantifier extends AbstractFeatureQuantifier{
 				}
 				vector[i++] = tfidf;
 			}
-			
 			unitToClassify.setFeatureVector(vector);
 		}
-	
 	}
 	
 	

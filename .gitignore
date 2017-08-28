@@ -7,3 +7,5 @@ information_extraction/data/competences/Schlagwortliste_Kompetenzen.xls
 classification/output
 
 src/de/uni_koeln/spinfo/information_extraction/bibbApplications/CreateBigDB.java
+
+clustering

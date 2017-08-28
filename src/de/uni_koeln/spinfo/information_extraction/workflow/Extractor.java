@@ -334,9 +334,9 @@ public class Extractor {
 			// init. ExtractionUnits
 			List<ExtractionUnit> extractionUnits = ExtractionUnitBuilder.initializeIEUnits(allUnits, true, false, false);
 			jobs.annotateTokens(extractionUnits);
-			Map<ExtractionUnit, Map<InformationEntity, List<Context>>> contextMatches = jobs.extractByPatterns(extractionUnits);
-			contextMatches = jobs.mergeInformationEntities(contextMatches);
-			jobs.updateEntitiesList(contextMatches);
+			Map<ExtractionUnit, Map<InformationEntity, List<Context>>> contextMatches = new HashMap<ExtractionUnit, Map<InformationEntity, List<Context>>>();//jobs.extractByPatterns(extractionUnits);
+		//	contextMatches = jobs.mergeInformationEntities(contextMatches);
+		//	jobs.updateEntitiesList(contextMatches);
 			
 			Map<ExtractionUnit, Map<InformationEntity, List<Context>>> stringMatches = jobs
 					.extractByStringMatch(extractionUnits, contextMatches);
@@ -346,20 +346,20 @@ public class Extractor {
 			// setImportances
 			if (jobs.type == IEType.COMPETENCE) {
 				jobs.setImportances(stringMatches);
-				jobs.setImportances(contextMatches);
+				//jobs.setImportances(contextMatches);
 			}
 
 			// write in DB
 			if (jobs.type == IEType.COMPETENCE) {
-				IE_DBConnector.writeCompetences(contextMatches, outputConnection, false);
+			//	IE_DBConnector.writeCompetences(contextMatches, outputConnection, false);
 				IE_DBConnector.writeCompetences(stringMatches, outputConnection, false);
 			}
 			if (jobs.type == IEType.TOOL) {
-				IE_DBConnector.writeTools(contextMatches, outputConnection, false);
+			//	IE_DBConnector.writeTools(contextMatches, outputConnection, false);
 				IE_DBConnector.writeTools(stringMatches, outputConnection, false);
 			}
 			count(statisticsFile, stringMatches, counts);
-			count(statisticsFile, contextMatches, counts);
+			//count(statisticsFile, contextMatches, counts);
 		}
 		// write statisticsFile
 		writeStatistics(counts, statisticsFile);

@@ -1,6 +1,4 @@
-number of types found in database: 714
-
-berufserfahrung: 72
+number of types found in database: 692
 
 erfahrung: 62
 
@@ -27,6 +25,8 @@ abgeschlossen berufsausbildung: 27
 
 zuverlässigkeit: 25
 
+berufserfahrung: 20
+
 schrift: 19
 
 wort: 18
@@ -37,7 +37,6 @@ pkw: 17
 kunde: 17
 
 sicher: 14
-englischkenntnis: 14
 
 zuverlässig: 12
 belastbarkeit: 12
@@ -51,7 +50,6 @@ hoch: 11
 fähigkeit: 11
 
 eigeninitiative: 10
-deutschkenntnis: 10
 
 gut kenntnis: 9
 team: 9
@@ -61,12 +59,10 @@ führerschein klasse: 9
 fachrichtung: 8
 freundlichkeit: 8
 gut deutschkenntnis: 8
-edv-kenntnis: 8
 
 freundlich: 7
 elektrotechnik: 7
 belastbar: 7
-pc-kenntnis: 7
 ausbildung: 7
 engagement: 7
 gut englischkenntnis: 7
@@ -81,7 +77,6 @@ schnell: 6
 abschluss: 6
 berufserfahrung in: 6
 pkw-führerschein: 6
-grundkenntnis: 6
 beruf: 6
 bedienung: 6
 abitur: 6
@@ -99,7 +94,6 @@ kundenorientierung: 5
 hauptschulabschluss: 5
 excel: 5
 system: 5
-sprachkenntnis: 5
 automatisierungstechnik: 5
 jahr berufserfahrung: 5
 kommunikativ: 5
@@ -109,18 +103,17 @@ kommunikation: 5
 abgeschlossen kaufmännisch ausbildung: 5
 
 ce: 4
-reisebereitschaft: 4
 programmierung: 4
 motivation: 4
-lernbereitschaft: 4
+englischkenntnis: 4
 gepflegt erscheinungsbild: 4
+edv-kenntnis: 4
 studium: 4
 praxis: 4
 beratung: 4
 erster berufserfahrung: 4
 staplerschein: 4
 hydraulik: 4
-montagebereitschaft: 4
 techniker: 4
 
 gut umgangsform: 3
@@ -128,11 +121,11 @@ mittlerer reife: 3
 projekt: 3
 anlage: 3
 gut abschluss: 3
+lernbereitschaft: 3
 kundenorientieren: 3
 gast: 3
 einfühlungsvermögen: 3
 fs: 3
-fachkenntnis: 3
 eigenverantwortung: 3
 analytisch denken: 3
 konstruktion: 3
@@ -149,6 +142,7 @@ ausreichend: 3
 gut pc-kenntnis: 3
 teamgeist: 3
 technologie: 3
+reisebereitschaft: 3
 leistungsbereitschaft: 3
 durchsetzungsvermögen: 3
 sap: 3
@@ -156,7 +150,6 @@ maschinenbau: 3
 fahrzeug: 3
 schichtbereitschaft: 3
 fundiert kenntnis: 3
-führungserfahrung: 3
 kommunikationsfähigkeit: 3
 mathe: 3
 jahr: 3
@@ -168,6 +161,7 @@ abgeschlossen studium: 3
 antriebstechnik: 3
 programmierkenntnis: 3
 gut edv-kenntnis: 3
+montagebereitschaft: 3
 kreativ: 3
 
 aufbau: 2
@@ -175,7 +169,6 @@ berufsausbildung: 2
 engagieren: 2
 hoch belastbarkeit: 2
 mathematik: 2
-kommunikationsvermögen: 2
 offen: 2
 bau: 2
 selbstständig arbeit: 2
@@ -189,6 +182,7 @@ engagiert: 2
 gut hauptschulabschluss: 2
 it: 2
 fahrpraxis: 2
+führungserfahrung: 2
 sap kenntnis: 2
 betrieb: 2
 gesundheitspass: 2
@@ -214,8 +208,8 @@ kaufmännisch ausbildung: 2
 computer: 2
 englisch sprache: 2
 ms-office-programm: 2
-montag: 2
 erfolgreich abgeschlossen ausbildung: 2
+montag: 2
 gastronomie: 2
 lesen: 2
 serviceorientierung: 2
@@ -223,22 +217,19 @@ hängerzug: 2
 erstellen: 2
 sensorik: 2
 sanitär: 2
-verantwortungsbewusst: 2
 tür: 2
-organisationsvermögen: 2
+verantwortungsbewusst: 2
 einrichtung: 2
 betreuung: 2
-englisch-kenntnis: 2
 pünktlichkeit: 2
 fenster: 2
 gut englisch: 2
 langjährig erfahrung: 2
-office: 2
 schnell auffassungsgabe: 2
+office: 2
 mode: 2
 indesign: 2
 abgeschlossen hochschulstudium: 2
-auffassungsvermögen: 2
 richten: 2
 gut englisch-kenntnis: 2
 ausbildung als: 2
@@ -248,8 +239,8 @@ bereit: 2
 kontaktfreudig: 2
 möglich ausbildung: 2
 maschine: 2
-energie: 2
 montage: 2
+energie: 2
 wirtschaftsingenieurwesen: 2
 praktisch erfahrung: 2
 physik: 2
@@ -281,12 +272,12 @@ fachhochschulreife: 2
 technik: 2
 sorgfältig: 2
 ms-office kenntnis: 2
-einkauf: 2
 pc: 2
+einkauf: 2
 gut kommunikationsfähigkeit: 2
 service: 2
-servicebereich: 2
 logistik: 2
+servicebereich: 2
 führungsqualität: 2
 
 praktisch berufserfahrung: 1
@@ -300,15 +291,14 @@ diagnostik: 1
 betriebswirtschaft: 1
 abgeschlossen fachbezogen berufsausbildung: 1
 fernverkehr: 1
-it-kenntnis: 1
 personal: 1
 brandschutz: 1
 genannt aufgabenbereiche: 1
 produktion: 1
 senior: 1
 salate: 1
-warenpräsentation: 1
 werkstatt: 1
+warenpräsentation: 1
 bundesweit montagebereitschaft: 1
 prozessmanagement: 1
 trendbewusst: 1
@@ -323,8 +313,8 @@ wechselbrück: 1
 kunststoff: 1
 punkt: 1
 gepflegt auftreten: 1
-betriebswirtschaftlich kenntnis: 1
 ähnlich fachrichtung: 1
+betriebswirtschaftlich kenntnis: 1
 kfz-teil: 1
 lichtbild: 1
 stromlaufplan: 1
@@ -353,8 +343,8 @@ lagerlogistik: 1
 gepflegt äußere: 1
 pflegebereich: 1
 ford: 1
-herstellung: 1
 überzeugend auftreten: 1
+herstellung: 1
 ausgezeichnet kenntnis: 1
 problemlösungsfähigkeit: 1
 verantwortungsbewusstsein: 1
@@ -362,40 +352,40 @@ aufgabenbereich: 1
 selbstständig arbeitsweise: 1
 heizung: 1
 farbberatung: 1
-warten: 1
 elektromaschinenbau: 1
+warten: 1
 textil: 1
 sozial kompetenz: 1
-einstellung: 1
 durchsetzungsfähig: 1
+einstellung: 1
 adr: 1
 weiß ware: 1
 datev-kenntnis: 1
 indisch: 1
-bedienen: 1
 selbständigkeit: 1
 handwerklich kenntnis: 1
+bedienen: 1
 strukturiert arbeit: 1
 überzeugungsstark: 1
 schein: 1
 türkischkenntnis: 1
-it-bereich: 1
 klimatechnik: 1
+it-bereich: 1
 innenbereich: 1
 gut berufserfahrung: 1
 schweißerprüfung: 1
-abgeschlossen technikerausbildung: 1
 englisch sprachkenntnis: 1
-ms-office produkt: 1
+abgeschlossen technikerausbildung: 1
 samstagsarbeit: 1
+ms-office produkt: 1
 schnelle auffassungsvermögen: 1
 befriedigend note: 1
 mechatroniker: 1
 freundlich auftreten: 1
 promotion: 1
 dokumentation: 1
-c++: 1
 fundiert fachkenntnis: 1
+c++: 1
 gut it-kenntnis: 1
 ausgeprägt dienstleistungsorientierung: 1
 hotellerie: 1
@@ -403,17 +393,15 @@ messgerät: 1
 unternehmerisch denken: 1
 positiv energie: 1
 gültig staplerschein: 1
-schleifkenntnis: 1
-erfindung: 1
 entsprechend ausbildung: 1
+erfindung: 1
 polizeilich führungszeugnis: 1
 ergebnisorientiert arbeitsstil: 1
-kfz-bereich: 1
 höflichkeit: 1
+kfz-bereich: 1
 waschen: 1
 verputzen: 1
 kleinkindbereich: 1
-datenverarbeitungskenntnis: 1
 körperlich: 1
 a-la-carte-geschäft: 1
 lackierer: 1
@@ -428,35 +416,34 @@ klinik: 1
 logisch denken: 1
 abschluss als aok betriebswirt: 1
 dienstleistungsbereich: 1
-freundlich wesen: 1
 spezialkenntnis: 1
+freundlich wesen: 1
 berufserfahrung in lager: 1
 informationstechnologie: 1
-qualifikation_kenntnis: 1
-krankenpflege: 1
 absolut teamplayer: 1
+krankenpflege: 1
 therapie: 1
 exportgeschäft: 1
 ablauf: 1
 ms-office-kenntnis: 1
-gestaltung: 1
 rechnungswesen: 1
+gestaltung: 1
 siemens s7: 1
-automation: 1
 vorbereitung: 1
+automation: 1
 gut allgemein edv-kenntnis: 1
-organisatorisch talent: 1
 geschick: 1
+organisatorisch talent: 1
 ausbildung zu fachinformatiker: 1
 gut deutsch sprachkenntnis: 1
 mm: 1
 kranerfahrung: 1
-fließend deutsch: 1
 computerkenntnis: 1
+fließend deutsch: 1
 kassenabrechnung: 1
 pneumatikbereich: 1
-stahl: 1
 zusatzqualifikation: 1
+stahl: 1
 werk: 1
 ortskenntnis: 1
 großunternehmen: 1
@@ -482,8 +469,8 @@ ausbildung zu sozialversicherungsfachangestellt: 1
 innovativ: 1
 cad system: 1
 staatlich anerkennung: 1
-wartung: 1
 kennzahl: 1
+wartung: 1
 transport: 1
 selbstständigkeit: 1
 spezifikation: 1
@@ -515,10 +502,9 @@ mittlerer bildungsabschluss: 1
 freundlich Art: 1
 selbstständig arbeitsstil: 1
 maschinenkonstruktion: 1
-programm: 1
 drehtechnik: 1
+programm: 1
 motor: 1
-pc-anwenderkenntnis: 1
 ähnlich: 1
 kundenberatung: 1
 autohaus: 1
@@ -528,18 +514,18 @@ gut pc-anwenderkenntnis: 1
 b2b: 1
 einwandfrei polizeilich führungszeugnis: 1
 genauigkeit: 1
-löterfahrung: 1
-strukturiert: 1
 ausgeprägt organisationsgeschick: 1
+strukturiert: 1
 ausbildung in hotelfach: 1
 abdichtungstechnik: 1
 versorgungstechnik: 1
 opel: 1
 zeichnung: 1
-untergrundvorbereitung: 1
 gehaltsabrechnung: 1
+untergrundvorbereitung: 1
 kundenbetreuung: 1
 qualitätsmanagement: 1
+deutschkenntnis: 1
 neigung: 1
 administration: 1
 teamorientieren: 1
@@ -557,7 +543,6 @@ privat: 1
 pflegedokumentation: 1
 weit fremdsprache: 1
 nahverkehr: 1
-schweißkenntnis: 1
 abgeschlossen berufausbildung: 1
 ausgeprägt technisch verständnis: 1
 fachbezogen ausbildung: 1
@@ -588,43 +573,42 @@ organisatorisch: 1
 siemens: 1
 catering: 1
 step: 1
-erweitert pc-kenntnis: 1
 fernmeldetechnik: 1
-wissbegierig: 1
+erweitert pc-kenntnis: 1
 kundschaft: 1
+wissbegierig: 1
 röntgenschein: 1
-fahrzeuglackierung: 1
 rhetorisch fähigkeit: 1
 sozialversicherungsrecht: 1
+fahrzeuglackierung: 1
 berufserfahrung in service: 1
 zwingend voraussetzung: 1
 software: 1
-körperlich belastbarkeit: 1
-handwerklich geschick: 1
-dreher: 1
 kassieren: 1
-umfangreich kenntnis: 1
+körperlich belastbarkeit: 1
+dreher: 1
+handwerklich geschick: 1
 auto-cad: 1
-dreischichtbereitschaft: 1
+umfangreich kenntnis: 1
 schriftlich bewerbung: 1
 qualität: 1
 höhentauglichkeit: 1
 warenwirtschaftssystem: 1
 nachtdienst: 1
 cnc-drehmaschine: 1
-erstellung: 1
 berufstypisch kenntnis: 1
+erstellung: 1
 praktikum: 1
 ausbildereignungsprüfung: 1
 kontaktfreude: 1
 französisch: 1
-metallbearbeitung: 1
 ausgeprägt kundenorientierung: 1
+metallbearbeitung: 1
 systematisch arbeitsweise: 1
 fach mathematik: 1
 kfz-mechaniker: 1
 wareneingangskontrolle: 1
-hilfsbereitschaft: 1
+pc-kenntnis: 1
 technisch optik: 1
 ms-office-produkt: 1
 vertriebsumfeld: 1
@@ -638,8 +622,8 @@ offen persönlichkeit: 1
 geoinformationssystem david: 1
 vorkenntnis: 1
 bereich heizungstechnik: 1
-zusammenarbeit: 1
 gut schulnot: 1
+zusammenarbeit: 1
 datenbanksystem oracle: 1
 entsprechend erfahrung: 1
 make-up: 1
@@ -653,7 +637,6 @@ erster kenntnis: 1
 montier: 1
 vergleichbar ausbildung: 1
 gut pädagogisch kenntnis: 1
-heimerfahrung: 1
 fachwis: 1
 pkw-fs: 1
 wochenendarbeit: 1
@@ -661,7 +644,6 @@ canalyzer: 1
 reifen: 1
 warenannahme: 1
 weinkenntnis: 1
-projektmanagementerfahrung: 1
 apparatebau: 1
 sicher kenntnis: 1
 geschäftspartner: 1
@@ -672,21 +654,20 @@ schweißen: 1
 dachfenster: 1
 lösungsorientiert arbeit: 1
 leitungserfahrung: 1
+ausbildung zu techniker: 1
 umfassend kenntnis: 1
 vorzugsweise berufserfahrung: 1
-ausbildung zu techniker: 1
 getriebekonstruktion: 1
 gültig prüfung: 1
 kundenfreundlich: 1
-it-umfeld: 1
 berufspraxis: 1
-computer-kenntnis: 1
+it-umfeld: 1
 html: 1
 reparatur: 1
 fluidtechnik: 1
+energiewirtschaft: 1
 alt mensch: 1
 sorgfältig arbeitsweise: 1
-energiewirtschaft: 1
 ms-office anwendung: 1
 führung: 1
 bundesweit montage: 1
@@ -704,42 +685,39 @@ fremdsprachenkenntnis: 1
 fachlich qualifikation: 1
 färben: 1
 edv kenntnis: 1
+rechtssicher handeln: 1
 fahrerlaubnis: 1
 cad-system: 1
-rechtssicher handeln: 1
-prüfen: 1
 kundenorientiert: 1
+prüfen: 1
 abgeschlossen schulausbildung: 1
 bereich heizung: 1
 hoch flexibilität: 1
-sozialkompetenz: 1
 tapezieren: 1
 wig: 1
 baumaschine: 1
 außendienst: 1
-praxiserfahrung: 1
 msr-kenntnis: 1
-gut zahlenverständnis: 1
 auftragsannahme: 1
 schlosser: 1
+gut zahlenverständnis: 1
 kautschuktechnik: 1
 pflege: 1
-chemikalie: 1
 elektro: 1
+chemikalie: 1
 gesundheitszeugnis: 1
+präzise: 1
 dienstleistung: 1
 detailgenau: 1
-präzise: 1
 organisationstalent: 1
 möbeltischlerei: 1
 überdurchschnittlich abschluss: 1
-allgemein hochschulreife: 1
 zeitlich flexibilität: 1
-entscheidungskompetenz: 1
+allgemein hochschulreife: 1
 verhandlungssich englisch: 1
 zuverlässig arbeitsweise: 1
-kaufmännisch berufsausbildung: 1
 realschulabschluss: 1
+kaufmännisch berufsausbildung: 1
 abschließen ausbildung: 1
 heidenhain steuerung: 1
 

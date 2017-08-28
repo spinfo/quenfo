@@ -336,34 +336,4 @@ public class IE_DBConnector {
 	}
 
 
-	
-	public static void createSimilarityTable(Connection connection) throws SQLException{
-		connection.setAutoCommit(false);
-		Statement stmt = connection.createStatement();
-		String sql = "DROP TABLE IF EXISTS Similarities";
-		stmt.executeUpdate(sql);
-		sql = "CREATE TABLE Similarities (ID INTEGER PRIMARY KEY AUTOINCREMENT, Comp TEXT NOT NULL, similar TEXT)";
-		stmt.executeUpdate(sql);
-		stmt.close();
-		connection.commit();
-	}
-
-	public static void writeSimilarities(String string, List<String> sims, Connection connection) throws SQLException {
-		StringBuffer sb = new StringBuffer();
-		for (String s : sims) {
-			sb.append(s+" | ");
-		}
-		//sb.delete(sb.length()-3, sb.length());
-		connection.setAutoCommit(false);
-		Statement stmt = connection.createStatement();
-		String sql = "INSERT INTO Similarities(Comp, similar) VALUES('"+string+"', '"+sb.toString()+"')";
-		stmt.executeUpdate(sql);
-		stmt.close();
-		connection.commit();
-	}
-
-
-
-
-
 }
