@@ -8,12 +8,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class AbstractFeatureQuantifier<E> {
+public  class FeatureQuantifier<E> {
 	
 	int maxTF = 0;
 	List<String> featureUnitOrder;
 	
-	public abstract Map<E,double[]> getFeatureVectors(Map<E,List<String>> documentsByKey, List<String> featureUnitOrder);
+	public Map<E,double[]> getFeatureVectors(Map<E,List<String>> documentsByKey, List<String> featureUnitOrder) {
+		return null;
+	}
 	
 	protected List<String> getFeatureUnitOrder(Collection<List<String>> documents ) {
 		Set<String> uniqueFeatures = new HashSet<String>();
@@ -26,7 +28,7 @@ public abstract class AbstractFeatureQuantifier<E> {
 		return toReturn;
 	}
 	
-	protected Map<String,Integer> getDocumentFrequencies(Map<E,List<String>> documentsByKey){
+	public Map<String,Integer> getDocumentFrequencies(Map<E,List<String>> documentsByKey){
 		Map<String, Integer> docFrequencies = new HashMap<String,Integer>();
 		for (String feature : featureUnitOrder) {
 			int count = 0;
@@ -40,7 +42,7 @@ public abstract class AbstractFeatureQuantifier<E> {
 		return docFrequencies;
 	}
 	
-	protected Map<E,Map<String,Integer>> getTermFrequencies(Map<E, List<String>> documentsByKey){
+	public Map<E,Map<String,Integer>> getTermFrequencies(Map<E, List<String>> documentsByKey){
 		Map<E, Map<String,Integer>> termFrequencies = new HashMap<E, Map<String,Integer>>();
 		for (E key : documentsByKey.keySet()) {
 			Map<String,Integer> counts = new HashMap<String,Integer>();

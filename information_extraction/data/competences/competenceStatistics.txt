@@ -1,54 +1,345 @@
-number of types found in database: 39
+number of types found in database: 325
 
 berufserfahrung: 62
 
-führerschein: 35
+teamfähigkeit: 42
+
 abgeschlossen ausbildung: 35
 
+flexibilität: 32
+
+führerschein: 29
 abgeschlossen berufsausbildung: 29
+
+zuverlässigkeit: 25
 
 flexibel: 17
 pkw: 17
 
-eigeninitiative: 10
+zuverlässig: 14
 
+setzen: 12
+englisch: 12
+
+eigeninitiative: 10
+deutschkenntnis: 10
+alt: 10
+
+verständnis: 8
 gut englischkenntnis: 8
+kommunikativ: 8
+freundlichkeit: 8
 kaufmännisch ausbildung: 8
 
 führerschein klasse B: 7
+elektrotechnik: 7
+pc-kenntnis: 7
+engagement: 7
+eigenverantwortlich: 7
 einschlägig berufserfahrung: 7
+motivieren: 7
+kommunikationsfähigkeit: 7
 
+einzelhandel: 6
+technisch verständnis: 6
+mobilität: 6
 teamfähig: 6
+kundenorientierung: 6
+verkauf: 6
+freude an umgang mit mensch: 6
+pkw-führerschein: 6
 
+bedienung: 5
+service: 5
+automatisierungstechnik: 5
 sprachkenntnis: 5
+schichtarbeit: 5
+staplerschein: 5
+sprache: 5
 
+weiterbildung: 4
+gut umgangsform: 4
 reisebereitschaft: 4
+fremdsprache: 4
+programmierung: 4
 deutsch und englischkenntnis: 4
+hydraulik: 4
+eigenständig: 4
 montagebereitschaft: 4
+englisch in wort und schrift: 4
 
+zeichnen: 3
 lernbereitschaft: 3
-schichtbereitschaft: 3
-programmierkenntnis: 3
+anpassungsfähigkeit: 3
+schnell auffassungsgabe: 3
 einfühlungsvermögen: 3
+eigenverantwortung: 3
+mathematik: 3
+führerschein --: 3
+analytisch denken: 3
+konstruktion: 3
+anlagenbau: 3
+linux: 3
+verkaufserfahrung: 3
+lkw: 3
+teamgeist: 3
+teamplayer: 3
+durchsetzungsvermögen: 3
+leistungsbereitschaft: 3
+maschinenbau: 3
+fahrzeug: 3
+schichtbereitschaft: 3
+führungserfahrung: 3
+kommunikationsstärke: 3
+offenheit: 3
+steuerung: 3
+antriebstechnik: 3
+programmierkenntnis: 3
 gut edv-kenntnis: 3
+zeichnung: 3
 
+pünktlichkeit: 2
+sap-kenntnis: 2
+software: 2
+körperlich belastbarkeit: 2
+vertrieb: 2
+pascal: 2
+din: 2
+kontakt: 2
+vob: 2
+kassensystem: 2
+messtechnik: 2
+catia: 2
 gut fachkenntnis: 2
+indesign: 2
+hochschulstudium: 2
 gut englisch-kenntnis: 2
+dienstleistungsorientierung: 2
+lernfähigkeit: 2
+maschine: 2
+serviceorientierung: 2
+wirtschaftsingenieurwesen: 2
+französisch: 2
+physik: 2
+sensorik: 2
+was: 2
+sozial kompetenz: 2
+planung: 2
+photoshop: 2
+verantwortungsbewusst: 2
+fahrpraxis: 2
+organisationsvermögen: 2
+einkauf: 2
+qualitätsbewusstsein: 2
+wärmedämmung: 2
+kreativität: 2
+mechatronik: 2
+zielstrebig: 2
+logistik: 2
+führungsqualität: 2
+basic: 2
+adr-schein: 2
+floristik: 2
 
-sap erfahrung: 1
-einsatz und lernbereitschaft: 1
-digitaldruck: 1
-entsprechend ausbildung: 1
-problemlösungspotential: 1
-gesundheitspaß: 1
-gut it-kenntnis: 1
-verkehrsrecht: 1
+ehrlichkeit: 1
+raumfahrttechnik: 1
+drehmaschine: 1
+profibus: 1
+qualitätssicherung: 1
+bürokommunikation: 1
+cad-kenntnis: 1
+shell-programmierung: 1
+bankenbranche: 1
+empathie: 1
+führerschein klasse ce: 1
+automobilindustrie: 1
+steuerung und regelungstechnik: 1
+fernverkehr: 1
+bedienung von cnc-drehmaschine: 1
+brandschutz: 1
+eigenmotivation: 1
+senior: 1
+führerschein der klasse B: 1
+prozessmanagement: 1
+büroarbeit: 1
+maschinenkonstruktion: 1
+drehtechnik: 1
+fleischerei: 1
+sympathisch: 1
+kranschein: 1
 wechselbrück: 1
+konzeptionell fähigkeit: 1
+preisauszeichnung: 1
+kunststoff: 1
+prüfung: 1
+führerschein B: 1
+betriebswirtschaftlich kenntnis: 1
+interesse an weiterbildung: 1
+genauigkeit: 1
+mes -- steuerung und regelungstechnik: 1
+verkehrsrecht: 1
+geograf: 1
 studium der informatik: 1
-praxiserfahrung: 1
-msr-kenntnis: 1
+inca: 1
+wirtschaftsinformatik: 1
+versorgungstechnik: 1
+opel: 1
+handelsschule: 1
+einsatz und lernbereitschaft: 1
+italienisch: 1
+qualitätsmanagement: 1
+administration: 1
+sauberkeit: 1
+gepflegt äußere: 1
+ford: 1
+problemlösungsfähigkeit: 1
+verantwortungsbewusstsein: 1
+ausgeglichenheit: 1
+selbstständig arbeitsweise: 1
+farbberatung: 1
+adr: 1
+pflegedokumentation: 1
+schweißkenntnis: 1
+internet: 1
+selbständigkeit: 1
+begeisterungsfähigkeit: 1
+grundbildung: 1
+kantine: 1
+verkaufsgespräch: 1
+kesselbau: 1
+sorgfalt: 1
+projektierung: 1
+haarverlängerung: 1
+mes und regeltechnik: 1
+organisatorisch fähigkeit: 1
 türkischkenntnis: 1
-abschluss als aok betriebswirt: 1
+chinesisch: 1
+samba: 1
+klimatechnik: 1
+eng: 1
+außenarbeit: 1
+frisieren: 1
+interessieren: 1
+internet --: 1
+windows: 1
+rohrleitungsbau: 1
+catering: 1
+schnelle auffassungsvermögen: 1
+wissbegierig: 1
+sattelschlepper: 1
+promotion: 1
+sozialversicherungsrecht: 1
+technisch mechanik: 1
+dokumentation: 1
+c++: 1
+handwerklich geschick: 1
+problemlösungspotential: 1
+gut it-kenntnis: 1
+höhentauglichkeit: 1
+warenwirtschaftssystem: 1
+nachtdienst: 1
+unternehmerisch denken: 1
+praktikum: 1
+digitaldruck: 1
+sinumerik: 1
+entsprechend ausbildung: 1
+integrität: 1
+kontaktfreude: 1
+metallbearbeitung: 1
+systematisch arbeitsweise: 1
+freude an der arbeit: 1
+schank: 1
+geoinformationssystem: 1
+step 7: 1
+koreanisch: 1
+aktuatorik: 1
+wareneingangskontrolle: 1
+hilfsbereitschaft: 1
+technisch optik: 1
+höflichkeit: 1
+zahlenverständnis: 1
+arbeitsschutz: 1
+heizungstechnik: 1
+umgang mit jugendliche: 1
+hausbesuch: 1
+fetchmail: 1
 datenverarbeitungskenntnis: 1
+unternehmerisch denken und handeln: 1
+allgemeinbildung: 1
+pädagogik: 1
+lackieren: 1
+make-up: 1
+pneumatik: 1
+datenbank: 1
+prozesstechnik: 1
+logisch denken: 1
+umrichter: 1
+abschluss als aok betriebswirt: 1
+sendmail: 1
+man: 1
+sap erfahrung: 1
+umgang mit kind: 1
+informationstechnologie: 1
+technisch strömungslehre: 1
+canalyzer: 1
+krankenpflege: 1
+reifen: 1
+decken: 1
+warenannahme: 1
+icem: 1
 projektmanagementerfahrung: 1
+apparatebau: 1
+a-la-carte-service: 1
+vertragsabwicklung: 1
+lagerwirtschaft: 1
+gesundheitspaß: 1
+schweißen: 1
+fortbildung: 1
+überzeugungskraft: 1
+berufspraxis: 1
+reparatur: 1
+meisterprüfung: 1
+fluidtechnik: 1
+energiewirtschaft: 1
+strukturmechanik: 1
+computerkenntnis: 1
+zentralheizung: 1
+kassenabrechnung: 1
+vertragsrecht: 1
+stahl: 1
+ortskenntnis: 1
+grundkenntnis englisch: 1
+professionell auftreten: 1
+squid: 1
+corel draw: 1
+aktiv: 1
+umgang mit chemikalie: 1
+pädagogisch kenntnis: 1
+patent: 1
+katastervermessung: 1
+führungsfähigkeit: 1
+vertriebserfahrung: 1
+tapezieren: 1
+spritzguss: 1
+außendienst: 1
+buch: 1
+msr-kenntnis: 1
+systemintegration: 1
+praxiserfahrung: 1
+körperlich fitness: 1
+auftragsannahme: 1
+tischler: 1
+kautschuktechnik: 1
+sorgsam: 1
+technisch informatik: 1
+kennzahl: 1
+wartung: 1
+hausverwaltung: 1
+organisationstalent: 1
+umgang mit alt mensch: 1
+möbeltischlerei: 1
+zeitlich flexibilität: 1
+erstellung von stromlaufplan: 1
+bogenmontage: 1
+schreiner: 1
 

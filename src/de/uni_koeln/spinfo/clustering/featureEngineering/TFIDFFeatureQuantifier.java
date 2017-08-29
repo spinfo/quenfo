@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TFIDFFeatureQuantifier<E> extends AbstractFeatureQuantifier<E> {
+public class TFIDFFeatureQuantifier<E> extends FeatureQuantifier<E> {
 
 	public Map<E, double[]> getFeatureVectors(Map<E, List<String>> documentsByKey, List<String> featureUnitOrder) {
 		//set FeatureUnitOrder

@@ -39,8 +39,6 @@ public class MatchCompetencesWithDB {
 	// path to the negative examples file
 	static File noCompetences = new File("information_extraction/data/competences/noCompetences.txt");
 	
-	//path to the correctable output-database  (to read the latest annotated competences)
-	//static String correctableCompetencesDB = /*"D:/Daten/sqlite/CorrectableCompetences.db"; */"C:/sqlite/CorrectableCompetences.db";
 
 
 	/////////////////////////////
@@ -71,8 +69,6 @@ public class MatchCompetencesWithDB {
 		// start matching
 		Extractor extractor = new Extractor(null, competences, noCompetences, contextFile, importanceTerms, IEType.COMPETENCE);
 		extractor.finalStringMatch(statisticsFile, inputConnection, outputConnection);
-		
-
 	}
 
 }

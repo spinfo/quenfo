@@ -335,6 +335,33 @@ public class IE_DBConnector {
 		return readAnnotatedEntities(connection, -1, type);
 	}
 	
+	public static void createCooccurrenceTable(Connection connection) throws SQLException{
+		connection.setAutoCommit(false);
+		Statement stmt = connection.createStatement();
+		String sql = "DROP TABLE IF EXISTS Cooccurrences";
+		stmt.executeUpdate(sql);
+		sql = "CREATE TABLE Cooccurrences (ID INTEGER PRIMARY KEY AUTOINCREMENT, Competence TEXT NOT NULL,  Cooccurrence Text NOT NULL, Count INT NOT NULL)";
+		stmt.executeUpdate(sql);
+		stmt.close();
+		connection.commit();
+	}
+	
+	public static void writeCooccurrences(Connection connection, Map<String,Map<String,Integer>> cooccurrences) throws SQLException{
+		connection.setAutoCommit(false);
+		PreparedStatement stmt = connection.prepareStatement("INSERT INTO Cooccurrences (Competence, Cooccurrence, Count) VALUES(?,?,?)");
+		for (String comp : cooccurrences.keySet()) {
+			for (String co : cooccurrences.get(comp).keySet()) {
+				System.out.println(comp+"    "+co);
+				stmt.setString(1, comp);
+				stmt.setString(2, co);
+				stmt.setInt(3,cooccurrences.get(comp).get(co));
+				stmt.executeUpdate();
+			}
+		}
+		stmt.close();
+		connection.commit();
+	}
+	
 	public static void createCluserTable(Connection connection) throws SQLException{
 		connection.setAutoCommit(false);
 		Statement stmt = connection.createStatement();
