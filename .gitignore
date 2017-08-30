@@ -4,6 +4,21 @@ information_extraction/data/openNLPmodels
 
 information_extraction/data/sentencedata_models
 
+information_extraction/data/competences/competences.txt
+
+information_extraction/data/competences/noCompetences.txt
+
+information_extraction/data/competences/competenceStatistics.txt
+
+information_extraction/data/tools/tools.txt
+
+information_extraction/data/tools/noTools.txt
+
+information_extraction/data/tools/toolStatistics.txt
+
+clustering/vectors.arff
+
+
 
 
 
