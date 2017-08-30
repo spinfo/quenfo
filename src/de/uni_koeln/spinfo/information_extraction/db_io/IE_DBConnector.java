@@ -346,16 +346,23 @@ public class IE_DBConnector {
 		connection.commit();
 	}
 	
-	public static void writeCooccurrences(Connection connection, Map<String,Map<String,Integer>> cooccurrences) throws SQLException{
+	public static void writeCooccurrences(Connection connection, Map<String,double[]> vectors, List<String> compOrder) throws SQLException{
 		connection.setAutoCommit(false);
 		PreparedStatement stmt = connection.prepareStatement("INSERT INTO Cooccurrences (Competence, Cooccurrence, Count) VALUES(?,?,?)");
-		for (String comp : cooccurrences.keySet()) {
-			for (String co : cooccurrences.get(comp).keySet()) {
-				System.out.println(comp+"    "+co);
-				stmt.setString(1, comp);
-				stmt.setString(2, co);
-				stmt.setInt(3,cooccurrences.get(comp).get(co));
-				stmt.executeUpdate();
+		for (String comp : vectors.keySet()) {
+			int i = 0;
+			for (String string : compOrder) {
+				if(string.equals(comp)) {
+					i++;
+					continue;
+				}
+				if(vectors.get(comp)[i]!= 0.0){
+					stmt.setString(1, comp);
+					stmt.setString(2, string);
+					stmt.setInt(3, (int) vectors.get(comp)[i]);
+					stmt.executeUpdate();
+				}
+				i++;
 			}
 		}
 		stmt.close();

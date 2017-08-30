@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RelativeFrequencyQuantifier<E> extends FeatureQuantifier<E> {
+public class RelativeFrequencyQuantifier<E> extends AbstractFeatureQuantifier<E> {
 
 	@Override
 	public Map<E, double[]> getFeatureVectors(Map<E, List<String>> documentsByKey, List<String> featureUnitOrder) {

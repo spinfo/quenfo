@@ -10,7 +10,7 @@ import org.apache.mahout.math.stats.LogLikelihood.ScoredItem;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 
-public class LoglikeliHoodQuantifier<E> extends FeatureQuantifier<E> {
+public class LoglikeliHoodQuantifier<E> extends AbstractFeatureQuantifier<E> {
 
 	Multiset<String> bagOfWords2 = HashMultiset.create();
 
