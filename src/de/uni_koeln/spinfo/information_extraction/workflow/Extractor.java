@@ -334,6 +334,7 @@ public class Extractor {
 			// init. ExtractionUnits
 			List<ExtractionUnit> extractionUnits = ExtractionUnitBuilder.initializeIEUnits(allUnits, true, false, false);
 			jobs.annotateTokens(extractionUnits);
+			//contextMatches bleibt leer, da nur ein Stringmatch ausgeführt werden soll
 			Map<ExtractionUnit, Map<InformationEntity, List<Context>>> contextMatches = new HashMap<ExtractionUnit, Map<InformationEntity, List<Context>>>();//jobs.extractByPatterns(extractionUnits);
 		//	contextMatches = jobs.mergeInformationEntities(contextMatches);
 		//	jobs.updateEntitiesList(contextMatches);

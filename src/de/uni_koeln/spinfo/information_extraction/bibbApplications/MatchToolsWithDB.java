@@ -16,7 +16,7 @@ public class MatchToolsWithDB {
 	/////////////////////////////
 
 	// path to input database
-	static String inputDB =    /*"D:/Daten/sqlite/CorrectableParagraphs.db"; */"C:/sqlite/CorrectableParagraphsBig.db"; //
+	static String inputDB =   "C:/sqlite/CorrectableParagraphs.db";
 
 	// folder for output database
 	static String outputFolder = /*"D:/Daten/sqlite/"; */ "C:/sqlite/"; //
