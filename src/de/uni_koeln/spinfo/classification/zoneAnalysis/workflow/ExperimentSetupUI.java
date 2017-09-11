@@ -103,6 +103,7 @@ public class ExperimentSetupUI {
 				if(model == null){
 					getExperimentConfiguration(dataFileName);
 				}
+				System.out.println(model);
 				classifier = model.getClassifier();
 				fq = model.getFQ();
 				fuc = model.getFuc();

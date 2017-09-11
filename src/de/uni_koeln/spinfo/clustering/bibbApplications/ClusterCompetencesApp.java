@@ -1,10 +1,5 @@
 package de.uni_koeln.spinfo.clustering.bibbApplications;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,16 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.mahout.math.hadoop.similarity.cooccurrence.measures.CooccurrenceCountSimilarity;
-
-import de.uni_koeln.spinfo.classification.core.featureEngineering.featureWeighting.AbsoluteFrequencyFeatureQuantifier;
-import de.uni_koeln.spinfo.clustering.featureEngineering.AbsoluteFrequencyQuantifier;
 import de.uni_koeln.spinfo.clustering.featureEngineering.AbstractFeatureQuantifier;
-import de.uni_koeln.spinfo.clustering.featureEngineering.CooccurrenceFeatureQuantifier;
-import de.uni_koeln.spinfo.clustering.featureEngineering.LoglikeliHoodQuantifier;
-import de.uni_koeln.spinfo.clustering.featureEngineering.RelativeFrequencyQuantifier;
 import de.uni_koeln.spinfo.clustering.featureEngineering.TFIDFFeatureQuantifier;
-import de.uni_koeln.spinfo.clustering.weka.ArffFileCreator;
 import de.uni_koeln.spinfo.clustering.weka.WekaClusterer;
 import de.uni_koeln.spinfo.information_extraction.data.ExtractionUnit;
 import de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
@@ -29,9 +16,6 @@ import de.uni_koeln.spinfo.information_extraction.preprocessing.IETokenizer;
 import is2.data.SentenceData09;
 import is2.lemmatizer.Lemmatizer;
 import weka.clusterers.SimpleKMeans;
-import weka.core.DistanceFunction;
-import weka.core.EuclideanDistance;
-import weka.core.Instances;
 import weka.core.ManhattanDistance;
 import weka.core.SelectedTag;
 

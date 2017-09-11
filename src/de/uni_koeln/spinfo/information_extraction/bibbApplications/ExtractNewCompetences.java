@@ -18,7 +18,7 @@ public class ExtractNewCompetences {
 /////////////////////////////
 
 // path to the input database
-static String inputDB =  /*"D:/Daten/sqlite/ClassifiedParagraphs.db"; */"C:/sqlite/CorrectableParagraphs.db"; 
+static String inputDB =  "D:/Daten/sqlite/CorrectableParagraphs.db";//"C:/sqlite/CorrectableParagraphs.db"; 
 
 // path to the competences-file (file of already known competences)
 static File competences = new File("information_extraction/data/competences/competences.txt");
@@ -33,7 +33,7 @@ static File importanceTerms = new File("information_extraction/data/competences/
 static File contextFile = new File("information_extraction/data/competences/competenceContexts.txt");
 
 //path to the (new) output-database
-static String outputDB = /*"D:/Daten/sqlite/CorrectableCompetences.db";*/ "C:/sqlite/CorrectableCompetences.db"; 
+static String outputDB = "D:/Daten/sqlite/CorrectableCompetences.db";// "C:/sqlite/CorrectableCompetences.db"; 
 
 // first paragraph read from input database
 static int startPos = 0;

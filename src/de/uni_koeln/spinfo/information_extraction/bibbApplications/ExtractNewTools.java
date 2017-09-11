@@ -18,7 +18,7 @@ public class ExtractNewTools {
 /////////////////////////////
 
 // path to the input database
-static String inputDB =  /*"D:/Daten/sqlite/ClassifiedParagraphs.db";  */"C:/sqlite/CorrectableParagraphs.db";
+static String inputDB = "D:/Daten/sqlite/ClassifiedParagraphs.db";  //"C:/sqlite/CorrectableParagraphs.db";
 
 // path to the tools-file
 static File tools = new File("information_extraction/data/tools/tools.txt");
@@ -30,7 +30,7 @@ static File noTools = new File("information_extraction/data/tools/noTools.txt");
 static File contextFile = new File("information_extraction/data/tools/toolContexts.txt");
 
 //path to the (new) output-database
-static String outputDB = /*"D:/Daten/sqlite/CorrectableTools.db"; */ "C:/sqlite/CorrectableTools.db"; //
+static String outputDB = "D:/Daten/sqlite/CorrectableTools.db"; // "C:/sqlite/CorrectableTools.db"; //
 
 // first paragraph read from input database
 static int startPos = 0;

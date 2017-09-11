@@ -16,10 +16,10 @@ public class MatchToolsWithDB {
 	/////////////////////////////
 
 	// path to input database
-	static String inputDB =   "C:/sqlite/CorrectableParagraphs.db";
+	static String inputDB =   "D:/Daten/sqlite/CorrectableParagraphs.db"; //"C:/sqlite/CorrectableParagraphs.db";
 
 	// folder for output database
-	static String outputFolder = /*"D:/Daten/sqlite/"; */ "C:/sqlite/"; //
+	static String outputFolder = "D:/Daten/sqlite/"; // "C:/sqlite/"; //
 
 	// name of output database
 	static String outputDB = "Tools.db";
@@ -35,10 +35,6 @@ public class MatchToolsWithDB {
 
 	// path to the negative examples file
 	static File noTools = new File("information_extraction/data/tools/noTools.txt");
-	
-	//path to the correctable output-database  (to read the latest annotated tools)
-	//static String correctableToolsDB = /*"D:/Daten/sqlite/CorrectableTools.db"; */ "C:/sqlite/CorrectableTools.db"; //
-
 
 	/////////////////////////////
 	// END
@@ -57,13 +53,6 @@ public class MatchToolsWithDB {
 
 		// Connect to output database
 		Connection outputConnection = IE_DBConnector.connect(outputFolder + outputDB);
-		
-//		File correctableTools = new File(correctableToolsDB);
-//		Connection correctableConnection = null;
-//		if(correctableTools.exists()){
-//			
-//			correctableConnection = IE_DBConnector.connect(correctableToolsDB);
-//		}
 
 		// start matching
 		Extractor extractor = new Extractor(null, tools, noTools, contextFile, IEType.TOOL);

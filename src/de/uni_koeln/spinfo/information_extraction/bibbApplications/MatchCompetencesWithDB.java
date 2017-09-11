@@ -16,10 +16,10 @@ public class MatchCompetencesWithDB {
 	/////////////////////////////
 
 	// path to input database
-	static String inputDB = /*"D:/Daten/sqlite/ClassifiedParagraphs.db"; */"C:/sqlite/CorrectableParagraphs.db"; // 
+	static String inputDB = "D:/Daten/sqlite/CorrectableParagraphs.db"; //"C:/sqlite/CorrectableParagraphs.db"; // 
 
 	// folder for output database
-	static String outputFolder = /*"D:/Daten/sqlite/";*/"C:/sqlite/"; // 
+	static String outputFolder = "D:/Daten/sqlite/";//"C:/sqlite/"; // 
 
 	// name of output database
 	static String outputDB = "Competences.db";
@@ -58,13 +58,6 @@ public class MatchCompetencesWithDB {
 
 		// Connect to output database
 		Connection outputConnection = IE_DBConnector.connect(outputFolder + outputDB);
-		
-//		File correctableComps = new File(correctableCompetencesDB);
-//		Connection correctableConnection = null;
-//		if(correctableComps.exists()){
-//			
-//			correctableConnection = IE_DBConnector.connect(correctableCompetencesDB);
-//		}
 
 		// start matching
 		Extractor extractor = new Extractor(null, competences, noCompetences, contextFile, importanceTerms, IEType.COMPETENCE);
