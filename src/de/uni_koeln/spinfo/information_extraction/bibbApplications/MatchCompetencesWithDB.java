@@ -14,38 +14,33 @@ public class MatchCompetencesWithDB {
 	///////////////////////////
 	// APP-CONFIGURATION
 	/////////////////////////////
+	
+	// Jahrgang bzw. Name der Tabelle (z.B. DL_ALL_Spinfo) die ursprünglich klassifiziert wurde (= Endung des DB-Namens)	
+	static String jahrgang = "DL_ALL_Spinfo";
 
-	// path to input database
-	static String inputDB = "D:/Daten/sqlite/CorrectableParagraphs.db"; //"C:/sqlite/CorrectableParagraphs.db"; // 
+	// Pfad zur Input-DB (Tabellenname wird automatsich hinzugefügt - z.B. CorrectableParagraphs_DL_ALL_Spinfo.db)
+	static String inputDB = /*"D:/Daten/sqlite/CorrectableParagraphs.db"; */"C:/sqlite/CorrectableParagraphs_"+jahrgang+".db"; // 
 
-	// folder for output database
-	static String outputFolder = "D:/Daten/sqlite/";//"C:/sqlite/"; // 
+	// Pfad zum Ordner in dem die neue Output-DB angelegt werden soll
+	static String outputFolder = /*"D:/Daten/sqlite/";*/"C:/sqlite/"; // 
 
-	// name of output database
-	static String outputDB = "Competences.db";
+	// Name der Output-DB (Tabellenname wird automatsich angehänt - z.B. Competences_DL_ALL_Spinfo.db)
+	static String outputDB = "Competences_"+jahrgang+".db";
 
-	// path to the comps-file
+	// Pfad zur Textdatei mit allen Kompetenzen 
 	static File competences = new File("information_extraction/data/competences/competences.txt");
 
-	// path to the importance terms file
+	// Pfad zur Textdatei mit allen 'Importance'-Ausdrücken
 	static File importanceTerms = new File("information_extraction/data/competences/importanceTerms.txt");
 
-	// path to the statistics file
+	// Pfad zur Textdatei für die Match-Staristik
 	static File statisticsFile = new File("information_extraction/data/competences/competenceStatistics.txt");
-
-	// path to the context file
-	static File contextFile = new File("information_extraction/data/competences/competenceContexts.txt");
-
-	// path to the negative examples file
-	static File noCompetences = new File("information_extraction/data/competences/noCompetences.txt");
-	
-
 
 	/////////////////////////////
 	// END
 	/////////////////////////////
 
-	public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
+	public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException {
 
 		// Connect to input database
 		Connection inputConnection = null;
@@ -60,7 +55,7 @@ public class MatchCompetencesWithDB {
 		Connection outputConnection = IE_DBConnector.connect(outputFolder + outputDB);
 
 		// start matching
-		Extractor extractor = new Extractor(null, competences, noCompetences, contextFile, importanceTerms, IEType.COMPETENCE);
+		Extractor extractor = new Extractor(null, competences, null, null, importanceTerms, IEType.COMPETENCE);
 		extractor.finalStringMatch(statisticsFile, inputConnection, outputConnection);
 	}
 

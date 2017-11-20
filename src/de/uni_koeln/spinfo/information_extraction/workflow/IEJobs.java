@@ -387,6 +387,10 @@ public class IEJobs {
 		BufferedReader in = new BufferedReader(new FileReader(entitiesFile));
 		String line = in.readLine();
 		while (line != null) {
+			if(line.equals("")) {
+				line = in.readLine();
+				continue;
+			}
 			// create inform.-entity and add to posExample list
 			String[] split = line.split(" ");
 			String keyword;
@@ -496,13 +500,20 @@ public class IEJobs {
 			readWordList(importanceTermsFile, importanceTerms);
 		}
 		contextPatterns = new ArrayList<Context>();
-		readContextPatterns(contextPatterns, contextPatternsFile);
+		if(contextPatternsFile!= null){
+			readContextPatterns(contextPatterns, contextPatternsFile);
+		}
+		
 	}
 
 	private void readWordList(File inputFile, Map<String, Set<List<String>>> map) throws IOException {
 		BufferedReader in = new BufferedReader(new FileReader(inputFile));
 		String line = in.readLine();
 		while (line != null) {
+			if(line.equals("")){
+				line = in.readLine();
+				continue;
+			}
 			String keyword;
 			String[] split = line.split(" ");
 			try {

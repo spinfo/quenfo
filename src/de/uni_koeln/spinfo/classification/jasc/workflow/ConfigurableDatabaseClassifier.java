@@ -66,17 +66,17 @@ public class ConfigurableDatabaseClassifier {
 		jobs = new ZoneJobs(stmc);
 	}
 
-	public void classify(StringBuffer sb) throws ClassNotFoundException, IOException, SQLException {
+	public void classify(StringBuffer sb, String tableName) throws ClassNotFoundException, IOException, SQLException {
 		// get ExperimentConfiguration
 		ExperimentSetupUI ui = new ExperimentSetupUI();
 		ExperimentConfiguration expConfig = ui.getExperimentConfiguration(trainingDataFileName);
 		if(sb != null){
 			System.out.println(sb.toString());
 		}
-		classify(expConfig);
+		classify(expConfig, tableName);
 	}
 
-	private void classify(ExperimentConfiguration config) throws IOException, SQLException, ClassNotFoundException {
+	private void classify(ExperimentConfiguration config, String tableName) throws IOException, SQLException, ClassNotFoundException {
 		
 		
 
@@ -121,7 +121,7 @@ public class ConfigurableDatabaseClassifier {
 		;
 		int jobAdCount = 0;
 		int paraCount = 0;
-		query = "SELECT ZEILENNR, Jahrgang, STELLENBESCHREIBUNG FROM DL_ALL_Spinfo LIMIT ? OFFSET ?;";
+		query = "SELECT ZEILENNR, Jahrgang, STELLENBESCHREIBUNG FROM "+tableName+" LIMIT ? OFFSET ?;";
 
 		PreparedStatement prepStmt = inputDb.prepareStatement(query);
 		prepStmt.setInt(1, queryLimit);
@@ -133,14 +133,14 @@ public class ConfigurableDatabaseClassifier {
 		// total entries to process:
 		if (queryLimit < 0) {
 
-			String countQuery = "SELECT COUNT(*) FROM DL_ALL_Spinfo;";
+			String countQuery = "SELECT COUNT(*) FROM "+tableName+";";
 			Statement stmt = inputDb.createStatement();
 			ResultSet countResult = stmt.executeQuery(countQuery);
 			int tableSize = countResult.getInt(1);
 			stmt.close();
 			stmt = inputDb.createStatement();
 			ResultSet rs = null;
-			rs = stmt.executeQuery("SELECT COALESCE(" + tableSize + "+1, 0) FROM DL_ALL_Spinfo;");
+			rs = stmt.executeQuery("SELECT COALESCE(" + tableSize + "+1, 0) FROM "+tableName+";");
 
 			queryLimit = rs.getInt(1);
 		}

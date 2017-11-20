@@ -25,42 +25,50 @@ public class ClassifyDatabase {
 	// APP-CONFIGURATION
 	/////////////////////////////
 	
-	// Path to input database
+	// Pfad zur Input-DB
 	static String inputDB = /*"D:/Daten/sqlite/SteA.db3"; */"classification/db/bibbDB.db"; 
-
-	// path to the output folder for classified paragraphs
+	
+	//Name der Tabelle, die klassifiziert werden soll (z.B. DL_ALL_Spinfo) Der Tabellenname wird dem Namen der Ouput-DB angehä#ngt (z.B. CorrectableCompetences_DL_ALL_Spinfo)
+	static String inputTableName = "Jahgang_2011";
+	
+	// Pfad zum Output-Ordner in dem die neue DB angelegt werden soll 
 	static String outputFolder = /*"D:/Daten/sqlite/";*/ "C:/sqlite/";
 
-	// Path to the trainingdata-file
-	static String trainingdataFile = "classification/data/trainingSets/mergedTD.csv";
+	// Name der korrigierbaren Output-DB (Tabellenname aus der Input-DB wird automatsich angehängt)
+	static String corrOutputDB = "CorrectableParagraphs_"+inputTableName+".db";
 
-	// path to the training-database annotated by BIBB
-	static String trainigDatabase = outputFolder + "TrainingData.db";
+	//Name der (nicht korrigierbaren) Output-DB (dient nur der Dokumentation der originalen Klassifikationsergebnisse - in den folgenden IE-Apps wird die CorrectableParagraphs-DB weiter verwendet)
+	static String origOutputDB = "OriginalParagraphs_"+inputTableName+".db";
 
-	// use training-database 
-	static boolean trainWithDB = false;
-
-	// use training-file
-	static boolean trainWithFile = true;
-
-	// correctable output database 
-	static String corrOutputDB = "CorrectableParagraphs.db";
-
-	//original output database
-	static String origOutputDB = "OriginalParagraphs.db";
-
-	// overall results fetched from db, no limit: -1
+	//Anzahl der Stellenanzeigen, die klassifiziert werden sollen (-1 = gesamte Tabelle)
 	static int queryLimit = -1;
 
-	// start query from entry with id larger than startId (if there is a query limit)
+	// falls nur eine begrenzte Anzahl von SteAs klassifiziert werden soll (s.o.): hier die offset-id angeben 
 	static int startId = 0;
 
-	// number of results fetched in one step
+	//Die SteAs werden (aus Speichergründen) nicht alle auf einmal ausgelesen, sondern Päckchenweise - hier angeben, wieviele jeweils in einem Schwung zusammen verarbeitet werden
+	//nach dem ersten Schwung erscheint in der Konsole ein Dialog, in dem man das Programm nochmal stoppen (s), die nächsten xx SteAs klassifizieren (c), oder ohne Unterbrechung zu Ende klassifizieren lassen kann (d)
 	static int fetchSize = 100;
 
 	/////////////////////////////
 	// END
 	/////////////////////////////
+	
+	
+	//Die 3 folgenden Variablen bitte nicht mehr verändern (Konfiguration der verwendeten Trainingsdaten)
+	
+	// Pfad zur Datei mit den Trainingsdaten
+	static String trainingdataFile = "classification/data/trainingSets/mergedTD.csv";
+	
+	//Pfad zur DB mit den vom BIBB ausgezeichneten Trainingsdaten
+	static String trainigDatabase = outputFolder + "TrainingData.db";
+
+	// Trainings-DB benutzen
+	static boolean trainWithDB = false;
+	
+	// use training-file
+	static boolean trainWithFile = true;
+	
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
 
@@ -196,7 +204,7 @@ public class ClassifyDatabase {
 				sb.append(trainingdataFile.substring(trainingdataFile.lastIndexOf("/") + 1));
 			}
 			sb.append("\n\n");
-			dbClassfy.classify(sb);
+			dbClassfy.classify(sb, inputTableName);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -17,25 +17,34 @@ public class ExtractNewTools {
 // APP-CONFIGURATION
 /////////////////////////////
 
-// path to the input database
-static String inputDB = "D:/Daten/sqlite/ClassifiedParagraphs.db";  //"C:/sqlite/CorrectableParagraphs.db";
+//Gewichtung der Stringähnlichkeit für die Gruppierung ähnlicher Tools
+//Sollte i.d.R nicht kleiner als 1.0 sein und nicht höher als 1.4 (--> bei 1.5 werden nur noch exakt identische Strings als ähnlich bewertet - unter 1.0 werden die Gruppen zu heterogen)
+static double similarityScore = 1.0;
+	
+// Jahrgang bzw. Name der Tabelle (z.B. DL_ALL_Spinfo)aus der ursprünglich klassifiziert wurde (= Endung des DB-Namens)	
+//z.B. DL_ALL_Spinfo	
+static String jahrgang = "Jahgang_2011";
 
-// path to the tools-file
+// Pfad zur Input-DB  (TabellenName wird automatisch hinzugefügt  z.b. .../CorrectableParagraphs_DL_ALL_Spinfo.db)
+static String inputDB = /*"D:/Daten/sqlite/ClassifiedParagraphs_"+jahrgang+".db";  */"C:/sqlite/CorrectableParagraphs_"+jahrgang+".db";
+
+//Pfad zur Output-DB (Tabellenname bzw. Jahrgang wird automatsich angehängt - zb. CorrectableConpetences_DL_ALL_Spinfo.db)
+static String outputDB = /*"D:/Daten/sqlite/CorrectableTools_"+jahrgang+".db"; */ "C:/sqlite/CorrectableTools_"+jahrgang+".db"; 
+
+//Pfad zur Textdatei mit allen bereits exrahierten und manuell abgesegneten Tools
 static File tools = new File("information_extraction/data/tools/tools.txt");
 
-// path to the noTools-file
+// Pfad zur Textdatei mit allen als kein Tool ausgezeichneten Begriffen
 static File noTools = new File("information_extraction/data/tools/noTools.txt");
 
-// path to the Context-file
+// Pfad zur Kontextdatei
 static File contextFile = new File("information_extraction/data/tools/toolContexts.txt");
 
-//path to the (new) output-database
-static String outputDB = "D:/Daten/sqlite/CorrectableTools.db"; // "C:/sqlite/CorrectableTools.db"; //
-
-// first paragraph read from input database
+//falls nicht alle Paragraphen aus der Input-DB verwendet werden sollen: hier Anzahl der zu lesenden Paragraphen festlegen
+// -1 = alle
 static int startPos = 0;
 
-// max number of read paragraphs
+// falls nur eine bestimmte Anzahl gelesen werden soll, hier die startID angeben
 static int maxCount = -1;
 
 
@@ -82,7 +91,7 @@ public static void main(String[] args) throws ClassNotFoundException, SQLExcepti
 		outputConnection = IE_DBConnector.connect(outputDB);
 	}
 	Extractor extractor = new Extractor(outputConnection, tools, noTools, contextFile, IEType.TOOL);
-	extractor.extract(startPos, maxCount, tableSize, inputConnection, outputConnection);
+	extractor.extract(startPos, maxCount, tableSize, inputConnection, outputConnection, similarityScore);
 }
 
 }

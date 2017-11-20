@@ -7,7 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,6 +23,8 @@ import de.uni_koeln.spinfo.information_extraction.data.Context;
 import de.uni_koeln.spinfo.information_extraction.data.ExtractionUnit;
 import de.uni_koeln.spinfo.information_extraction.data.IEType;
 import de.uni_koeln.spinfo.information_extraction.data.InformationEntity;
+import de.uni_koeln.spinfo.information_extraction.preprocessing.IETokenizer;
+import is2.data.SentenceData09;
 
 /**
  * @author geduldia
@@ -67,18 +71,18 @@ public class IE_DBConnector {
 		stmt.executeUpdate(sql);
 		if(correctable){
 			if(type == IEType.COMPETENCE){
-				sql = "CREATE TABLE Competences (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, Sentence TEXT NOT NULL, Comp TEXT, Importance TEXT, Contexts INT, ContextDescriptions TEXT NOT NULL, isCompetence INT NOT NULL, Notes TEXT)";
+				sql = "CREATE TABLE Competences (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, Sentence TEXT NOT NULL, Comp TEXT, Contexts INT, ContextDescriptions TEXT NOT NULL, GroupID INT, isCompetence INT NOT NULL, Notes TEXT)";
 			}
 			if(type == IEType.TOOL){
-				sql = "CREATE TABLE Tools (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, Sentence TEXT NOT NULL, Tool TEXT NOT NULL, Contexts TEXT NOT NULL, ContextDescriptions TEXT NOT NULL, isTool INT NOT NULL, Notes TEXT)";
+				sql = "CREATE TABLE Tools (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, Sentence TEXT NOT NULL, Tool TEXT NOT NULL, Contexts TEXT NOT NULL, ContextDescriptions TEXT NOT NULL, GroupID INT, isTool INT NOT NULL, Notes TEXT)";
 			}
 		}
 		else{
 			if(type == IEType.COMPETENCE){
-				sql = "CREATE TABLE Competences (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, Sentence TEXT NOT NULL, Comp TEXT, Importance TEXT, Contexts INT, ContextDescriptions TEXT NOT NULL)";
+				sql = "CREATE TABLE Competences (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, Lemmata TEXT NOT NULL, Sentence TEXT NOT NULL, Comp TEXT, Importance TEXT)";
 			}
 			if(type == IEType.TOOL){
-				sql = "CREATE TABLE Tools (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, Sentence TEXT NOT NULL, Tool TEXT NOT NULL, Contexts TEXT NOT NULL, ContextDescriptions TEXT NOT NULL)";
+				sql = "CREATE TABLE Tools (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, Lemmata TEXT NOT NULL ,Sentence TEXT NOT NULL, Tool TEXT NOT NULL)";
 			}
 		}
 		stmt.executeUpdate(sql);
@@ -143,40 +147,69 @@ public class IE_DBConnector {
 	 * @param extractions
 	 * 			extracted competences
 	 * @param connection
+	 * @param groupIds 
 	 * @throws SQLException
 	 */
-	public static void writeCompetences(Map<ExtractionUnit,Map<InformationEntity,List<Context>>> extractions, Connection connection, boolean correctable) throws SQLException{
+	public static void writeCompetences(Map<ExtractionUnit,Map<InformationEntity,List<Context>>> extractions, Connection connection, boolean correctable, Map<String, Integer> groupIds) throws SQLException{
+		Set<String> types = new HashSet<String>();
 		for (ExtractionUnit extractionUnit : extractions.keySet()) {
 			Map<InformationEntity,List<Context>> ies = extractions.get(extractionUnit);
 			int jahrgang = extractionUnit.getJobAdID();
 			int zeilennr = extractionUnit.getSecondJobAdID();
 			String paraID = extractionUnit.getClassifyUnitID().toString();
+			String sentence = extractionUnit.getSentence();
+			StringBuffer lemmata = null;
+			if(!correctable){
+				lemmata = new StringBuffer();
+				for (int i = 1; i < extractionUnit.getLemmata().length; i++) {
+					String string = extractionUnit.getLemmata()[i];
+					lemmata.append(string+" ");
+				}
+			}
+			
 			connection.setAutoCommit(false);
 			PreparedStatement prepStmt;
 			if(correctable){
 				prepStmt = connection
-						.prepareStatement("INSERT INTO Competences (Jahrgang, Zeilennr, ParaID, Sentence, Comp, Importance, Contexts, ContextDescriptions, isCompetence) VALUES(" + jahrgang + ", "
-								+ zeilennr + ", '" + paraID + "',?,?,?,?,?,"+-1+")");
+						.prepareStatement("INSERT INTO Competences (Jahrgang, Zeilennr, ParaID, Sentence, Comp, Contexts, ContextDescriptions, GroupId, isCompetence) VALUES(" + jahrgang + ", "
+								+ zeilennr + ", '" + paraID +"', '"+ sentence + "',?,?,?,?,"+-1+")");
 			}
 			else{
 				prepStmt = connection
-						.prepareStatement("INSERT INTO Competences (Jahrgang, Zeilennr, ParaID, Sentence, Comp, Importance, Contexts, ContextDescriptions) VALUES(" + jahrgang + ", "
-								+ zeilennr + ", '" + paraID + "',?,?,?,?,?)");
+						.prepareStatement("INSERT INTO Competences (Jahrgang, Zeilennr, ParaID, Lemmata, Sentence, Comp,  Importance) VALUES(" + jahrgang + ", "
+								+ zeilennr + ", '" + paraID + "', '"+lemmata.toString()+"' ,'"+sentence+"',?,?)");
 			}
 			for (InformationEntity ie : ies.keySet()) {
-				prepStmt.setString(1, extractionUnit.getSentence());
-				prepStmt.setString(2, ie.toString());
-				prepStmt.setString(3, ie.getImportance());
-				prepStmt.setInt(4, ies.get(ie).size());
-				if(!ies.get(ie).isEmpty()){
-					StringBuffer sb = new StringBuffer();
-					for (Context context : ies.get(ie)) {
-						sb.append("["+context.getDescription()+"]  ");
+				if(correctable){
+					//write only unique types
+					String expression = ie.getFullExpression();
+					if(types.contains(expression)){
+						String sql = "UPDATE Competences SET Sentence = sentence || '  |  ' || '"+sentence+"' WHERE Comp = '"+expression+"'";
+						Statement stmt = connection.createStatement();
+						stmt.executeUpdate(sql);
+						stmt.close();
+						continue;
 					}
-					prepStmt.setString(5,sb.toString());
+					types.add(expression);
+				}			
+				prepStmt.setString(1, ie.toString());
+				
+				if(correctable){
+					prepStmt.setInt(2, ies.get(ie).size());
+					if(!ies.get(ie).isEmpty()){
+						StringBuffer sb = new StringBuffer();
+						for (Context context : ies.get(ie)) {
+							sb.append("["+context.getDescription()+"]  ");
+						}
+						prepStmt.setString(3,sb.toString());
+					}
+					else{
+						prepStmt.setString(3, "StringMatch");
+					}
+					prepStmt.setInt(4, groupIds.get(ie.getFullExpression()));
 				}
 				else{
-					prepStmt.setString(5, "StringMatch");
+					prepStmt.setString(2, ie.getImportance());
 				}
 				prepStmt.executeUpdate();
 			}
@@ -192,37 +225,61 @@ public class IE_DBConnector {
 	 * @param connection
 	 * @throws SQLException
 	 */
-	public static void writeTools(Map<ExtractionUnit, Map<InformationEntity, List<Context>>> extractions,Connection connection, boolean correctable) throws SQLException {
+	public static void writeTools(Map<ExtractionUnit, Map<InformationEntity, List<Context>>> extractions,Connection connection, boolean correctable, Map<String, Integer> groupIds) throws SQLException {
+		Set<String> types = new HashSet<String>();
 		for (ExtractionUnit extractionUnit : extractions.keySet()) {
 			Map<InformationEntity,List<Context>> ies = extractions.get(extractionUnit);
 			int jahrgang = extractionUnit.getJobAdID();
 			int zeilennr = extractionUnit.getSecondJobAdID();
 			String paraID = extractionUnit.getClassifyUnitID().toString();
+			String sentence = extractionUnit.getSentence();
+			StringBuffer lemmata = null;
+			if(!correctable){
+				lemmata = new StringBuffer();
+				for (int i = 1; i < extractionUnit.getLemmata().length; i++) {
+					String string = extractionUnit.getLemmata()[i];
+					lemmata.append(string+" ");
+				}
+			}
 			connection.setAutoCommit(false);
 			PreparedStatement  prepStmt;
 			if(correctable){
 				prepStmt = connection
-						.prepareStatement("INSERT INTO Tools (Jahrgang, Zeilennr, ParaID, Sentence, Tool, Contexts, ContextDescriptions, isTool) VALUES(" + jahrgang + ", "
-								+ zeilennr + ", '" + paraID + "',?,?,?,?,"+-1+")");
+						.prepareStatement("INSERT INTO Tools (Jahrgang, Zeilennr, ParaID, Sentence, Tool, Contexts, ContextDescriptions, GroupId, isTool) VALUES(" + jahrgang + ", "
+								+ zeilennr + ", '" + paraID + "','"+sentence+"',?,?,?,?,"+-1+")");
 			}
 			else{
 				prepStmt = connection
-						.prepareStatement("INSERT INTO Tools (Jahrgang, Zeilennr, ParaID, Sentence, Tool, Contexts, ContextDescriptions) VALUES(" + jahrgang + ", "
-								+ zeilennr + ", '" + paraID + "',?,?,?,?"+")");
+						.prepareStatement("INSERT INTO Tools (Jahrgang, Zeilennr, ParaID, Lemmata, Sentence, Tool) VALUES(" + jahrgang + ", "
+								+ zeilennr + ", '" + paraID +"','"+lemmata.toString()+ "','"+sentence+"',?"+")");
 			}
 			for (InformationEntity ie : ies.keySet()) {
-				prepStmt.setString(1, extractionUnit.getSentence());
-				prepStmt.setString(2, ie.toString());
-				prepStmt.setInt(3, ies.get(ie).size());
-				if(!ies.get(ie).isEmpty()){
-					StringBuffer sb = new StringBuffer();
-					for (Context context : ies.get(ie)) {
-						sb.append("["+context.getDescription()+"]  ");
+				if(correctable){
+					//write only unique types
+					String expression = ie.getFullExpression();
+					if(types.contains(expression)){
+						String sql = "UPDATE Tools SET Sentence = sentence || '  |  ' || '"+sentence+"' WHERE Tool = '"+expression+"'";
+						Statement stmt = connection.createStatement();
+						stmt.executeUpdate(sql);
+						stmt.close();
+						continue;
 					}
-					prepStmt.setString(4,sb.toString());
+					types.add(expression);
 				}
-				else{
-					prepStmt.setString(4, "StringMatch");
+				prepStmt.setString(1, ie.toString());
+				if(correctable){
+					prepStmt.setInt(2, ies.get(ie).size());
+					if(!ies.get(ie).isEmpty()){
+						StringBuffer sb = new StringBuffer();
+						for (Context context : ies.get(ie)) {
+							sb.append("["+context.getDescription()+"]  ");
+						}
+						prepStmt.setString(3,sb.toString());
+					}
+					else{
+						prepStmt.setString(3, "StringMatch");
+					}
+					prepStmt.setInt(4, groupIds.get(ie.getFullExpression()));
 				}
 				prepStmt.executeUpdate();
 			}
@@ -328,6 +385,8 @@ public class IE_DBConnector {
 			String comp = result.getString(1);
 			toReturn.add(comp);
 		}
+		stmt.close();
+		connection.commit();
 		return toReturn;
 	}
 	
@@ -367,6 +426,28 @@ public class IE_DBConnector {
 		}
 		stmt.close();
 		connection.commit();
+	}
+	
+	public static Map<String, List<String>> readCompsAndContexts(Connection connection) throws SQLException{
+		Map<String, List<String>> contextsByComp = new HashMap<String, List<String>>();
+		connection.setAutoCommit(false);
+		Statement stmt = connection.createStatement();
+		String sql = "SELECT Comp, Lemmata FROM Competences";
+		ResultSet result = stmt.executeQuery(sql);
+		IETokenizer tokenizer = new IETokenizer();
+		while(result.next()){
+			String comp = result.getString(1);
+			String lemmata = result.getString(2);
+			SentenceData09 sd = new SentenceData09();
+			sd.init(tokenizer.tokenizeSentence(lemmata));
+			List<String> lemmas = contextsByComp.get(comp);
+			if(lemmas == null) lemmas = new ArrayList<>();
+			lemmas.addAll(Arrays.asList(sd.forms));
+			contextsByComp.put(comp, lemmas);
+		}
+		stmt.close();
+		connection.commit();
+		return contextsByComp;
 	}
 	
 	public static void createCluserTable(Connection connection) throws SQLException{

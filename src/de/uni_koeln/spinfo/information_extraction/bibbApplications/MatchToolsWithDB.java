@@ -14,27 +14,25 @@ public class MatchToolsWithDB {
 	///////////////////////////
 	// APP-CONFIGURATION
 	/////////////////////////////
+	
+	// Jahrgang bzw. Name der Tabelle (z.B. DL_ALL_Spinfo) die ursprünglich klassifiziert wurde (= Endung des DB-Namens)	
+	static String jahrgang = "Jahgang_2011";
 
-	// path to input database
-	static String inputDB =   "D:/Daten/sqlite/CorrectableParagraphs.db"; //"C:/sqlite/CorrectableParagraphs.db";
+	// Pfad zur Input-DB (Tabellenname wird automatsich hinzugefügt - z.B. CorrectableParagraphs_DL_ALL_Spinfo.db)
+	static String inputDB =   /*"D:/Daten/sqlite/CorrectableParagraphs_"+jahrgang+".db"; */"C:/sqlite/CorrectableParagraphs_"+jahrgang+".db";
 
-	// folder for output database
-	static String outputFolder = "D:/Daten/sqlite/"; // "C:/sqlite/"; //
+	// Pfad zum Ordner in dem die neue Output-DB angelegt werden soll
+	static String outputFolder = /*"D:/Daten/sqlite/"; */ "C:/sqlite/"; //
 
-	// name of output database
-	static String outputDB = "Tools.db";
+	// Name der Output-DB (Tabellenname wird automatsich angehänt - z.B. Tools_DL_ALL_Spinfo.db)
+	static String outputDB = "Tools_"+jahrgang+".db";
 
-	// path to the tools-file
+	// Pfad zur Textdatei mit allen Tools
 	static File tools = new File("information_extraction/data/tools/tools.txt");
 
-	// path to the statistics file
+	// Pfad zur Textdatei für die Match-Staristik
 	static File statisticsFile = new File("information_extraction/data/tools/toolStatistics.txt");
 
-	// path to the context file
-	static File contextFile = new File("information_extraction/data/tools/toolContexts.txt");
-
-	// path to the negative examples file
-	static File noTools = new File("information_extraction/data/tools/noTools.txt");
 
 	/////////////////////////////
 	// END
@@ -55,7 +53,7 @@ public class MatchToolsWithDB {
 		Connection outputConnection = IE_DBConnector.connect(outputFolder + outputDB);
 
 		// start matching
-		Extractor extractor = new Extractor(null, tools, noTools, contextFile, IEType.TOOL);
+		Extractor extractor = new Extractor(null, tools, null, null, IEType.TOOL);
 		extractor.finalStringMatch(statisticsFile, inputConnection, outputConnection);
 		
 
