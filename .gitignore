@@ -1,5 +1,4 @@
 /classification/data/trainingSets/trainingDataBIBBandSpinfo.csv
-/classification/data/trainingSets/trainingdata_anonymized.tsv
 /classification/db/bibbDB.db
 /classification/output/
 /classification/svm/
