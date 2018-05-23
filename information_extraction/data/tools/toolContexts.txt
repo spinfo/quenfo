@@ -1,0 +1,524 @@
+NAME:	TOOL +  Konj +  Nom
+ID:	1
+TOKEN:	null	null	null	true
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	NN|NE	false
+EXTRACT:	2
+CONF:	0.0
+
+NAME:	TOOL + Konj +  Nom + Nom|Zahl
+ID:	2
+TOKEN:	null	null	null	true
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	NE|NN|CARD	false
+EXTRACT:	2,3
+CONF:	0.0
+
+NAME:	TOOL  + Konj + Nom + Nom|Zahl + Nom|Zahl
+ID:	3
+TOKEN:	null	null	null	true
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	NE|NN|CARD	false
+TOKEN:	null	null	NE|NN|CARD	false
+EXTRACT:	2,3,4
+CONF:	0.0
+
+NAME:	Nom + Nom|Zahl + Nom|Zahl + Konj + TOOL
+ID:	6
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	NE|NN|CARD	false
+TOKEN:	null	null	NE|NN|CARD	false
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	null	true
+EXTRACT:	0,1,2
+CONF:	0.0
+
+NAME:	Nom + Nom|Zahl + Konj + TOOL
+ID:	6
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	NE|NN|CARD	false
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	null	true
+EXTRACT:	0,1
+CONF:	0.0
+
+NAME:	Nom + Konj + TOOL
+ID:	6
+TOKEN:	null	null	NN|NE	false
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	null	true
+EXTRACT:	0
+CONF:	0.0
+
+
+NAME:	TRUNC + Konj|, + TOOL
+ID:	666
+TOKEN:	null	null	TRUNC	false
+TOKEN:	null	null	KON|$,	false
+TOKEN:	null	null	null	true
+EXTRACT:	0,1,2
+CONF:	0.0
+
+NAME:	TOOL + Konj|, + TRUNC
+ID:	666
+TOKEN:	null	null	null	true
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	TRUNC	false
+EXTRACT:	0,1,2
+CONF:	0.0
+
+
+
+NAME:	KNOWLDGE im umgang|bedienen + Art|Präp + Nom
+ID:	3
+TOKEN:	null	kenntnis|erfahrung|übung	null	false
+TOKEN:	null	in	null	false
+TOKEN:	null	umgang|bedienen|bedienung	null	false
+TOKEN:	null	null	ART|APPR|APPRART	false
+TOKEN:	null	null	NE|NN	false
+EXTRACT:	4
+CONF:	0.0
+
+NAME:	KONWLDEGE in umgang|bedienung + Art|Konj + TRUNC + Konj|, + Nom
+ID:	3
+TOKEN:	null	kenntnis|erfahrung|übung	null	false
+TOKEN:	null	in	null	false
+TOKEN:	null	umgang|bedienen|bedienung	null	false
+TOKEN:	null	null	ART|APPR|APPRART	false
+TOKEN:	null	null	TRUNC	false
+TOKEN:	null	null	KON|$,	false
+TOKEN:	null	null	NN|NE	false
+EXTRACT:	4,5,6
+CONF:	0.0
+
+NAME:	KONWLDEGE in umgang|bedienung + Art|Konj + Nom + Konj|, + TRUNC
+ID:	3
+TOKEN:	null	kenntnis|erfahrung|übung	null	false
+TOKEN:	null	in	null	false
+TOKEN:	null	umgang|bedienen|bedienung	null	false
+TOKEN:	null	null	ART|APPR|APPRART	false
+TOKEN:	null	null	NN|NE	false
+TOKEN:	null	null	KON|$,	false
+TOKEN:	null	null	TRUNC	false
+EXTRACT:	4,5,6
+CONF:	0.0
+
+
+NAME:	KONWLDEGE in umgang|bedienung + Art|Konj + Adj|Nom + Nom|Zahl
+ID:	3
+TOKEN:	null	kenntnis|erfahrung|übung	null	false
+TOKEN:	null	in	null	false
+TOKEN:	null	umgang|bedienen|bedienung	null	false
+TOKEN:	null	null	ART|APPR|APPRART	false
+TOKEN:	null	null	ADJA|ADJD|NN|NE	false
+TOKEN:	null	null	NE|NN|CARD	false
+EXTRACT:	4,5
+CONF:	0.0
+
+NAME:	KONWLDEGE in umgang|bedienung + Art|Konj + Adj|Nom + Nom|Zahl + Nom|Zahl
+ID:	3
+TOKEN:	null	kenntnis|erfahrung|übung	null	false
+TOKEN:	null	in	null	false
+TOKEN:	null	umgang|bedienen|bedienung	null	false
+TOKEN:	null	null	ART|APPR|APPRART	false
+TOKEN:	null	null	ADJA|ADJD|NN|NE	false
+TOKEN:	null	null	NE|NN|CARD	false
+TOKEN:	null	null	NE|NN|CARD	false
+EXTRACT:	4,5,6
+CONF:	0.0
+
+
+NAME:	KONWLDEGE in umgang|bedienung + Konj + Art + Nom|Adj + Nom|Zahl
+ID:	3
+TOKEN:	null	kenntnis|erfahrung|übung	null	false
+TOKEN:	null	in	null	false
+TOKEN:	null	umgang|bedienen|bedienung	null	false
+TOKEN:	null	null	APPR	false
+TOKEN:	null	null	ART	false
+TOKEN:	null	null	NE|NN|ADJA|ADJD	false
+TOKEN:	null	null	NN|NE|CARD	false
+EXTRACT:	5,6
+CONF:	0.0	
+
+NAME:	KONWLDEGE in umgang|bedienung + Konj + Art + Nom|Adj + Nom|Zahl + Nom|Zahl
+ID:	3
+TOKEN:	null	kenntnis|erfahrung|übung	null	false
+TOKEN:	null	in	null	false
+TOKEN:	null	umgang|bedienen|bedienung	null	false
+TOKEN:	null	null	APPR	false
+TOKEN:	null	null	ART	false
+TOKEN:	null	null	NE|NN|ADJA|ADJD	false
+TOKEN:	null	null	NN|NE|CARD	false
+TOKEN:	null	null	NN|NE|CARD	false
+EXTRACT:	5,6,7
+CONF:	0.0	
+
+
+
+NAME:	TOOL + ( + Nom + ,|)
+ID:	4
+TOKEN:	null	null	null	true
+TOKEN:	(	null	null	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	,|)	null	null	false
+EXTRACT:	2
+CONF:	0.0
+
+NAME:	TOOL + ( + TRUNC + ,|Konj + Nom + ,|)
+ID:	4
+TOKEN:	null	null	null	true
+TOKEN:	(	null	null	false
+TOKEN:	null	null	TRUNC	false
+TOKEN:	null	null	KON|$,	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	,|)	null	null	false
+EXTRACT:	2,3,4
+CONF:	0.0
+
+NAME:	TOOL + ( + Nom + ,|Konj + TRUNC + ,|)
+ID:	4
+TOKEN:	null	null	null	true
+TOKEN:	(	null	null	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	KON|$,	false
+TOKEN:	null	null	TRUNC	false
+TOKEN:	,|)	null	null	false
+EXTRACT:	2,3,4
+CONF:	0.0
+
+NAME:	TOOL + ( + Nom + Nom|Zahl
+ID:	4
+TOKEN:	null	null	null	true
+TOKEN:	(	null	null	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	NN|NE|CARD	false
+EXTRACT:	2,3
+CONF:	0.0
+
+NAME:	TOOL + ( + Nom + Nom|Zahl + Nom|Zahl
+ID:	4
+TOKEN:	null	null	null	true
+TOKEN:	(	null	null	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	NN|NE|CARD	false
+TOKEN:	null	null	NN|NE|CARD	false
+EXTRACT:	2,3,4
+CONF:	0.0
+
+
+
+NAME:	TOOL + ( + Nom + , + Nom + ,|)
+ID:	4
+TOKEN:	null	null	null	true
+TOKEN:	(	null	null	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	,|)	null	null	false
+EXTRACT:	4
+CONF:	0.0
+
+
+NAME:	TOOL + ( + Nom + , + Nom + Nom|Zahl
+ID:	4
+TOKEN:	null	null	null	true
+TOKEN:	(	null	null	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	NE|NN|CARD	false
+EXTRACT:	4,5
+CONF:	0.0
+
+NAME:	TOOL + ( + Nom + , + Nom + Nom|Zahl + Nom|Zahl
+ID:	4
+TOKEN:	null	null	null	true
+TOKEN:	(	null	null	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	NE|NN|CARD	false
+TOKEN:	null	null	NE|NN|CARD	false
+EXTRACT:	4,5,6
+CONF:	0.0
+
+
+NAME:	TOOL + ( + Nom + , + Nom|Zahl + , + Nom + ,|)
+ID:	4
+TOKEN:	null	null	null	true
+TOKEN:	(	null	null	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	NE|NN|CARD	false
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	,|)	null	null	false
+EXTRACT:	5
+CONF:	0.0
+
+NAME:	TOOL + ( + Nom + Nom|Zahl + , Nom + Nom|Zahl
+ID:	4
+TOKEN:	null	null	null	true
+TOKEN:	(	null	null	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	NE|NN|CARD	false
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	NE|NN|CARD	false
+EXTRACT:	5,6
+CONF:	0.0
+
+NAME:	TOOL + ( + Nom + Nom|Zahl + , Nom + Nom|Zahl + Nom|Zahl
+ID:	4
+TOKEN:	null	null	null	true
+TOKEN:	(	null	null	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	NE|NN|CARD	false
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	NE|NN|CARD	false
+TOKEN:	null	null	NE|NN|CARD	false
+EXTRACT:	5,6,7
+CONF:	0.0
+
+NAME:	TOOL + ( + Nom + , + Nom + , + Nom + ,|)
+ID:	4
+TOKEN:	null	null	null	true
+TOKEN:	(	null	null	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	,|)	null	null	false
+EXTRACT:	6
+CONF:	0.0
+
+NAME:	TOOL + ( + Nom + Nom + , + Nom + Nom|Zahl
+ID:	4
+TOKEN:	null	null	null	true
+TOKEN:	(	null	null	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	NN|NE|CARD	false
+EXTRACT:	6,7
+CONF:	0.0
+
+NAME:	TOOL + ( + Nom + , + Nom + , + Nom + Nom|Zahl + Nom|Zahl
+ID:	4
+TOKEN:	null	null	null	true
+TOKEN:	(	null	null	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	NN|NE|CARD	false
+TOKEN:	null	null	NN|NE|CARD	false
+EXTRACT:	6,7,8
+CONF:	0.0
+
+
+
+NAME:	TOOL + , + Nom + Konj + Nom
+ID:	5
+TOKEN:	null	null	null	true
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	NE|NN	false
+EXTRACT:	2
+CONF:	0.0	
+
+NAME:	TOOL + , + Nom|Adj + Nom|Zahl + Konj + Nom
+ID:	5
+TOKEN:	null	null	null	true
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	NE|NN|ADJA|ADJD	false
+TOKEN:	null	null	NE|NN|CARD	false
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	NE|NN	false
+EXTRACT:	2,3
+CONF:	0.0	
+
+NAME:	TOOL + , + Nom|Adj + Nom|Zahl + Nom|Zahl + Konj + Nom
+ID:	5
+TOKEN:	null	null	null	true
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	NE|NN|ADJA|ADJD	false
+TOKEN:	null	null	NE|NN|CARD	false
+TOKEN:	null	null	NE|NN|CARD	false
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	NE|NN	false
+EXTRACT:	2,3,4
+CONF:	0.0	
+
+NAME:	TOOL + , + Nom + Konj + Nom
+ID:	5
+TOKEN:	null	null	null	true
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	NE|NN	false
+EXTRACT:	4
+CONF:	0.0	
+
+NAME:	TOOL + , + Nom + Konj + Nom + Nom|Zahl
+ID:	5
+TOKEN:	null	null	null	true
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	NE|NN|CARD	false
+EXTRACT:	4,5
+CONF:	0.0	
+
+NAME:	TOOL + , + Nom + Konj + Nom + Nom|Zahl + Nom|Zahl
+ID:	5
+TOKEN:	null	null	null	true
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	NE|NN|CARD	false
+TOKEN:	null	null	NE|NN|CARD	false
+EXTRACT:	4,5,6
+CONF:	0.0	
+
+NAME:	Nom + , + TOOL + Konj + Nom
+ID:	5
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	null	true
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	NE|NN	false
+EXTRACT:	0
+CONF:	0.0	
+
+NAME:	Nom + Nom|Zahl + , + TOOL + Konj + Nom
+ID:	5
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	NE|NN|CARD	false
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	null	true
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	NE|NN	false
+EXTRACT:	0,1
+CONF:	0.0	
+
+NAME:	Nom + Nom|Zahl + Nom|Zahl + , + TOOL + Konj + Nom
+ID:	5
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	NE|NN|CARD	false
+TOKEN:	null	null	NE|NN|CARD	false
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	null	true
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	NE|NN	false
+EXTRACT:	0,1,2
+CONF:	0.0	
+
+NAME:	Nom + , + TOOL + Konj + Nom
+ID:	5
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	null	true
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	NE|NN	false
+EXTRACT:	4
+CONF:	0.0	
+
+NAME:	Nom + , + TOOL + Konj + Nom + Nom|Zahl
+ID:	5
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	null	true
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	NE|NN|CARD	false
+EXTRACT:	4,5
+CONF:	0.0	
+
+NAME:	Nom + , + TOOL + Konj + Nom + Nom|Zahl + Nom|Zahl
+ID:	5
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	null	true
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	NE|NN|CARD	false
+TOKEN:	null	null	NE|NN|CARD	false
+EXTRACT:	4,5,6
+CONF:	0.0	
+
+NAME:	Nom + , +  Nom + Konj + TOOL
+ID:	5
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	null	true
+EXTRACT:	0
+CONF:	0.0	
+
+NAME:	Nom + Nom|Zahl + , +  Nom + Konj + TOOL
+ID:	5
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	NE|NN|CARD	false
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	null	true
+EXTRACT:	0,1
+CONF:	0.0	
+
+NAME:	Nom + Nom|Zahl + Nom|Zahl + , +  Nom + Konj + TOOL
+ID:	5
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	NE|NN|CARD	false
+TOKEN:	null	null	NE|NN|CARD	false
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	null	true
+EXTRACT:	0,1,2
+CONF:	0.0	
+
+NAME:	Nom + , +  Nom + Konj + TOOL
+ID:	5
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	null	true
+EXTRACT:	2
+CONF:	0.0	
+
+NAME:	Nom + , +  Nom|Adj + Nom|Zahl + Konj + TOOL
+ID:	5
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	NE|NN|ADJA|ADJD	false
+TOKEN:	null	null	NE|NN|CARD	false
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	null	true
+EXTRACT:	2,3
+CONF:	0.0	
+
+NAME:	Nom + , +  Nom|Adj + Nom|Zahl + Nom|Zahl + Konj + TOOL
+ID:	5
+TOKEN:	null	null	NE|NN	false
+TOKEN:	null	null	$,	false
+TOKEN:	null	null	NE|NN|ADJA|ADJD	false
+TOKEN:	null	null	NE|NN|CARD	false
+TOKEN:	null	null	NE|NN|CARD	false
+TOKEN:	null	null	KON	false
+TOKEN:	null	null	null	true
+EXTRACT:	2,3,4
+CONF:	0.0	
+

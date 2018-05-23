@@ -1,17 +1,23 @@
 /classification/data/trainingSets/trainingDataBIBBandSpinfo.csv
-
 /classification/data/trainingSets/trainingdata_anonymized.tsv
-
 /classification/db/bibbDB.db
-
 /classification/output/
-
 /classification/svm/
 
+/information_extraction/data/competences/competences.txt
+/information_extraction/data/competences/noCompetences.txt
+/information_extraction/data/competences/matchingStats.txt
+/information_extraction/data/competences/notValidatedCompetences.txt
+/information_extraction/data/competences/notValidatedMatchingStats.txt
 
-/information_extraction/
+/information_extraction/data/openNLPmodels/
+/information_extraction/data/sentencedata_models/
 
-/categorization/
+/information_extraction/data/tools/matchingStats.txt
+/information_extraction/data/tools/noTools.txt
+/information_extraction/data/tools/notValidatedMatchingStats.txt
+/information_extraction/data/tools/notValidatedTools.txt
+/information_extraction/data/tools/tools.txt
 
 
 *.log
