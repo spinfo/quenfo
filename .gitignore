@@ -9,8 +9,9 @@
 /information_extraction/data/competences/notValidatedCompetences.txt
 /information_extraction/data/competences/notValidatedMatchingStats.txt
 
-/information_extraction/data/openNLPmodels/
-/information_extraction/data/sentencedata_models/
+/information_extraction/data/openNLPmodels/de-sent.bin
+/information_extraction/data/openNLPmodels/de-token.bin
+/information_extraction/data/sentencedata_models/ger-tagger+lemmatizer+morphology+graph-based-3.6
 
 /information_extraction/data/tools/matchingStats.txt
 /information_extraction/data/tools/noTools.txt
