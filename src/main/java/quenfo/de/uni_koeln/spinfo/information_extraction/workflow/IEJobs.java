@@ -597,9 +597,6 @@ public class IEJobs {
 				if (t + skip >= tokens.size())
 					break;
 				Token token = tokens.get(t + skip);
-				if (token.isInformationEntity()) {
-					skip += ((TextToken) token).getTokensToCompleteInformationEntity();
-				}
 				String lemma = normalizeLemma(token.getLemma());
 				if (entities.keySet().contains(lemma)) {
 					for (InformationEntity ie : entities.get(lemma)) {
@@ -620,7 +617,7 @@ public class IEJobs {
 								matches = false;
 								break;
 							}
-							matches = ie.getLemmata().get(c).equals(normalizeLemma(tokens.get(t + c).getLemma()));
+							matches = ie.getLemmata().get(c).equals(normalizeLemma(tokens.get(t + c+ skip).getLemma()));
 							if (!matches) {
 								break;
 							}
@@ -628,7 +625,6 @@ public class IEJobs {
 						if (matches) {
 							token.setIEToken(true);
 							((TextToken) token).setTokensToCompleteInformationEntity(ie.getLemmata().size() - 1);
-
 							InformationEntity newIE = new InformationEntity(ie.getStartLemma(), false);
 							newIE.setExpression(ie.getLemmata());
 							Map<InformationEntity, List<Pattern>> iesForUnit = extractions.get(extractionUnit);
@@ -639,6 +635,10 @@ public class IEJobs {
 						}
 					}
 				}
+//				if (token.isInformationEntity()) {
+//					skip += ((TextToken) token).getTokensToCompleteInformationEntity();
+//					System.out.println("skip: " +skip);
+//				}
 			}
 		}
 		return extractions;
