@@ -11,7 +11,14 @@ Informationsextraktion Ein Bootstrapping-Ansatz zur Extraktion von Kompetenzen a
 **Hermes, Jürgen & Manuel Schandock (2016)**. "Stellenanzeigenanalyse in der
 Qualifikationsentwicklungsforschung. Die Nutzung maschineller Lernverfahren in der Klassifikation von Textabschnitten". In: *Fachbeiträge im Internet. Bundesinstitut für Berufsbildung*. URL: <a href="https://www.bibb.de/veroeffentlichungen/de/publication/show/8146">https://www.bibb.de/veroeffentlichungen/de/publication/show/8146</a>
 
-## Classification
+## Classification (Zoning)
+Segmentierung von Stellenanzeigen in Abschnitte und Klassifikation der Abschnitte in die vier Kategorien:
+
+1. Unternehmensbeschreibung
+2. Jobbeschreibung
+3. Bewerberprofil
+4. Sonstiges/Formalia
+
 ### zu ergänzende Dateien/Daten
 
 #### in den Ordner classification/data/trainingSets/ <br />
@@ -28,10 +35,11 @@ Qualifikationsentwicklungsforschung. Die Nutzung maschineller Lernverfahren in d
 
 Konfigurations-Variablen ggf. anpassen <br /><br />
 
-
 ## Information Extration 
-### zu ergänzende Dateien/Daten
+Extrahiert  Kompetenzen aus den Abschnitten, die zuvor der Klasse 'Bewerberprofil' zugeordnet wurden
+Extrahiert Tools aus den Abschnitten, die zuvor der Klasse 'Jobbeschreibung' und/oder 'Bewerberprofil' zugeordnet wurden.
 
+### zu ergänzende Dateien/Daten
 
 #### in den Ordner information_extraction/data/openNLPmodels/ <br />
 
@@ -62,6 +70,8 @@ der extrahierten Tools: .../information_extraction/applications/<b>MatchNotValid
 nur der validierten Tools (tools.txt): .../information_extraction/applications/<b>MatchTools.java</b> <br /><br />
 
 ## Categorization
+
+Bildet Gruppen von Kompetenzen/Tools auf Grundlage ihrer Stringähnlichkeit (Needleman-Wunsch) und/oder Kookkurrenzen (chi-Quadrat)
 
 ### zu ergänzende Daten
  --> CategorizedCompetences.db (DB mit bereits kategorisierten Kompetenzen - Pfadangabe zur DB in den jeweiligen Apps anpassen) <br />
