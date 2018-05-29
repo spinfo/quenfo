@@ -12,12 +12,12 @@ Informationsextraktion Ein Bootstrapping-Ansatz zur Extraktion von Kompetenzen a
 Qualifikationsentwicklungsforschung. Die Nutzung maschineller Lernverfahren in der Klassifikation von Textabschnitten". In: *Fachbeiträge im Internet. Bundesinstitut für Berufsbildung*. URL: <a href="https://www.bibb.de/veroeffentlichungen/de/publication/show/8146">https://www.bibb.de/veroeffentlichungen/de/publication/show/8146</a>
 
 ## Classification (Zoning)
-Segmentierung von Stellenanzeigen in Abschnitte und Klassifikation der Abschnitte in die vier Kategorien:
+Segmentierung von Stellenanzeigen in Abschnitte und Klassifikation der Abschnitte in die vier Kategorien: <br />
 
-1. Unternehmensbeschreibung
-2. Jobbeschreibung
-3. Bewerberprofil
-4. Sonstiges/Formalia
+1. Unternehmensbeschreibung<br />
+2. Jobbeschreibung<br />
+3. Bewerberprofil<br />
+4. Sonstiges/Formalia<br />
 
 ### zu ergänzende Dateien/Daten
 
@@ -36,8 +36,8 @@ Segmentierung von Stellenanzeigen in Abschnitte und Klassifikation der Abschnitt
 Konfigurations-Variablen ggf. anpassen <br /><br />
 
 ## Information Extration 
-Extrahiert  Kompetenzen aus den Abschnitten, die zuvor der Klasse 'Bewerberprofil' zugeordnet wurden
-Extrahiert Tools aus den Abschnitten, die zuvor der Klasse 'Jobbeschreibung' und/oder 'Bewerberprofil' zugeordnet wurden.
+Extrahiert  Kompetenzen aus den Abschnitten, die zuvor der Klasse 'Bewerberprofil' zugeordnet wurden<br />
+Extrahiert Tools aus den Abschnitten, die zuvor der Klasse 'Jobbeschreibung' und/oder 'Bewerberprofil' zugeordnet wurden.<br />
 
 ### zu ergänzende Dateien/Daten
 
