@@ -65,7 +65,7 @@ public class GroupCompetencesByCooccurrence {
 
 	// legt fest, ob die Sätze vor der Kookkurrenz-Analyse gekürzt werden oder
 	// nicht
-	private static boolean trimSentences = true;
+	private static boolean trimSentences = false;
 
 	// falls die Sätze gekürzt werden sollen: Anzahl der Wörter vor und hinter
 	// dem Kompetenzbegriff

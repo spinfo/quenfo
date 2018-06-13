@@ -30,7 +30,7 @@ import quenfo.de.uni_koeln.spinfo.classification.jasc.workflow.ConfigurableDatab
 public class ClassifyDatabase {
 
 	// Pfad zur Input-DB
-	static String inputDB = /* "D:/Daten/sqlite/SteA.db3"; */"classification/db/bibbDB.db";
+	static String inputDB = /* "D:/Daten/sqlite/SteA.db3"; */"classification/db/JobAds.db";
 
 	// Jahrgang 
 	static String jahrgang = "2011";

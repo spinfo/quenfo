@@ -10,6 +10,7 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit;
@@ -177,6 +178,20 @@ public class Class_DBConnector {
 			prepStmt.executeUpdate();
 		}
 		prepStmt.close();
+		connection.commit();
+	}
+
+
+	public static void writeInputDB(SortedMap<Integer, String> jobAds,Connection connection) throws SQLException {
+		connection.setAutoCommit(false);
+		String sql = "INSERT INTO DL_ALL_Spinfo (ZEILENNR, Jahrgang, STELLENBESCHREIBUNG) VALUES(?,2011,?)";
+		PreparedStatement stmt = connection.prepareStatement(sql);
+		for (int i : jobAds.keySet()) {
+			stmt.setInt(1, i);
+			stmt.setString(2, jobAds.get(i));
+			stmt.executeUpdate();
+		}
+		stmt.close();
 		connection.commit();
 	}
 }

@@ -1,5 +1,7 @@
 /classification/data/trainingSets/trainingDataBIBBandSpinfo.csv
 /classification/db/bibbDB.db
+/classification/db/JobAds.db
+/classification/db/Original_JobAdFile_BIBB.xls
 /classification/output/
 /classification/svm/
 
