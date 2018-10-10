@@ -47,6 +47,9 @@ public class MatchTools {
 	// Falls nicht alle Paragraphen gematcht werden sollen, hier die
 	// Startposition angeben
 	static int startPos = 0;
+	
+	// true, falls Koordinationen  in Informationseinheit aufgelöst werden sollen
+	static boolean resolveCoordinations = true;
 
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
@@ -86,7 +89,7 @@ public class MatchTools {
 		// starte Matching
 		long before = System.currentTimeMillis();
 		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTWO, ClassTHREE");
-		Extractor extractor = new Extractor(tools, null,IEType.TOOL);
+		Extractor extractor = new Extractor(tools, null,IEType.TOOL, resolveCoordinations);
 		extractor.stringMatch(statisticsFile, inputConnection, outputConnection, maxCount, startPos);
 		long after = System.currentTimeMillis();
 		double time = (((double) after - before)/1000)/60;

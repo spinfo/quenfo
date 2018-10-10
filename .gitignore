@@ -22,6 +22,8 @@
 /information_extraction/data/tools/tools.txt
 
 
+/src/test/resources/coordinations/
+
 *.log
 .classpath
 .settings

@@ -42,6 +42,9 @@ public class Extractor {
 	private IEType type;
 	private Set<String> knownEntities = new HashSet<String>();
 	private Set<String> noEntities = new HashSet<String>();
+	private Map<String, String> possCompoundSplits = new HashMap<String, String>();
+	private String possibleFileString = "information_extraction/data/compounds/possibleCompounds.txt";
+	private boolean resolveCoordinations;
 	private File entitiesFile;
 	private File noEntitiesFile;
 	private File contexts;
@@ -49,18 +52,16 @@ public class Extractor {
 
 	// Konstruktor für die Matching-Workflows
 	/**
-	 * @param entities
-	 *            file of already known/extracted entities
-	 * @param modifiers
-	 *            files with modifier-terms
-	 * @param type
-	 *            type of information
+	 * @param entities  file of already known/extracted entities
+	 * @param modifiers files with modifier-terms
+	 * @param type      type of information
 	 * @throws IOException
 	 */
-	public Extractor(File entities, File modifiers, IEType type) throws IOException {
+	public Extractor(File entities, File modifiers, IEType type, boolean resolveCoordinations) throws IOException {
+		this.resolveCoordinations = resolveCoordinations;
 		this.entitiesFile = entities;
 		this.type = type;
-		this.jobs = new IEJobs(entities, null, modifiers, null, type);
+		this.jobs = new IEJobs(entities, null, modifiers, null, type, resolveCoordinations);
 		initialize();
 	}
 
@@ -69,18 +70,12 @@ public class Extractor {
 	 * 
 	 * @param outputConnection
 	 * 
-	 * @param competences
-	 *            file of already known/extracted competences
-	 * @param noCompetences
-	 *            file of known typical mistakes
-	 * @param contexts
-	 *            file of context-patterns for comp.-extraction
-	 * @param importanceTerms
-	 *            file of importance-terms
-	 * @param type
-	 *            type of information (competences)
-	 * @throws IOException
-	 *             // * @throws SQLException //
+	 * @param competences      file of already known/extracted competences
+	 * @param noCompetences    file of known typical mistakes
+	 * @param contexts         file of context-patterns for comp.-extraction
+	 * @param importanceTerms  file of importance-terms
+	 * @param type             type of information (competences)
+	 * @throws IOException // * @throws SQLException //
 	 */
 	// public Extractor(Connection outputConnection, File competences, File
 	// noCompetences, File contexts,
@@ -105,26 +100,26 @@ public class Extractor {
 	/**
 	 * 
 	 * @param outputConnection
-	 * @param entitiesFile
-	 *            file with the already known/extracted entities
-	 *            (competences/tools)
-	 * @param noEntitiesFile
-	 *            file with known typical mistakes
-	 * @param contexts
-	 *            file with the context-patterns
-	 * @param type
-	 *            type of information (tools o.competences)
+	 * @param entitiesFile     file with the already known/extracted entities
+	 *                         (competences/tools)
+	 * @param noEntitiesFile   file with known typical mistakes
+	 * @param contexts         file with the context-patterns
+	 * @param type             type of information (tools o.competences)
 	 * @throws IOException
 	 * @throws SQLException
 	 */
-	public Extractor(Connection outputConnection, File entitiesFile, File noEntitiesFile, File contexts, File modifier, IEType type)
-			throws IOException, SQLException {
+	public Extractor(Connection outputConnection, File entitiesFile, File noEntitiesFile, File contexts, File modifier,
+			IEType type, boolean resolveCoordinations) throws IOException, SQLException {
 		this.entitiesFile = entitiesFile;
 		this.noEntitiesFile = noEntitiesFile;
 		this.modifier = modifier;
 		this.contexts = contexts;
 		this.type = type;
-		this.jobs = new IEJobs(entitiesFile, noEntitiesFile, modifier, contexts, type);// new IEJobs(entitiesFile, noEntitiesFile, contexts, type);
+		this.jobs = new IEJobs(entitiesFile, noEntitiesFile, modifier, contexts, type, resolveCoordinations);// new
+																												// IEJobs(entitiesFile,
+																												// noEntitiesFile,
+																												// contexts,
+																												// type);
 		if (outputConnection != null) {
 			// liest aus der Output-DB, die - falls vorhanen - manuell
 			// validierten Entitäten aus dem vorherigen Extraktionsdurchgang ein
@@ -162,21 +157,20 @@ public class Extractor {
 
 	/**
 	 * Coordinates the Information-Extraction (1) reads the Paragraphs from the
-	 * Input-DB (2) splits paragraphs into sentences and initializes
-	 * ExtractionUnits (3) hands the ExtractionUnits to the IEJobs-Instance to
-	 * execute the extraction (4) stores the extracted Entites in the Output-DB
+	 * Input-DB (2) splits paragraphs into sentences and initializes ExtractionUnits
+	 * (3) hands the ExtractionUnits to the IEJobs-Instance to execute the
+	 * extraction (4) stores the extracted Entites in the Output-DB
 	 * 
 	 * @param startPos
 	 * @param maxCount
-	 * @param tablesize
-	 *            number of rows (= paragraphs) in the input-table
+	 * @param tablesize        number of rows (= paragraphs) in the input-table
 	 * @param inputConnection
 	 * @param outputConnection
 	 * @throws IOException
 	 * @throws SQLException
 	 */
 	public Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> extract(int startPos, int maxCount, int tablesize,
-			Connection inputConnection, Connection outputConnection) throws IOException, SQLException {
+			Connection inputConnection, Connection outputConnection, boolean gold) throws IOException, SQLException {
 
 		// Falls die lexikalischen Infos (lemmata, POS-Tags etc.) noch nicht in
 		// der Input-DB hinterlegt sind, dann werden Sie in diesem Workflow
@@ -204,7 +198,7 @@ public class Extractor {
 		if (maxCount > -1 && paragraphsPerRound > maxCount) {
 			paragraphsPerRound = maxCount;
 		}
-		
+
 		long before;
 		long after;
 		double time;
@@ -215,20 +209,19 @@ public class Extractor {
 		// Die Extraktionen aus jeder Runde werden in der Map AllExtractions
 		// gesammelt
 		while (!finished) {
+//			System.out.println(jobs.getNewCompoundsCount() + " neue Komposita");
 			before = System.currentTimeMillis();
 
 			// Einlesen der Paragraphen
 			if (maxCount > -1 && readParagraphs + paragraphsPerRound > maxCount) {
 				paragraphsPerRound = maxCount - readParagraphs;
 			}
-			System.out.println(
-					"\nread ClassifyUnits from DB " + offset + " - " + (offset + paragraphsPerRound));
-			classifyUnits = IE_DBConnector.readClassifyUnits(paragraphsPerRound, offset,
-					inputConnection, jobs.type);
+			System.out.println("\nread ClassifyUnits from DB " + offset + " - " + (offset + paragraphsPerRound));
+			classifyUnits = IE_DBConnector.readClassifyUnits(paragraphsPerRound, offset, inputConnection, jobs.type);
 			if (classifyUnits.isEmpty()) {
 				finished = true;
 			}
-			readParagraphs +=classifyUnits.size();
+			readParagraphs += classifyUnits.size();
 			if (readParagraphs >= maxCount) {
 				finished = true;
 			}
@@ -250,7 +243,10 @@ public class Extractor {
 			// Informationsextraktion
 			jobs.annotateTokens(extractionUnits);
 			System.out.println("\nextract " + type.name().toLowerCase() + "s");
-			extractions = jobs.extractEntities(extractionUnits);
+			extractions = jobs.extractEntities(extractionUnits, lemmatizer);
+
+			possCompoundSplits.putAll(jobs.getNewCompounds());
+
 			// Entfernen der bereits bekannten Entitäten
 			extractions = removeKnownEntities(extractions);
 
@@ -262,7 +258,7 @@ public class Extractor {
 			classifyUnits = null;
 			extractions = null;
 			extractionUnits = null;
-			this.jobs = new IEJobs(entitiesFile, noEntitiesFile,modifier, contexts, type);
+			this.jobs = new IEJobs(entitiesFile, noEntitiesFile, modifier, contexts, type, resolveCoordinations);
 			jobs.addKnownEntities(knownEntities);
 			jobs.addNoEntities(noEntities);
 		}
@@ -276,19 +272,24 @@ public class Extractor {
 		} else {
 			// Speichern der Extraktionsergebnisse in der Output-DB
 			System.out.println("\nwrite extracted " + type.name().toLowerCase() + "s in output-DB ");
-			IE_DBConnector.createExtractionOutputTable(outputConnection, type, true);
+			if (gold)
+				IE_DBConnector.createExtractionGoldOutputTable(outputConnection, type, true);
+			else
+				IE_DBConnector.createExtractionOutputTable(outputConnection, type, true);
 			if (type == IEType.COMPETENCE) {
-				IE_DBConnector.writeCompetenceExtractions(allExtractions, outputConnection, true);
+				IE_DBConnector.writeCompetenceExtractions(allExtractions, outputConnection, true, gold);
 			}
 			if (type == IEType.TOOL) {
-				IE_DBConnector.writeToolExtractions(allExtractions, outputConnection, true);
+				IE_DBConnector.writeToolExtractions(allExtractions, outputConnection, true, gold);
 			}
 		}
 		// schreibt die txt-Files (competences.txt & noCompetences.txt) neu, da
-		// zu Beginn evtl. neue manuell annotierte eingelsen wurden
+		// zu Beginn evtl. neue manuell annotierte eingelesen wurden
 		// (eigentlich nicht mehr notwendig, da im BIBB nicht mehr manuell
 		// annotiert wird)
 		reWriteFiles();
+		System.out.print("\nwrite new compounds to evaluate");
+		writeNewCoordinations();
 		return allExtractions;
 	}
 
@@ -317,11 +318,11 @@ public class Extractor {
 		int paragraphsPerRound = 50000;
 		int readParagraphs = 0;
 		int offset = startPos;
-		
+
 		if (maxCount > -1 && paragraphsPerRound > maxCount) {
 			paragraphsPerRound = maxCount;
 		}
-	
+
 		Map<String, Integer> matchCounts = new HashMap<String, Integer>();
 		while (true) {
 			// Einlesen der Paragraphen
@@ -329,8 +330,7 @@ public class Extractor {
 				paragraphsPerRound = maxCount - readParagraphs;
 			}
 			System.out.println("\nread ClassifyUnit " + offset + " - " + (offset + paragraphsPerRound));
-			classifyUnits = IE_DBConnector.readClassifyUnits(paragraphsPerRound, offset, inputConnection,
-					jobs.type);
+			classifyUnits = IE_DBConnector.readClassifyUnits(paragraphsPerRound, offset, inputConnection, jobs.type);
 			if (classifyUnits.isEmpty()) {
 				break;
 			}
@@ -345,7 +345,7 @@ public class Extractor {
 			// Matching
 			System.out.println("\nmatch");
 			jobs.annotateTokens(extractionUnits);
-			stringMatches = jobs.extractByStringMatch(extractionUnits);
+			stringMatches = jobs.extractByStringMatch(extractionUnits, lemmatizer);
 			stringMatches = jobs.mergeInformationEntities(stringMatches);
 
 			// set Modifiers
@@ -356,10 +356,10 @@ public class Extractor {
 			// write results in DB
 			System.out.println("\nwrite results in output-DB");
 			if (jobs.type == IEType.COMPETENCE) {
-				IE_DBConnector.writeCompetenceExtractions(stringMatches, outputConnection, false);
+				IE_DBConnector.writeCompetenceExtractions(stringMatches, outputConnection, false, false);
 			}
 			if (jobs.type == IEType.TOOL) {
-				IE_DBConnector.writeToolExtractions(stringMatches, outputConnection, false);
+				IE_DBConnector.writeToolExtractions(stringMatches, outputConnection, false, false);
 			}
 
 			updateMatchCount(stringMatches, matchCounts);
@@ -369,6 +369,8 @@ public class Extractor {
 		// write statisticsFile
 		System.out.println("\nwrite Statistics-File");
 		writeStatistics(matchCounts, statisticsFile);
+		System.out.print("\nwrite new compounds to evaluate");
+		writeNewCoordinations();
 		lemmatizer = null;
 	}
 
@@ -547,6 +549,27 @@ public class Extractor {
 	// // rewrite/ reorder knowledge lists
 	// // jobs.writeEntitieLists(entitiesFile, noEntitiesFile);
 	// }
+
+	private void writeNewCoordinations() {
+		System.out.print(": " + possCompoundSplits.size());
+		StringBuffer sb = new StringBuffer();
+		for (Map.Entry<String, String> e : possCompoundSplits.entrySet()) {
+			sb.append(e.getKey() + "|" + e.getValue() + "\n");
+		}
+
+		try {
+			File f = new File(possibleFileString);
+			if (!f.exists()) {
+				f.getParentFile().mkdirs();
+				f.createNewFile();
+			}
+			FileWriter fw = new FileWriter(f);
+			fw.write(sb.toString());
+			fw.close();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+	}
 
 	private void writeStatistics(Map<String, Integer> counts, File statisticsFile) throws IOException {
 		Map<Integer, Set<String>> statistics = new TreeMap<Integer, Set<String>>();

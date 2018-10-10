@@ -55,6 +55,12 @@ public class ExtractNewTools {
 	// falls nur eine bestimmte Anzahl gelesen werden soll, hier die startID
 	// angeben
 	static int startPos = 0;
+	
+	// true, falls Koordinationen  in Informationseinheit aufgelöst werden sollen
+	static boolean resolveCoordinations = true;
+	
+	// true, falls Goldstandard-Tabelle erzeugt werden soll
+		static boolean gold = false;
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
 
@@ -98,11 +104,11 @@ public class ExtractNewTools {
 		// Index für die Spalten 'ClassTWO' und 'ClassTHREE' anlegen für
 		// schnelleren Zugriff
 		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTWO, ClassTHREE");
-		Extractor extractor = new Extractor(outputConnection, tools, noTools, contextFile, null, IEType.TOOL);
+		Extractor extractor = new Extractor(outputConnection, tools, noTools, contextFile, null, IEType.TOOL, false);
 		if (maxCount == -1) {
 			maxCount = tableSize;
 		}
-		extractor.extract(startPos, maxCount, tableSize, inputConnection, outputConnection);
+		extractor.extract(startPos, maxCount, tableSize, inputConnection, outputConnection, gold);
 		long after = System.currentTimeMillis();
 		double time = (((double) after - before) / 1000) / 60;
 		if (time > 60.0) {

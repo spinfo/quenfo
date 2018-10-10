@@ -49,6 +49,9 @@ public class MatchNotValidatedTools {
 	
 	//Falls nicht alle Paragraphen gematcht werden sollen, hier die Startposition angeben
 	static int startPos = 0;
+	
+	// true, falls Koordinationen  in Informationseinheit aufgelöst werden sollen
+	static boolean resolveCoordinations = false;
 
 	public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException {
 
@@ -99,7 +102,7 @@ public class MatchNotValidatedTools {
 		long before = System.currentTimeMillis();
 		//erzeugt einen Index auf die Spalten 'ClassTWO' und 'ClassTHREE' (falls noch nicht vorhanden)
 		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTWO, ClassTHREE");
-		Extractor extractor = new Extractor(notValidatedTools, null, IEType.TOOL);
+		Extractor extractor = new Extractor(notValidatedTools, null, IEType.TOOL, resolveCoordinations);
 		extractor.stringMatch(statisticsFile, inputConnection, outputConnection, maxCount, startPos);
 		long after = System.currentTimeMillis();
 		double time = (((double) after - before)/1000)/60;

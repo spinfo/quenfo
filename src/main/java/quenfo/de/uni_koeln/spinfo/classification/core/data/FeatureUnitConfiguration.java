@@ -39,7 +39,7 @@ public class FeatureUnitConfiguration implements Serializable {
 			if(string.equals("suffixTree")){
 				suffixTree = true;
 			}
-			if(string.equals(stem)){
+			if(string.equals("stem")){
 				stem=true;
 				continue;
 			}

@@ -46,11 +46,14 @@ public class MatchCompetences {
 
 	// Anzahl der Paragraphen aus der Input-DB, gegen die gematcht werden soll
 	// (-1 = alle)
-	static int maxCount = -1;
+	static int maxCount = 50;
 
 	// Falls nicht alle Paragraphen gematcht werden sollen, hier die
 	// Startposition angeben
 	static int startPos = 0;
+	
+	// true, falls Koordinationen  in Informationseinheit aufgelöst werden sollen
+	static boolean resolveCoordinations = true;
 
 	public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException {
 		
@@ -90,7 +93,7 @@ public class MatchCompetences {
 		long before = System.currentTimeMillis();
 		//erzeugt einen Index auf die Spalte 'ClassTHREE' (falls noch nicht vorhanden)
 		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTHREE");
-		Extractor extractor = new Extractor(competences, modifier, IEType.COMPETENCE);
+		Extractor extractor = new Extractor(competences, modifier, IEType.COMPETENCE, resolveCoordinations);
 		extractor.stringMatch(statisticsFile, inputConnection, outputConnection, maxCount, startPos);
 		long after = System.currentTimeMillis();
 		double time = (((double) after - before) / 1000) / 60;
