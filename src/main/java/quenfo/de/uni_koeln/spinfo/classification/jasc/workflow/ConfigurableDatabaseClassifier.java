@@ -2,6 +2,7 @@ package quenfo.de.uni_koeln.spinfo.classification.jasc.workflow;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
@@ -134,6 +135,8 @@ public class ConfigurableDatabaseClassifier {
 		boolean goOn = true;
 		boolean askAgain = true;
 		long start = System.currentTimeMillis();
+		
+		List<String> allParagraphs = new ArrayList<String>();
 
 		while (queryResult.next() && goOn) {
 			jobAdCount++;
@@ -168,6 +171,12 @@ public class ConfigurableDatabaseClassifier {
 
 			// 1. Split into paragraphs and create a ClassifyUnit per paragraph
 			List<String> paragraphs = ClassifyUnitSplitter.splitIntoParagraphs(jobAd);
+			
+			
+			allParagraphs.addAll(paragraphs); //TODO Delete
+			
+			
+			
 			// if treat enc
 			if (config.getFeatureConfiguration().isTreatEncoding()) {
 				paragraphs = EncodingProblemTreatment.normalizeEncoding(paragraphs);
@@ -256,6 +265,17 @@ public class ConfigurableDatabaseClassifier {
 				start = System.currentTimeMillis();
 			}
 		}
+		
+		//TEST
+		StringBuilder sb = new StringBuilder();
+		for (String string : allParagraphs) {
+			sb.append(string + "\n");
+		}
+		FileWriter fw = new FileWriter(new File("sentences.txt"));
+		fw.write(sb.toString());
+		fw.close();
+		
+		//ENDE
 	}
 
 }

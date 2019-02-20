@@ -28,6 +28,12 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
 import quenfo.de.uni_koeln.spinfo.information_extraction.preprocessing.ExtractionUnitBuilder;
 import is2.lemmatizer.Lemmatizer;
 import is2.tag.Tagger;
+import is2.tools.Tool;
+
+/**
+ * TODO JB: Refactoring
+ * 20.02.19: reWriteFiles @Deprecated, auskommentierte Methoden gelöscht
+ */
 
 /**
  * @author geduldia
@@ -43,13 +49,14 @@ public class Extractor {
 	private Set<String> knownEntities = new HashSet<String>();
 	private Set<String> noEntities = new HashSet<String>();
 	private Map<String, String> possCompoundSplits = new HashMap<String, String>();
-	private String possibleFileString = "information_extraction/data/compounds/possibleCompounds.txt";
+	private File possCompoundsFile;
 	private boolean resolveCoordinations;
 	private File entitiesFile;
 	private File noEntitiesFile;
 	private File contexts;
 	private File modifier;
 
+	//TODO Konstruktoren refactoring
 	// Konstruktor für die Matching-Workflows
 	/**
 	 * @param entities  file of already known/extracted entities
@@ -63,39 +70,14 @@ public class Extractor {
 		this.type = type;
 		this.jobs = new IEJobs(entities, null, modifiers, null, type, resolveCoordinations);
 		initialize();
+		this.possCompoundsFile = new File("src/test/resources/coordinations/possibleCompounds.txt");
+	}
+	
+	public Extractor(File competences, File modifiers, File tokensToRemove, IEType type,
+			boolean resolveCoordinations) throws IOException {
+		this(competences, modifiers, type, resolveCoordinations);
 	}
 
-	/**
-	 * Constructor for competence-matching
-	 * 
-	 * @param outputConnection
-	 * 
-	 * @param competences      file of already known/extracted competences
-	 * @param noCompetences    file of known typical mistakes
-	 * @param contexts         file of context-patterns for comp.-extraction
-	 * @param importanceTerms  file of importance-terms
-	 * @param type             type of information (competences)
-	 * @throws IOException // * @throws SQLException //
-	 */
-	// public Extractor(Connection outputConnection, File competences, File
-	// noCompetences, File contexts,
-	// File importanceTerms, IEType type) throws IOException, SQLException {
-	// this.entitiesFile = competences;
-	// this.noEntitiesFile = noCompetences;
-	// this.contexts = contexts;
-	// this.type = type;
-	// this.jobs = new IEJobs(competences, noCompetences, importanceTerms,
-	// contexts, type);
-	// if (outputConnection != null) {
-	// knownEntities = IE_DBConnector.readAnnotatedEntities(outputConnection, 1,
-	// type);
-	// noEntities = IE_DBConnector.readAnnotatedEntities(outputConnection, 0,
-	// type);
-	// jobs.addKnownEntities(knownEntities);
-	// jobs.addNoEntities(noEntities);
-	// }
-	// initialize();
-	// }
 
 	/**
 	 * 
@@ -116,9 +98,7 @@ public class Extractor {
 		this.contexts = contexts;
 		this.type = type;
 		this.jobs = new IEJobs(entitiesFile, noEntitiesFile, modifier, contexts, type, resolveCoordinations);// new
-																												// IEJobs(entitiesFile,
-																												// noEntitiesFile,
-																												// contexts,
+		this.possCompoundsFile = new File("src/test/resources/coordinations/possibleCompounds.txt");																								// contexts,
 																												// type);
 		if (outputConnection != null) {
 			// liest aus der Output-DB, die - falls vorhanen - manuell
@@ -139,6 +119,8 @@ public class Extractor {
 		}
 		initialize();
 	}
+
+	
 
 	private void initialize() {
 		Map<Integer, List<Integer>> translations = new HashMap<Integer, List<Integer>>();
@@ -182,9 +164,9 @@ public class Extractor {
 		Class_DBConnector.addColumn(inputConnection, "POSTags", "ClassifiedParagraphs");
 		// Lemmatizer und Tagger (nur für den Fall, dass noch lexikalische Infos
 		// generiert werden müssen)
-		is2.tools.Tool lemmatizer = new Lemmatizer(
-				"information_extraction/data/sentencedata_models/ger-tagger+lemmatizer+morphology+graph-based-3.6/lemma-ger-3.6.model");
-		is2.tools.Tool tagger = new Tagger(
+		Tool lemmatizer = new Lemmatizer(
+				"information_extraction/data/sentencedata_models/ger-tagger+lemmatizer+morphology+graph-based-3.6/lemma-ger-3.6.model", false);
+		Tool tagger = new Tagger(
 				"information_extraction/data/sentencedata_models/ger-tagger+lemmatizer+morphology+graph-based-3.6/tag-ger-3.6.model");
 
 		List<ClassifyUnit> classifyUnits = null;
@@ -209,7 +191,6 @@ public class Extractor {
 		// Die Extraktionen aus jeder Runde werden in der Map AllExtractions
 		// gesammelt
 		while (!finished) {
-//			System.out.println(jobs.getNewCompoundsCount() + " neue Komposita");
 			before = System.currentTimeMillis();
 
 			// Einlesen der Paragraphen
@@ -293,6 +274,7 @@ public class Extractor {
 		return allExtractions;
 	}
 
+	
 	public void stringMatch(File statisticsFile, Connection inputConnection, Connection outputConnection, int maxCount,
 			int startPos) throws SQLException, IOException {
 
@@ -306,8 +288,8 @@ public class Extractor {
 		Class_DBConnector.addColumn(inputConnection, "POSTags", "ClassifiedParagraphs");
 		// Lemmatizer (nur für den Fall, dass noch Lemmata generiert werden
 		// müssen)
-		is2.tools.Tool lemmatizer = new Lemmatizer(
-				"information_extraction/data/sentencedata_models/ger-tagger+lemmatizer+morphology+graph-based-3.6/lemma-ger-3.6.model");
+		Tool lemmatizer = new Lemmatizer(
+				"information_extraction/data/sentencedata_models/ger-tagger+lemmatizer+morphology+graph-based-3.6/lemma-ger-3.6.model", false);
 
 		List<ClassifyUnit> classifyUnits;
 		List<ExtractionUnit> extractionUnits;
@@ -374,52 +356,6 @@ public class Extractor {
 		lemmatizer = null;
 	}
 
-	// private void cluster(Map<ExtractionUnit, Map<InformationEntity,
-	// List<Context>>> extractionUnits, Connection outputConnection) throws
-	// Exception {
-	// // sort contexts by competence
-	// Map<String, List<String>> lemmatasByCompetence = new HashMap<String,
-	// List<String>>();
-	// for (ExtractionUnit eu : extractionUnits.keySet()) {
-	// for (InformationEntity ie : extractionUnits.get(eu).keySet()) {
-	// String comp = ie.getFullExpression();
-	// List<String> lemmata = lemmatasByCompetence.get(comp);
-	// if (lemmata == null)
-	// lemmata = new ArrayList<String>();
-	// lemmata.addAll(Arrays.asList(eu.getLemmata()));
-	// lemmatasByCompetence.put(comp, lemmata);
-	// }
-	// }
-	//
-	// // get cooccurrences
-	// AbstractFeatureQuantifier<String> qf = new
-	// CooccurrenceFeatureQuantifier<String>();
-	// Map<String, double[]> vectors =
-	// qf.getFeatureVectors(lemmatasByCompetence, null);
-	//
-	// //create Clusterer
-	// SimpleKMeans kmeans = new SimpleKMeans(); // new instance of clusterer
-	// kmeans.setNumClusters(17);
-	// kmeans.setPreserveInstancesOrder(true);
-	// kmeans.setInitializationMethod(new SelectedTag(SimpleKMeans.RANDOM,
-	// SimpleKMeans.TAGS_SELECTION));
-	// kmeans.setDistanceFunction(new ManhattanDistance());
-	// kmeans.setMaxIterations(100);
-	// WekaClusterer clusterer = new WekaClusterer(kmeans, vectors);
-	// clusterer.cluster();
-	//
-	// Connection c =
-	// IE_DBConnector.connect("C:/sqlite/ClusteredCompetences.db");
-	// IE_DBConnector.createCluserTable(c);
-	// int i = 0;
-	// for (String comp : vectors.keySet()) {
-	// int clusterID = clusterer.getClusterForInstance(i);
-	// IE_DBConnector.writeClusterResult(clusterID, comp, c);
-	// i++;
-	// }
-	//
-	// }
-
 	private Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> removeKnownEntities(
 			Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> allExtractions) {
 		Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> toReturn = new HashMap<ExtractionUnit, Map<InformationEntity, List<Pattern>>>();
@@ -440,29 +376,8 @@ public class Extractor {
 		return toReturn;
 	}
 
-	// private void readAnnotatedEntitiesFromFile() throws IOException {
-	//
-	// if (entitiesFile.exists()) {
-	// BufferedReader in = new BufferedReader(new FileReader(entitiesFile));
-	// String line = in.readLine();
-	// while (line != null) {
-	// knownEntities.add(line);
-	// line = in.readLine();
-	// }
-	// in.close();
-	// }
-	//
-	// if (noEntitiesFile.exists()) {
-	// BufferedReader in = new BufferedReader(new FileReader(noEntitiesFile));
-	// String line = in.readLine();
-	// while (line != null) {
-	// noEntities.add(line);
-	// line = in.readLine();
-	// }
-	// in.close();
-	// }
-	// }
 
+	@Deprecated
 	private void reWriteFiles() throws IOException {
 
 		if (!entitiesFile.exists()) {
@@ -499,56 +414,6 @@ public class Extractor {
 		out.close();
 	}
 
-	// private void writeOutputFiles(Map<ExtractionUnit, Map<InformationEntity,
-	// List<Context>>> allExtractions,
-	// File potentialComps, File potentialCompsWithContext) throws IOException {
-	// Set<String> extracted = new HashSet<String>();
-	// PrintWriter out;
-	// // write entities with contexts
-	// if (potentialCompsWithContext != null) {
-	// out = new PrintWriter(new FileWriter(potentialCompsWithContext));
-	// for (ExtractionUnit iePhrase : allExtractions.keySet()) {
-	// out.write("\n" + iePhrase.getSentence() + "\n");
-	// for (int t = 1; t < iePhrase.getTokenObjects().size() - 1; t++) {
-	// Token token = iePhrase.getTokenObjects().get(t);
-	// out.write(token.getLemma() + " " + " [" + token.getPosTag() + "] ");
-	// }
-	// out.write("\n");
-	// Map<InformationEntity, List<Context>> iesWithContext =
-	// allExtractions.get(iePhrase);
-	// for (InformationEntity ie : iesWithContext.keySet()) {
-	// out.write("\n--> " + ie.toString());
-	// boolean knowledge = false;
-	// List<Context> contexts = iesWithContext.get(ie);
-	// for (Context context : contexts) {
-	// if (context.getDescription().contains("KNOWLEDGE")) {
-	// knowledge = true;
-	// break;
-	// }
-	// }
-	// if (knowledge) {
-	// extracted.add("[KNOWLEDGE] " + ie.toString());
-	// } else {
-	// extracted.add(ie.toString());
-	// }
-	// }
-	// out.write("\n");
-	// }
-	// out.close();
-	// }
-	// // write entities
-	// if (potentialComps != null) {
-	// List<String> sorted = new ArrayList<String>(extracted);
-	// Collections.sort(sorted);
-	// out = new PrintWriter(new FileWriter(potentialComps));
-	// for (String string : sorted) {
-	// out.write(string + "\n");
-	// }
-	// out.close();
-	// }
-	// // rewrite/ reorder knowledge lists
-	// // jobs.writeEntitieLists(entitiesFile, noEntitiesFile);
-	// }
 
 	private void writeNewCoordinations() {
 		System.out.print(": " + possCompoundSplits.size());
@@ -558,12 +423,12 @@ public class Extractor {
 		}
 
 		try {
-			File f = new File(possibleFileString);
-			if (!f.exists()) {
-				f.getParentFile().mkdirs();
-				f.createNewFile();
+			
+			if (!possCompoundsFile.exists()) {
+				possCompoundsFile.getParentFile().mkdirs();
+				possCompoundsFile.createNewFile();
 			}
-			FileWriter fw = new FileWriter(f);
+			FileWriter fw = new FileWriter(possCompoundsFile);
 			fw.write(sb.toString());
 			fw.close();
 		} catch (IOException e1) {
@@ -610,24 +475,5 @@ public class Extractor {
 			}
 		}
 	}
-
-	// private Map<ExtractionUnit, Map<InformationEntity, List<Context>>>
-	// removeKnowledgeStringMatches(
-	// Map<ExtractionUnit, Map<InformationEntity, List<Context>>> stringMatches)
-	// {
-	// Map<ExtractionUnit, Map<InformationEntity, List<Context>>> toReturn =
-	// stringMatches;
-	// for (ExtractionUnit eu : stringMatches.keySet()) {
-	// Map<InformationEntity, List<Context>> map = new
-	// HashMap<InformationEntity, List<Context>>();
-	// for (InformationEntity ie : stringMatches.get(eu).keySet()) {
-	// if (!ie.isKnowledge()) {
-	// map.put(ie, stringMatches.get(eu).get(ie));
-	// }
-	// }
-	// toReturn.put(eu, map);
-	// }
-	// return stringMatches;
-	// }
 
 }

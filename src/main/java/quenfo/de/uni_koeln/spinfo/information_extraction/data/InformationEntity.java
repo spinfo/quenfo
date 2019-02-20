@@ -34,7 +34,11 @@ public class InformationEntity {
 	//Index des ersten Lemmatas im Satz
 	private int firstIndex;
 	
+	//expandierte Koordinationen im Ausdruck (für Evaluierung)
 	private List<String> coordinations;
+	
+	//Tokens des Ausdrucks
+	private List<TextToken> originalEntity;
 	
 
 	/**
@@ -59,6 +63,15 @@ public class InformationEntity {
 		this.firstIndex = firstIndex;
 	}
 
+	/**
+	 * Konstruktor wird beim Einlesen des Goldstandards zur Evaluation
+	 * der Koordinationsexpansion benutzt
+	 * @param startLemma
+	 * @param isSingleWordEntity
+	 * @param fromMorphemCoordination
+	 * @param firstIndex
+	 * @param resolvedCoo
+	 */
 	public InformationEntity(String startLemma, boolean isSingleWordEntity, 
 			boolean fromMorphemCoordination, int firstIndex, String resolvedCoo) {
 		this(startLemma, isSingleWordEntity, fromMorphemCoordination, firstIndex);
@@ -192,6 +205,14 @@ public class InformationEntity {
 
 	public void setFromMorphemCoordination(boolean fromMorphemCoordination) {
 		this.fromMorphemCoordination = fromMorphemCoordination;
+	}
+	
+	public void setOriginalEntity(List<TextToken> originalEntity) {
+		this.originalEntity = originalEntity;
+	}
+	
+	public List<TextToken> getOriginialEntity()	{
+		return originalEntity;
 	}
 
 

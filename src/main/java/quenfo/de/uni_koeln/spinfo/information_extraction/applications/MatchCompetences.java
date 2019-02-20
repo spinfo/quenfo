@@ -40,6 +40,8 @@ public class MatchCompetences {
 
 	// txt-File mit allen 'Modifier'-Ausdrücken
 	static File modifier = new File("information_extraction/data/competences/modifier.txt");
+	
+	static File tokensToRemove = new File("information_extraction/data/competences/fuellwoerter.txt");
 
 	// txt-File zur Speicherung der Match-Statistiken
 	static File statisticsFile = new File("information_extraction/data/competences/matchingStats.txt");
@@ -93,7 +95,7 @@ public class MatchCompetences {
 		long before = System.currentTimeMillis();
 		//erzeugt einen Index auf die Spalte 'ClassTHREE' (falls noch nicht vorhanden)
 		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTHREE");
-		Extractor extractor = new Extractor(competences, modifier, IEType.COMPETENCE, resolveCoordinations);
+		Extractor extractor = new Extractor(competences, modifier, tokensToRemove, IEType.COMPETENCE, resolveCoordinations);
 		extractor.stringMatch(statisticsFile, inputConnection, outputConnection, maxCount, startPos);
 		long after = System.currentTimeMillis();
 		double time = (((double) after - before) / 1000) / 60;

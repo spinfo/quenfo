@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import is2.tools.Tool;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.ExtractionUnit;
@@ -32,8 +33,8 @@ public class ExtractionUnitBuilder {
 	 * @return list of initialized extractionUnits
 	 * @throws IOException
 	 */
-	public static List<ExtractionUnit> initializeIEUnits(List<ClassifyUnit> classifyUnits, is2.tools.Tool lemmatizer,
-			is2.tools.Tool morphTagger, is2.tools.Tool tagger) throws IOException {
+	public static List<ExtractionUnit> initializeIEUnits(List<ClassifyUnit> classifyUnits, Tool lemmatizer,
+			Tool morphTagger, Tool tagger) throws IOException {
 		List<ExtractionUnit> extractionUnits = new ArrayList<ExtractionUnit>();
 		IETokenizer tokenizer = new IETokenizer();
 		List<String> sentences;

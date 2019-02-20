@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -20,6 +21,14 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.data.Pattern;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.PatternToken;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.TextToken;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.Token;
+import quenfo.de.uni_koeln.spinfo.information_extraction.utils.Util;
+
+/**
+ * TODO JB: Refactoring
+ * 20.02.19: Methoden zur String-Verarbeitung in "Util" verschoben
+ * public in knownEntities @Deprecated
+ * 
+ */
 
 /**
  * @author geduldia Enthält alle Methoden zur Extraktion und zum Matching von
@@ -35,9 +44,12 @@ public class IEJobs {
 	// Liste mit den bereits bekannten Kompetenzen/Tools (sortiert nach dem
 	// Anfangswort)
 	public Map<String, Set<InformationEntity>> entities;
+	
+	public Map<String, Set<List<String>>> tokensToRemove;
 	// Informationstyp (Kompetenz oder Tool)
 	IEType type;
 	// Anahl der bereits bekannten Kompetenzen/Tools
+	@Deprecated
 	public int knownEntities;
 	// Extraktionspatterns
 	public List<Pattern> patterns;
@@ -79,6 +91,7 @@ public class IEJobs {
 	private void initialize(File tools, File noTools, File patterns, boolean resolveCoordinations) throws IOException {
 		initialize(tools, noTools, null, patterns, resolveCoordinations);
 	}
+
 
 	// liest die verschiedenen Files ein und initialisiert die zugehörigen
 	// Felder
@@ -123,7 +136,7 @@ public class IEJobs {
 			String[] split = line.split(" ");
 			String keyword;
 			try {
-				keyword = normalizeLemma(split[0]);
+				keyword = Util.normalizeLemma(split[0]);
 			} catch (ArrayIndexOutOfBoundsException e) {
 				line = in.readLine();
 				continue;
@@ -134,7 +147,7 @@ public class IEJobs {
 			InformationEntity ie = new InformationEntity(keyword, split.length == 1, false);
 			if (!ie.isSingleWordEntity()) {
 				for (String string : split) {
-					ie.addLemma(normalizeLemma(string));
+					ie.addLemma(Util.normalizeLemma(string));
 
 				}
 			}
@@ -161,7 +174,7 @@ public class IEJobs {
 			String keyword;
 			String[] split = line.split(" ");
 			try {
-				keyword = normalizeLemma(split[0]);
+				keyword = Util.normalizeLemma(split[0]);
 			} catch (ArrayIndexOutOfBoundsException e) {
 				line = in.readLine();
 				continue;
@@ -266,7 +279,7 @@ public class IEJobs {
 	private void annotateEntities(List<TextToken> tokens) {
 		for (int t = 0; t < tokens.size(); t++) {
 			Token currentToken = tokens.get(t);
-			String lemma = normalizeLemma(currentToken.getLemma());
+			String lemma = Util.normalizeLemma(currentToken.getLemma());
 			if (entities.keySet().contains(lemma)) {
 				for (InformationEntity ie : entities.get(lemma)) {
 					if (ie.isSingleWordEntity()) {
@@ -282,7 +295,7 @@ public class IEJobs {
 							matches = false;
 							break;
 						}
-						matches = ie.getLemmata().get(c).equals(normalizeLemma(tokens.get(t + c).getLemma()));
+						matches = ie.getLemmata().get(c).equals(Util.normalizeLemma(tokens.get(t + c).getLemma()));
 						if (!matches) {
 							break;
 						}
@@ -303,7 +316,7 @@ public class IEJobs {
 			return;
 		for (int t = 0; t < tokens.size(); t++) {
 			Token currentToken = tokens.get(t);
-			String lemma = normalizeLemma(currentToken.getLemma());
+			String lemma = Util.normalizeLemma(currentToken.getLemma());
 			if (negExamples.keySet().contains(lemma)) {
 				boolean match = false;
 				for (List<String> expression : negExamples.get(lemma)) {
@@ -334,7 +347,7 @@ public class IEJobs {
 			if (t + skip >= tokens.size())
 				break;
 			Token currentToken = tokens.get(t + skip);
-			String lemma = normalizeLemma(currentToken.getLemma());
+			String lemma = Util.normalizeLemma(currentToken.getLemma());
 			if (modifiers.keySet().contains(lemma)) {
 				int required = -1;
 				boolean match = false;
@@ -342,7 +355,7 @@ public class IEJobs {
 					for (int s = 0; s < expression.size(); s++) {
 						String string = expression.get(s);
 						try {
-							match = string.equals(normalizeLemma(tokens.get(t + skip + s).getLemma()));
+							match = string.equals(Util.normalizeLemma(tokens.get(t + skip + s).getLemma()));
 						} catch (ArrayIndexOutOfBoundsException e) {
 							break;
 						}
@@ -422,7 +435,7 @@ public class IEJobs {
 						List<InformationEntity> informationEntities = new ArrayList<InformationEntity>();
 
 						entityToken = textTokens.get(entityPointer);
-						String normLemma = normalizeLemma(entityToken.getLemma());
+						String normLemma = Util.normalizeLemma(entityToken.getLemma());
 
 						int entity_size = pattern.getPointer().size();
 						if (entity_size == 1) {
@@ -446,7 +459,7 @@ public class IEJobs {
 							List<TextToken> completeEntity = new ArrayList<TextToken>();
 							for (int p = 0; p < pattern.getPointer().size(); p++) {
 								TextToken currentToken = textTokens.get(entityPointer + p);
-								String s = normalizeLemma(currentToken.getLemma());
+								String s = Util.normalizeLemma(currentToken.getLemma());
 								if (!s.trim().equals("") && !s.trim().equals("--")) {
 									completeEntity.add(currentToken);
 								}
@@ -458,30 +471,38 @@ public class IEJobs {
 								// prüfen, ob es sich um eine morphemkoordination handelt
 								for (TextToken tt : completeEntity) {
 									// solange kein TRUNC auftaucht, werden alle Lemmas dem Ausdruck hinzugefügt
-									entities.add(normalizeLemma(tt.getLemma()));
+									entities.add(Util.normalizeLemma(tt.getLemma()));
 
 									// sobald ein KON auftaucht, wird die morphemkoordination aufgelöst
 									if (cr!= null && tt.getPosTag().equals("KON")) {
 										isMorphemCoordination = true;
 
-										List<String[]> combinations = cr.resolve(completeEntity, textTokens, lemmatizer, false);
-										for (String[] list : combinations) {
+//										List<String[]> combinations = cr.resolve(completeEntity, textTokens, lemmatizer, false);
+										List<List<TextToken>> combinations = cr.resolve(completeEntity, textTokens, lemmatizer, false);
+										for (List<TextToken> list : combinations) {
 											
-											List<String> cooEntities = Arrays.asList(list);
-											ie = new InformationEntity(cooEntities.get(0), false, true);
-											ie.setExpression(cooEntities);
+//											List<String> cooEntities = Arrays.asList(list);
+											List<String> lemmata = new ArrayList<String>();
+											for(TextToken currTT : list) {
+												lemmata.add(currTT.getLemma());
+											}
+											ie = new InformationEntity(lemmata.get(0), false, true);
+											ie.setExpression(lemmata);
+											ie.setOriginalEntity(list); 
 											informationEntities.add(ie);
 										}
 									}
 								}
 
 								ie = new InformationEntity(entities.get(0), false, isMorphemCoordination, entityPointer);
+								ie.setOriginalEntity(completeEntity);
 								ie.setExpression(entities);
 
 							} else if (completeEntity.size() < 1) { // Entität besteht aus weniger als einem Token
 								ie = null;
 								continue;
 							} else { // Entität besteht aus genau einem Token
+								ie.setOriginalEntity(completeEntity);
 								ie = new InformationEntity(completeEntity.get(0).getString(), true, false, entityPointer);
 
 							}
@@ -527,37 +548,20 @@ public class IEJobs {
 		textTokens = null;
 		if (cr != null)
 			System.out.println(cr.getPossResolvations().size() + " new Compounds");
-//		System.out.println(toReturn.size() + " contemp. Extractions");
-
-//		System.out.println("-------------------------------------------");
-//		for (Map.Entry<ExtractionUnit, Map<InformationEntity, List<Pattern>>> e : toReturn.entrySet()) {
-//
-//			StringBuilder sb = new StringBuilder();
-//
-//			sb.append(e.getKey().getSentence() + "\n");
-//			for (Map.Entry<InformationEntity, List<Pattern>> d : e.getValue().entrySet()) {
-//				sb.append(d.getKey().getLemmata() + "\n");
-//
-//			}
-//			sb.append("\n\n");
-//
-//			System.out.println(sb.toString());
-//		}
 
 		return toReturn;
 	}
 
 
 	private void removeModifier(InformationEntity e) {
-//		System.out.println(e.getLemmata());
 		List<String> lemmata = e.getLemmata();
 		List<String> toDelete = new ArrayList<>();
-		int skip = 0;
+		int skip = 0; 
 		int required = -1;
 		for (int t = 0; t < lemmata.size(); t++) {
 			if (t + skip >= lemmata.size())
 				break;
-			String lemma = normalizeLemma(lemmata.get(t + skip));
+			String lemma = Util.normalizeLemma(lemmata.get(t + skip));
 			if (modifiers.containsKey(lemma)) {
 				required = -1;
 				boolean match = false;
@@ -567,7 +571,7 @@ public class IEJobs {
 					for (int s = 0; s < expression.size(); s++) {
 						String string = expression.get(s);
 						try {
-							match = string.equals(normalizeLemma(lemmata.get(t + skip + s)));
+							match = string.equals(Util.normalizeLemma(lemmata.get(t + skip + s)));
 						} catch (IndexOutOfBoundsException ex) {
 							match = false;
 						}
@@ -611,19 +615,25 @@ public class IEJobs {
 			InformationEntity containingIE = null;
 			for (int i = 0; i < iesForUnit.size(); i++) {
 				InformationEntity currentIE = iesForUnit.get(i);
-				boolean isPartOfOtherIE = false;
+				//boolean isPartOfOtherIE = false;
+				int subList = -1;
 				for (int j = 0; j < iesForUnit.size(); j++) {
 					if (j == i)
 						continue;
 					InformationEntity otherIE = iesForUnit.get(j);
-					// check if currentIE is in otherIE
-					isPartOfOtherIE = containsList(otherIE.getLemmata(), currentIE.getLemmata());
-					if (isPartOfOtherIE) {
+					// check if currentIE is sublist of otherIE
+					subList = Collections.indexOfSubList(otherIE.getLemmata(), currentIE.getLemmata());
+					//boolean isSubList = false;
+					//if (subList != -1)
+					//		isSubList = true;
+					//System.out.println(subList);
+					//isPartOfOtherIE = Util.containsList(otherIE.getLemmata(), currentIE.getLemmata());
+					if (subList != -1) {//if (isPartOfOtherIE) {
 						containingIE = otherIE;
 						break;
 					}
 				}
-				if (!isPartOfOtherIE) {
+				if (subList == -1) {//if (!isPartOfOtherIE) {
 					merged.put(currentIE, extractions.get(ieunit).get(currentIE));
 				} else {
 					if (containingIE.getLemmata().contains("und") || containingIE.getLemmata().contains("oder")) {
@@ -649,17 +659,19 @@ public class IEJobs {
 	public Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> extractByStringMatch(
 			List<ExtractionUnit> extractionUnits, Tool lemmatizer) {
 		Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> extractions = new HashMap<ExtractionUnit, Map<InformationEntity, List<Pattern>>>();
-		List<Pattern> List = new ArrayList<Pattern>();
+		List<Pattern> patternList = new ArrayList<Pattern>();
 		for (ExtractionUnit extractionUnit : extractionUnits) {
 
 			List<TextToken> tokens = extractionUnit.getTokenObjects();
-			int skip = 0;
+			//int skip = 0; //TODO Delete skip
 			for (int t = 0; t < tokens.size(); t++) {
-				if (t + skip >= tokens.size())
+				if (t /*+ skip*/ >= tokens.size())
 					break;
-				Token token = tokens.get(t + skip);
-				String lemma = normalizeLemma(token.getLemma());
+				TextToken token = tokens.get(t /*+ skip*/); 
+				String lemma = Util.normalizeLemma(token.getLemma());
 				if (entities.keySet().contains(lemma)) {
+							
+					
 					for (InformationEntity ie : entities.get(lemma)) {
 						if (ie.isSingleWordEntity()) {
 							token.setIEToken(true);
@@ -667,8 +679,54 @@ public class IEJobs {
 							Map<InformationEntity, List<Pattern>> iesForUnit = extractions.get(extractionUnit);
 							if (iesForUnit == null)
 								iesForUnit = new HashMap<InformationEntity, List<Pattern>>();
-							iesForUnit.put(newIE, List);
+							iesForUnit.put(newIE, patternList);
 							extractions.put(extractionUnit, iesForUnit);
+							
+							if((t /*+ skip*/ + 2) >= tokens.size())
+								continue;
+							TextToken possibleEllipse = tokens.get(t /*+ skip*/ + 2);
+							
+							if(possibleEllipse.getString() == null)
+								continue;
+							if(possibleEllipse.getString().startsWith("-")) {
+								List<InformationEntity> informationEntities = new ArrayList<InformationEntity>();
+
+								boolean isMorphemCoordination = true;
+								List<TextToken> completeEntity = new ArrayList<TextToken>();
+								
+								
+								int lastEllipse = tokens.size()-2;
+								while (!tokens.get(lastEllipse).getString().startsWith("-"))
+									lastEllipse--;
+								for(int i = t/*+ skip*/; i <= lastEllipse;i++) {
+									completeEntity.add(tokens.get(i));
+								}
+
+								List<List<TextToken>> combinations = cr.resolve(completeEntity, lemmatizer);
+								for (List<TextToken> list : combinations) {
+									List<String> lemmata = new ArrayList<String>();
+									for(TextToken currTT : list) {
+										lemmata.add(currTT.getLemma());
+									}
+									//System.out.println(lemmata);
+									boolean isSingleWordEntity = true;
+									if (list.size() > 1)
+										isSingleWordEntity = false;
+									InformationEntity cooIE = new InformationEntity(lemmata.get(0), isSingleWordEntity,
+											isMorphemCoordination);
+									cooIE.setExpression(lemmata);
+									informationEntities.add(cooIE);
+								}
+
+								iesForUnit = extractions.get(extractionUnit);
+								for (InformationEntity cooIE : informationEntities) {
+
+									if (iesForUnit == null)
+										iesForUnit = new HashMap<InformationEntity, List<Pattern>>();
+									iesForUnit.put(cooIE, patternList);
+									extractions.put(extractionUnit, iesForUnit);
+								}
+							}
 							continue;
 						}
 
@@ -676,40 +734,59 @@ public class IEJobs {
 						List<String> entityPOS = new ArrayList<String>();
 
 						boolean matches = false;
+						int stop = 0;
 						for (int c = 0; c < ie.getLemmata().size(); c++) {
 							if (tokens.size() <= t + c) {
 								matches = false;
+								stop = c;
 								break;
 							}
 							matches = ie.getLemmata().get(c)
-									.equals(normalizeLemma(tokens.get(t + c + skip).getLemma()));
+									.equals(Util.normalizeLemma(tokens.get(t + c /*+ skip*/).getLemma()));
 							if (!matches) {
+								stop = c;
 								break;
 							}
-							completeEntity.add(tokens.get(t + c + skip));
-							entityPOS.add(tokens.get(t + c + skip).getPosTag());
+							completeEntity.add(tokens.get(t + c /*+ skip*/));
+							entityPOS.add(tokens.get(t + c /*+ skip*/).getPosTag());
 						}
 
 						if (matches) {
+							
+							//prüfen, ob Koordination übersehen wurde
+							try {
+								if(tokens.get(t + stop /*+ skip*/ + 2).getString().startsWith("-")) {
+									completeEntity.addAll(tokens.subList(t + stop /*+ skip*/, t + stop /*+ skip*/ + 2));
+									entityPOS.add(tokens.get(t + stop /*+ skip*/ + 1).getPosTag());
+									entityPOS.add(tokens.get(t + stop /*+ skip*/ + 2).getPosTag());
+									
+									System.out.println(completeEntity);
+								}
+							} catch (NullPointerException e) {
+							}
 
 							List<InformationEntity> informationEntities = new ArrayList<InformationEntity>();
 
 							boolean isMorphemCoordination = false;
 
-//							// bei mehreren Tokens muss auf Koordination geprüft werden
-//							// Konjunktion gilt als Schlüssel-POS für eine mögliche Koordination
+							// bei mehreren Tokens muss auf Koordination geprüft werden
+							// Konjunktion gilt als Schlüssel-POS für eine mögliche Koordination
 							if (cr != null && entityPOS.contains("KON")) {
 								isMorphemCoordination = true;
-								List<String[]> combinations = cr.resolve(completeEntity, lemmatizer);
+								List<List<TextToken>> combinations = cr.resolve(completeEntity, lemmatizer);
 
-								for (String[] list : combinations) {
-									List<String> cooEntities = Arrays.asList(list);
+								for (List<TextToken> list : combinations) {
+									List<String> lemmata = new ArrayList<String>();
+									for(TextToken currTT : list) {
+										lemmata.add(currTT.getLemma());
+									}
+
 									boolean isSingleWordEntity = true;
-									if (list.length > 1)
+									if (list.size() > 1)
 										isSingleWordEntity = false;
-									InformationEntity cooIE = new InformationEntity(cooEntities.get(0), isSingleWordEntity,
+									InformationEntity cooIE = new InformationEntity(lemmata.get(0), isSingleWordEntity,
 											isMorphemCoordination);
-									cooIE.setExpression(cooEntities);
+									cooIE.setExpression(lemmata);
 									informationEntities.add(cooIE);
 								}
 
@@ -718,7 +795,7 @@ public class IEJobs {
 
 									if (iesForUnit == null)
 										iesForUnit = new HashMap<InformationEntity, List<Pattern>>();
-									iesForUnit.put(cooIE, List);
+									iesForUnit.put(cooIE, patternList);
 									extractions.put(extractionUnit, iesForUnit);
 								}
 
@@ -730,15 +807,12 @@ public class IEJobs {
 								iesForUnit = extractions.get(extractionUnit);
 								if (iesForUnit == null)
 									iesForUnit = new HashMap<InformationEntity, List<Pattern>>();
-								iesForUnit.put(newIE, List);
+								iesForUnit.put(newIE, patternList);
 								extractions.put(extractionUnit, iesForUnit);
 							}
 						}
 					}
-//				if (token.isInformationEntity()) {
-//					skip += ((TextToken) token).getTokensToCompleteInformationEntity();
-//					System.out.println("skip: " +skip);
-//				}
+
 				}
 			}
 		}
@@ -757,12 +831,12 @@ public class IEJobs {
 			String longestMatchingModifer = null;
 			int modifierLength = 0;
 			List<TextToken> tokens = extractionUnit.getTokenObjects();
-			int skip = 0;
+			//int skip = 0; //TODO Delete skip
 			for (int t = 0; t < tokens.size(); t++) {
-				if (t + skip >= tokens.size())
+				if (t /*+ skip*/ >= tokens.size())
 					break;
-				Token currentToken = tokens.get(t + skip);
-				String lemma = normalizeLemma(currentToken.getLemma());
+				Token currentToken = tokens.get(t /*+ skip*/);
+				String lemma = Util.normalizeLemma(currentToken.getLemma());
 				if (currentToken.isModifier() && ((TextToken) currentToken).getTokensToCompleteModifier() == 0) {
 					if (longestMatchingModifer == null) {
 						longestMatchingModifer = lemma;
@@ -774,7 +848,7 @@ public class IEJobs {
 					if (((TextToken) currentToken).getTokensToCompleteModifier() > modifierLength) {
 						StringBuffer sb = new StringBuffer();
 						for (int i = 0; i < ((TextToken) currentToken).getTokensToCompleteModifier() + 1; i++) {
-							sb.append(normalizeLemma(tokens.get(t + skip + i).getLemma()) + " ");
+							sb.append(Util.normalizeLemma(tokens.get(t /*+ skip*/ + i).getLemma()) + " ");
 						}
 						longestMatchingModifer = sb.toString().trim();
 						modifierLength = ((TextToken) currentToken).getTokensToCompleteModifier();
@@ -803,7 +877,7 @@ public class IEJobs {
 			String[] split = comp.split(" ");
 			String keyword;
 			try {
-				keyword = normalizeLemma(split[0]);
+				keyword = Util.normalizeLemma(split[0]);
 
 			} catch (ArrayIndexOutOfBoundsException e) {
 				continue;
@@ -814,7 +888,7 @@ public class IEJobs {
 			InformationEntity ie = new InformationEntity(keyword, split.length == 1, false);
 			if (!ie.isSingleWordEntity()) {
 				for (String string : split) {
-					ie.addLemma(normalizeLemma(string));
+					ie.addLemma(Util.normalizeLemma(string));
 				}
 			}
 			boolean isnew = iesForKeyword.add(ie);
@@ -837,7 +911,7 @@ public class IEJobs {
 			String keyword;
 			String[] split = line.split(" ");
 			try {
-				keyword = normalizeLemma(split[0]);
+				keyword = Util.normalizeLemma(split[0]);
 			} catch (ArrayIndexOutOfBoundsException e) {
 				continue;
 			}
@@ -853,95 +927,7 @@ public class IEJobs {
 		}
 	}
 
-	/**
-	 * normalizes the given string - trim - deletes (most) special characters at the
-	 * begin and end of the string (with some exceptions)
-	 * 
-	 * @param lemma string to normalize
-	 * @return normalized string
-	 */
-	private String normalizeLemma(String lemma) {
-		
-		// String before = lemma;
-		lemma = lemma.trim();
-		if (lemma.equals("--")) {
-			return lemma;
-		}
-		if (lemma.startsWith("<end-")) {
-			return lemma;
-		}
-		if (lemma.startsWith("<root-"))
-			if (lemma.length() <= 1) {
-				return lemma;
-			}
-		while (true) {
-			lemma = lemma.trim();
-			if (lemma.length() == 0) {
-				break;
-			}
-			Character s = lemma.charAt(0);
-			if (s == '_') {
-				lemma = lemma.substring(1);
-				lemma = lemma.trim();
-			}
-			if (lemma.length() == 0) {
-				break;
-			}
-			if (!Character.isLetter(s) && !Character.isDigit(s) && !(s == '§')) {
-				lemma = lemma.substring(1);
-				lemma = lemma.trim();
-			} else {
-				break;
-			}
-			if (lemma.length() == 0) {
-				break;
-			}
-		}
-		while (true) {
-			if (lemma.length() == 0) {
-				break;
-			}
-			Character e = lemma.charAt(lemma.length() - 1);
-			if (e == '_') {
-				lemma = lemma.substring(0, lemma.length() - 1);
-				lemma = lemma.trim();
-			}
 
-			if (!Character.isLetter(e) && !Character.isDigit(e) && !(e == '+') && !(e == '#')) {
-				lemma = lemma.substring(0, lemma.length() - 1);
-				lemma = lemma.trim();
-			} else {
-				break;
-			}
-		}
-		// if(!before.trim().equals(lemma.trim())){
-		// System.out.println("\nbefore: "+ before);
-		// System.out.println("after: "+lemma);
-		// }
-
-		return lemma;
-
-	}
-
-	private boolean containsList(List<String> a, List<String> b) {
-
-
-		if (a.size() < b.size()) {
-			return false;
-		}
-		for (int i = 0; i <= a.size() - b.size(); i++) {
-			boolean match = false;
-			for (int j = 0; j < b.size(); j++) {
-				match = a.get(i + j).equals(b.get(j));
-				if (!match)
-					break;
-			}
-			if (match) {
-				return true;
-			}
-		}
-		return false;
-	}
 
 	public Map<String, String> getNewCompounds() {
 		if(cr == null)

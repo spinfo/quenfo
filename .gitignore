@@ -10,6 +10,7 @@
 /information_extraction/data/competences/matchingStats.txt
 /information_extraction/data/competences/notValidatedCompetences.txt
 /information_extraction/data/competences/notValidatedMatchingStats.txt
+/information_extraction/data/competences/tei_index
 
 /information_extraction/data/openNLPmodels/de-sent.bin
 /information_extraction/data/openNLPmodels/de-token.bin

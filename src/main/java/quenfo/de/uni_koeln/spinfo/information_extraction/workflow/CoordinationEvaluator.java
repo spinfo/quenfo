@@ -88,7 +88,15 @@ public class CoordinationEvaluator {
 				// Morphemkoordinationen auflösen und mit Goldstandard vergleichen
 				List<String> goldResults = ie.getCoordinations();
 				if(Arrays.asList(pos).contains("KON")) {
-					List<String[]> result = cr.resolve(completeEntity, extractionUnit, lemmatizer, false);
+					List<List<TextToken>> resultTextToken = cr.resolve(completeEntity, extractionUnit, lemmatizer, false);
+					List<String[]> result = new ArrayList<String[]>();
+					
+					for(List<TextToken> ttList : resultTextToken) {
+						String[] coordination = new String[ttList.size()];
+						for(int i = 0; i < ttList.size(); i++) {
+							coordination[i] = ttList.get(i).getLemma();
+						}
+					}
 					
 					// falls Vergleich fehlschlägt, erneut im "Debug"-Modus auflösen
 					// (Details zum Auflösungsprozess in der Konsole)
