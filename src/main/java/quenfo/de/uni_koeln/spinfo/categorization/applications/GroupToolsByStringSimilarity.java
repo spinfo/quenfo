@@ -124,8 +124,8 @@ public class GroupToolsByStringSimilarity {
 		connection = Cat_DBConnector.connect(outputFolder + outputDB);
 		Cat_DBConnector.createPairsTable(connection, IEType.TOOL);
 		SimilarityCalculator sc = new SimilarityCalculator(match, mismatch, gap);
-		Map<Double, List<Entity>> similarTools = Cat_Jobs.getSimilarityPairs(new ArrayList<Entity>(allTools), sc, minPairSimilarity,
-				connection, IEType.TOOL);
+		Map<Double, List<Entity>> similarTools = Cat_Jobs.getSimilarityPairs(new ArrayList<Entity>(allTools),
+				sc, minPairSimilarity, connection, IEType.TOOL);
 		System.out.println("number of similar tools: " + similarTools.size());
 
 		// Gruppenbildung

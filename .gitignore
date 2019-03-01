@@ -6,11 +6,12 @@
 /classification/svm/
 
 /information_extraction/data/competences/competences.txt
+/information_extraction/data/competences/notCategorized.txt
 /information_extraction/data/competences/noCompetences.txt
 /information_extraction/data/competences/matchingStats.txt
 /information_extraction/data/competences/notValidatedCompetences.txt
 /information_extraction/data/competences/notValidatedMatchingStats.txt
-/information_extraction/data/competences/tei_index
+/information_extraction/data/competences/tei_index/compdict.tei
 
 /information_extraction/data/openNLPmodels/de-sent.bin
 /information_extraction/data/openNLPmodels/de-token.bin

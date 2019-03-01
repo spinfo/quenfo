@@ -49,7 +49,7 @@ public class GroupCompetencesByStringSimilarity {
 	private static String categoriesDB = "C:/sqlite/categorization/competences/CategorizedCompetences.db";
 
 	private static String validCompetences = "information_extraction/data/competences/competences.txt";
-
+	
 	// DB mit den extrahierten Kompetenzvorschlägen
 	private static String notValidatedComps = "C:/sqlite/information_extraction/competences/CorrectableCompetences_"
 			+ jahrgang + ".db";
@@ -125,8 +125,8 @@ public class GroupCompetencesByStringSimilarity {
 		connection = Cat_DBConnector.connect(outputFolder + outputDB);
 		Cat_DBConnector.createPairsTable(connection, IEType.COMPETENCE);
 		SimilarityCalculator sc = new SimilarityCalculator(match, mismatch, gap);
-		Map<Double,List<Entity>> similarComps = Cat_Jobs.getSimilarityPairs(new ArrayList<Entity>(allCompetences), sc, minPairSimilarity,
-				connection, IEType.COMPETENCE);
+		Map<Double,List<Entity>> similarComps = Cat_Jobs.getSimilarityPairs(new ArrayList<Entity>(allCompetences), 
+				sc, minPairSimilarity, connection, IEType.COMPETENCE);
 		System.out.println("--> number of similar competences: " + similarComps.size());
 
 		// Gruppenbildung
