@@ -30,20 +30,30 @@
                 <moduleRef key="textstructure" except=""/>
                 <moduleRef key="dictionaries"
                     except="case colloc def dictScrap entryFree etym gen gram hom hyph iType lang lbl mood number oRef pRef per pron re sense stress subc syll tns usg xr"/>
-                <elementSpec ident="div" module="core" mode="change">
+                <elementSpec ident="div1" module="textstructure" mode="change">
                     <attList>
                         <attDef ident="label" mode="add">
-                            <desc>Contains the Label of the division (1st or 2nd level)</desc>
+                            <desc>Contains the Label of the 1st level division</desc>
                             <datatype>
                                 <dataRef key="teidata.string"/>
                             </datatype>
                         </attDef>
                     </attList>
                 </elementSpec>
-                <elementSpec ident="superEntry" module="dictionaries" mode="change">
+                <elementSpec ident="div2" module="textstructure" mode="change">
                     <attList>
                         <attDef ident="label" mode="add">
-                            <desc>Contains the Label of the Hyper-Synset (3rd level)</desc>
+                            <desc>Contains the Label of the 2nd level division</desc>
+                            <datatype>
+                                <dataRef key="teidata.string"/>
+                            </datatype>
+                        </attDef>
+                    </attList>
+                </elementSpec>
+                <elementSpec ident="div3" module="textstructure" mode="change">
+                    <attList>
+                        <attDef ident="label" mode="add">
+                            <desc>Contains the Label of the division (1st or 2nd level)</desc>
                             <datatype>
                                 <dataRef key="teidata.string"/>
                             </datatype>

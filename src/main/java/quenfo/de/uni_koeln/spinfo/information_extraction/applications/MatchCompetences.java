@@ -36,7 +36,14 @@ public class MatchCompetences {
 	static String outputDB = "CompetenceMatches_" + jahrgang + ".db";
 
 	// txt-File mit den validierten Kompetenzen
-	static File competences = new File("information_extraction/data/competences/competences.txt");
+	//static File competences = new File("information_extraction/data/competences/competences.txt");
+	static File notCatcompetences = new File("information_extraction/data/competences/notCategorized.txt"); //TODO refactoring
+	
+	// tei-File mit kategorisierten Kompetenzen
+	static File amsComps = new File("information_extraction/data/competences/tei_index/compdict.tei");
+	
+	// Ebene, auf der die Kompetenz zugeordnet werden soll(div1, div2, div3, form, orth)
+	static String category = "div3";
 
 	// txt-File mit allen 'Modifier'-Ausdrücken
 	static File modifier = new File("information_extraction/data/competences/modifier.txt");
@@ -95,7 +102,7 @@ public class MatchCompetences {
 		long before = System.currentTimeMillis();
 		//erzeugt einen Index auf die Spalte 'ClassTHREE' (falls noch nicht vorhanden)
 		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTHREE");
-		Extractor extractor = new Extractor(competences, modifier, tokensToRemove, IEType.COMPETENCE, resolveCoordinations);
+		Extractor extractor = new Extractor(notCatcompetences, modifier, amsComps, category, IEType.COMPETENCE, resolveCoordinations);
 		extractor.stringMatch(statisticsFile, inputConnection, outputConnection, maxCount, startPos);
 		long after = System.currentTimeMillis();
 		double time = (((double) after - before) / 1000) / 60;

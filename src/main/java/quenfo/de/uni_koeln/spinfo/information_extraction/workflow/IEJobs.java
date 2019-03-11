@@ -2,8 +2,12 @@ package quenfo.de.uni_koeln.spinfo.information_extraction.workflow;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,6 +16,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
+import org.jsoup.select.Elements;
 
 import is2.tools.Tool;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.ExtractionUnit;
@@ -45,6 +55,9 @@ public class IEJobs {
 	// Anfangswort)
 	public Map<String, Set<InformationEntity>> entities;
 	
+	// Liste mit den bereits bekannten Kompetenzen/Tools (key = Anfangswort)
+	//public Map<String, Set<InformationEntity>> catEntities;
+	
 	public Map<String, Set<List<String>>> tokensToRemove;
 	// Informationstyp (Kompetenz oder Tool)
 	IEType type;
@@ -67,7 +80,8 @@ public class IEJobs {
 	public IEJobs(File competences, File noCompetences, File importanceTerms, File patterns, IEType type, boolean resolveCoordinations)
 			throws IOException {
 		this.type = type;
-		initialize(competences, noCompetences, importanceTerms, patterns, resolveCoordinations);
+		//TODO passt der Konstruktor so?
+		initialize(competences, noCompetences, null, null, importanceTerms, patterns, resolveCoordinations);
 	}
 
 	/**
@@ -82,6 +96,12 @@ public class IEJobs {
 		initialize(tools, noTools, patterns, resolveCoordinations);
 	}
 
+	public IEJobs(File competences, File noCompetences, File amsComps, String category, File importanceTerms, File patterns, IEType type,
+			boolean resolveCoordinations) throws IOException {
+		this.type = type;
+		initialize(competences, noCompetences, amsComps, category, importanceTerms, patterns, resolveCoordinations);
+	}
+
 	/**
 	 * @param tools
 	 * @param noTools
@@ -89,13 +109,13 @@ public class IEJobs {
 	 * @throws IOException
 	 */
 	private void initialize(File tools, File noTools, File patterns, boolean resolveCoordinations) throws IOException {
-		initialize(tools, noTools, null, patterns, resolveCoordinations);
+		initialize(tools, noTools, null, null, null, patterns, resolveCoordinations);
 	}
 
 
 	// liest die verschiedenen Files ein und initialisiert die zugehörigen
 	// Felder
-	private void initialize(File knownEntities, File negativeEntities, File modifiersFile, File patternsFile, boolean resolveCoordinations)
+	private void initialize(File knownEntities, File negativeEntities, File teiFile, String category, File modifiersFile, File patternsFile, boolean resolveCoordinations)
 			throws IOException {
 		entities = new HashMap<String, Set<InformationEntity>>();
 		if (resolveCoordinations) 
@@ -104,6 +124,7 @@ public class IEJobs {
 		if (knownEntities != null) {
 			readKnownEntitiesFromFile(knownEntities);
 		}
+		System.out.println(entities.size());
 		negExamples = new HashMap<String, Set<List<String>>>();
 		if (negativeEntities != null) {
 			readWordList(negativeEntities, negExamples);
@@ -116,6 +137,65 @@ public class IEJobs {
 		if (patternsFile != null) {
 			readPatterns(patterns, patternsFile);
 		}
+		//catEntities = new HashMap<String, Set<InformationEntity>>();
+		if (teiFile != null) {
+			readTEIFile(teiFile, category);
+		}
+		System.out.println(entities.size());
+		
+	}
+
+	private void readTEIFile(File teiFile, String category) throws IOException {
+		//TODO read File
+		
+		BufferedReader br = new BufferedReader(
+				new InputStreamReader(new FileInputStream(teiFile), "UTF8"));
+		
+		StringBuilder sb = new StringBuilder();
+		String line = "";
+		while ((line = br.readLine()) != null) {
+			sb.append(line);
+		}
+		br.close();
+		String teiString = sb.toString();
+		
+		Document doc = Jsoup.parse(teiString, "", Parser.xmlParser());
+		
+		Elements catElements = doc.select(category);
+		for (Element catElement : catElements) {
+			String cat = catElement.attr("label");
+			Elements orthElements = catElement.select("orth");
+			for (Element orthElement : orthElements) {
+				String orth = orthElement.text();
+				if (orth.equals("")) 
+					continue;
+				
+				String[] split = orth.split(" ");
+				String keyword;
+				try {
+					keyword = Util.normalizeLemma(split[0]);
+				} catch (ArrayIndexOutOfBoundsException e) {
+					continue;
+				}
+				Set<InformationEntity> iesForKeyword = entities.get(keyword);
+				if (iesForKeyword == null)
+					iesForKeyword = new HashSet<InformationEntity>();
+				InformationEntity ie = new InformationEntity(keyword, split.length == 1, cat, false);
+				if (!ie.isSingleWordEntity()) {
+					for (String string : split) {
+						ie.addLemma(Util.normalizeLemma(string));
+
+					}
+				}
+				boolean isnew = iesForKeyword.add(ie);
+				if (isnew) {
+					knownEntities++;
+				}
+				entities.put(keyword, iesForKeyword);
+				
+			}
+			
+		}
 	}
 
 	/**
@@ -125,7 +205,7 @@ public class IEJobs {
 	 * @param entitiesFile
 	 * @throws IOException
 	 */
-	public void readKnownEntitiesFromFile(File entitiesFile) throws IOException {
+	private void readKnownEntitiesFromFile(File entitiesFile) throws IOException {
 		BufferedReader in = new BufferedReader(new FileReader(entitiesFile));
 		String line = in.readLine();
 		while (line != null) {
@@ -144,7 +224,8 @@ public class IEJobs {
 			Set<InformationEntity> iesForKeyword = entities.get(keyword);
 			if (iesForKeyword == null)
 				iesForKeyword = new HashSet<InformationEntity>();
-			InformationEntity ie = new InformationEntity(keyword, split.length == 1, false);
+			//nicht kategorisierte IEs haben kein Label
+			InformationEntity ie = new InformationEntity(keyword, split.length == 1,"", false);
 			if (!ie.isSingleWordEntity()) {
 				for (String string : split) {
 					ie.addLemma(Util.normalizeLemma(string));
@@ -669,13 +750,14 @@ public class IEJobs {
 					break;
 				TextToken token = tokens.get(t /*+ skip*/); 
 				String lemma = Util.normalizeLemma(token.getLemma());
-				if (entities.keySet().contains(lemma)) {
-							
+//				if (entities.keySet().contains(lemma)) {
+				if (entities.keySet().contains(lemma)) {			
 					
+//					for (InformationEntity ie : entities.get(lemma)) {
 					for (InformationEntity ie : entities.get(lemma)) {
 						if (ie.isSingleWordEntity()) {
 							token.setIEToken(true);
-							InformationEntity newIE = new InformationEntity(ie.getStartLemma(), true, false);
+							InformationEntity newIE = new InformationEntity(ie.getStartLemma(), true,ie.getLabels(), false);
 							Map<InformationEntity, List<Pattern>> iesForUnit = extractions.get(extractionUnit);
 							if (iesForUnit == null)
 								iesForUnit = new HashMap<InformationEntity, List<Pattern>>();
@@ -735,6 +817,7 @@ public class IEJobs {
 
 						boolean matches = false;
 						int stop = 0;
+						
 						for (int c = 0; c < ie.getLemmata().size(); c++) {
 							if (tokens.size() <= t + c) {
 								matches = false;
@@ -752,6 +835,7 @@ public class IEJobs {
 						}
 
 						if (matches) {
+							Set<String> labels = ie.getLabels();
 							
 							//prüfen, ob Koordination übersehen wurde
 							try {
@@ -785,7 +869,7 @@ public class IEJobs {
 									if (list.size() > 1)
 										isSingleWordEntity = false;
 									InformationEntity cooIE = new InformationEntity(lemmata.get(0), isSingleWordEntity,
-											isMorphemCoordination);
+											labels, isMorphemCoordination);
 									cooIE.setExpression(lemmata);
 									informationEntities.add(cooIE);
 								}
@@ -802,7 +886,7 @@ public class IEJobs {
 								token.setIEToken(true);
 								((TextToken) token).setTokensToCompleteInformationEntity(ie.getLemmata().size() - 1);
 								InformationEntity newIE = new InformationEntity(ie.getStartLemma(), false,
-										isMorphemCoordination);
+										labels, isMorphemCoordination);
 								newIE.setExpression(ie.getLemmata());
 								iesForUnit = extractions.get(extractionUnit);
 								if (iesForUnit == null)

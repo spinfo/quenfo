@@ -2,7 +2,9 @@ package quenfo.de.uni_koeln.spinfo.information_extraction.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -31,6 +33,9 @@ public class InformationEntity {
 	//Modifizierer (z.B. 'zwingend erforderlich')
 	private String modifier;
 	
+	//übergeordnetes Konzept der Kompetenz (des Tools)
+	private Set<String> labels;
+	
 	//Index des ersten Lemmatas im Satz
 	private int firstIndex;
 	
@@ -46,7 +51,8 @@ public class InformationEntity {
 	 * 			first token of this IE
 	 * @param isSingleWordEntity
 	 */
-	public InformationEntity(String startLemma, boolean isSingleWordEntity, boolean fromMorphemCoordination) {
+	public InformationEntity(String startLemma, boolean isSingleWordEntity,
+			boolean fromMorphemCoordination) {
 		this.startLemma = startLemma;
 		this.singleWordEntity = isSingleWordEntity;
 		this.setFromMorphemCoordination(fromMorphemCoordination);
@@ -61,6 +67,19 @@ public class InformationEntity {
 			boolean fromMorphemCoordination, int firstIndex) {
 		this(startLemma, isSingleWordEntity, fromMorphemCoordination);
 		this.firstIndex = firstIndex;
+	}
+	
+	public InformationEntity(String startLemma, boolean isSingleWordEntity,
+			String label, boolean fromMorphemCoordination) {
+		this(startLemma, isSingleWordEntity, fromMorphemCoordination);
+		this.labels = new HashSet<>();
+		labels.add(label);
+	}
+	
+	public InformationEntity(String startLemma, boolean isSingleWordEntity,
+			Set<String> labels, boolean fromMorphemCoordination) {
+		this(startLemma, isSingleWordEntity, fromMorphemCoordination);
+		this.labels = labels;
 	}
 
 	/**
@@ -213,6 +232,14 @@ public class InformationEntity {
 	
 	public List<TextToken> getOriginialEntity()	{
 		return originalEntity;
+	}
+
+	public Set<String> getLabels() {
+		return labels;
+	}
+	
+	public void addLabel(String label) {
+		
 	}
 
 

@@ -52,6 +52,7 @@ public class Extractor {
 	private File possCompoundsFile;
 	private boolean resolveCoordinations;
 	private File entitiesFile;
+	//private File amsComps;
 	private File noEntitiesFile;
 	private File contexts;
 	private File modifier;
@@ -73,14 +74,19 @@ public class Extractor {
 		this.possCompoundsFile = new File("src/test/resources/coordinations/possibleCompounds.txt");
 	}
 	
-	public Extractor(File competences, File modifiers, File tokensToRemove, IEType type,
-			boolean resolveCoordinations) throws IOException {
-		this(competences, modifiers, type, resolveCoordinations);
+	public Extractor(File entities, File modifiers, File amsComps, String category, IEType type,
+			boolean resolveCoordinations) throws IOException {		
+		this.resolveCoordinations = resolveCoordinations;
+		this.entitiesFile = entities;
+		this.type = type;
+		this.jobs = new IEJobs(entities, null, amsComps, category, modifiers, null, type, resolveCoordinations);
+		initialize();
+		this.possCompoundsFile = new File("src/test/resources/coordinations/possibleCompounds.txt");
 	}
 
 
 	/**
-	 * 
+	 * Constructor to extract new Competences/Tools
 	 * @param outputConnection
 	 * @param entitiesFile     file with the already known/extracted entities
 	 *                         (competences/tools)

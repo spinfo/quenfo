@@ -5,7 +5,7 @@
          xmlns:teix="http://www.tei-c.org/ns/Examples"
          datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"
          ns="http://www.tei-c.org/ns/1.0"><!--
-Schema generated from ODD source 2019-02-27T11:17:45Z. .
+Schema generated from ODD source 2019-03-07T15:53:45Z. .
 TEI Edition: Version 3.0.0. Last updated on
 	29th March 2016, revision 89ba24e
 TEI Edition Location: http://www.tei-c.org/Vault/P5/Version 3.0.0/
@@ -6367,33 +6367,44 @@ Suggested values include: 1] sent; 2] received; 3] transmitted; 4] redirected; 5
       <element name="div">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(text division) contains a subdivision of the front, body, or back of a text. [4.1. Divisions of the Body]</a:documentation>
          <group>
+      
             <zeroOrMore>
                <choice>
                   <ref name="tei_model.divTop"/>
+          
                   <ref name="tei_model.global"/>
                </choice>
             </zeroOrMore>
+      
             <optional>
                <group>
                   <choice>
+          
                      <oneOrMore>
                         <group>
                            <choice>
                               <ref name="tei_model.divLike"/>
                               <ref name="tei_model.divGenLike"/>
                            </choice>
+              
                            <zeroOrMore>
                               <ref name="tei_model.global"/>
                            </zeroOrMore>
+              
                         </group>
                      </oneOrMore>
+          
                      <group>
                         <oneOrMore>
                            <group>
+              
                               <ref name="tei_model.common"/>
+              
+              
                               <zeroOrMore>
                                  <ref name="tei_model.global"/>
                               </zeroOrMore>
+              
                            </group>
                         </oneOrMore>
                         <zeroOrMore>
@@ -6402,19 +6413,25 @@ Suggested values include: 1] sent; 2] received; 3] transmitted; 4] redirected; 5
                                  <ref name="tei_model.divLike"/>
                                  <ref name="tei_model.divGenLike"/>
                               </choice>
+              
                               <zeroOrMore>
                                  <ref name="tei_model.global"/>
                               </zeroOrMore>
+              
                            </group>
                         </zeroOrMore>
                      </group>
                   </choice>
                   <zeroOrMore>
                      <group>
+          
                         <ref name="tei_model.divBottom"/>
+          
+          
                         <zeroOrMore>
                            <ref name="tei_model.global"/>
                         </zeroOrMore>
+          
                      </group>
                   </zeroOrMore>
                </group>
@@ -6442,11 +6459,6 @@ Suggested values include: 1] sent; 2] received; 3] transmitted; 4] redirected; 5
          <ref name="tei_att.typed.attributes"/>
          <ref name="tei_att.declaring.attributes"/>
          <ref name="tei_att.written.attributes"/>
-         <optional>
-            <attribute name="label">
-               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Contains the Label of the division (1st or 2nd level)</a:documentation>
-            </attribute>
-         </optional>
          <empty/>
       </element>
    </define>
@@ -6454,14 +6466,12 @@ Suggested values include: 1] sent; 2] received; 3] transmitted; 4] redirected; 5
       <element name="div1">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(level-1 text division) contains a first-level subdivision of the front, body, or back of a text. [4.1.2. Numbered Divisions]</a:documentation>
          <group>
-      
             <zeroOrMore>
                <choice>
                   <ref name="tei_model.divTop"/>
                   <ref name="tei_model.global"/>
                </choice>
             </zeroOrMore>
-      
             <optional>
                <group>
                   <choice>
@@ -6471,24 +6481,18 @@ Suggested values include: 1] sent; 2] received; 3] transmitted; 4] redirected; 5
                               <ref name="tei_model.div2Like"/>
                               <ref name="tei_model.divGenLike"/>
                            </choice>
-            
                            <zeroOrMore>
                               <ref name="tei_model.global"/>
                            </zeroOrMore>
-            
                         </group>
                      </oneOrMore>
                      <group>
                         <oneOrMore>
                            <group>
-              
                               <ref name="tei_model.common"/>
-              
-              
                               <zeroOrMore>
                                  <ref name="tei_model.global"/>
                               </zeroOrMore>
-              
                            </group>
                         </oneOrMore>
                         <zeroOrMore>
@@ -6497,25 +6501,19 @@ Suggested values include: 1] sent; 2] received; 3] transmitted; 4] redirected; 5
                                  <ref name="tei_model.div2Like"/>
                                  <ref name="tei_model.divGenLike"/>
                               </choice>
-              
                               <zeroOrMore>
                                  <ref name="tei_model.global"/>
                               </zeroOrMore>
-              
                            </group>
                         </zeroOrMore>
                      </group>
                   </choice>
                   <zeroOrMore>
                      <group>
-          
                         <ref name="tei_model.divBottom"/>
-          
-          
                         <zeroOrMore>
                            <ref name="tei_model.global"/>
                         </zeroOrMore>
-          
                      </group>
                   </zeroOrMore>
                </group>
@@ -6525,6 +6523,11 @@ Suggested values include: 1] sent; 2] received; 3] transmitted; 4] redirected; 5
          <ref name="tei_att.divLike.attributes"/>
          <ref name="tei_att.typed.attributes"/>
          <ref name="tei_att.declaring.attributes"/>
+         <optional>
+            <attribute name="label">
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Contains the Label of the 1st level division</a:documentation>
+            </attribute>
+         </optional>
          <empty/>
       </element>
    </define>
@@ -6532,14 +6535,12 @@ Suggested values include: 1] sent; 2] received; 3] transmitted; 4] redirected; 5
       <element name="div2">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(level-2 text division) contains a second-level subdivision of the front, body, or back of a text. [4.1.2. Numbered Divisions]</a:documentation>
          <group>
-      
             <zeroOrMore>
                <choice>
                   <ref name="tei_model.divTop"/>
                   <ref name="tei_model.global"/>
                </choice>
             </zeroOrMore>
-      
             <optional>
                <group>
                   <choice>
@@ -6549,24 +6550,18 @@ Suggested values include: 1] sent; 2] received; 3] transmitted; 4] redirected; 5
                               <ref name="tei_model.div3Like"/>
                               <ref name="tei_model.divGenLike"/>
                            </choice>
-            
                            <zeroOrMore>
                               <ref name="tei_model.global"/>
                            </zeroOrMore>
-            
                         </group>
                      </oneOrMore>
                      <group>
                         <oneOrMore>
                            <group>
-              
                               <ref name="tei_model.common"/>
-              
-              
                               <zeroOrMore>
                                  <ref name="tei_model.global"/>
                               </zeroOrMore>
-              
                            </group>
                         </oneOrMore>
                         <zeroOrMore>
@@ -6575,25 +6570,19 @@ Suggested values include: 1] sent; 2] received; 3] transmitted; 4] redirected; 5
                                  <ref name="tei_model.div3Like"/>
                                  <ref name="tei_model.divGenLike"/>
                               </choice>
-              
                               <zeroOrMore>
                                  <ref name="tei_model.global"/>
                               </zeroOrMore>
-              
                            </group>
                         </zeroOrMore>
                      </group>
                   </choice>
                   <zeroOrMore>
                      <group>
-          
                         <ref name="tei_model.divBottom"/>
-          
-          
                         <zeroOrMore>
                            <ref name="tei_model.global"/>
                         </zeroOrMore>
-          
                      </group>
                   </zeroOrMore>
                </group>
@@ -6603,6 +6592,11 @@ Suggested values include: 1] sent; 2] received; 3] transmitted; 4] redirected; 5
          <ref name="tei_att.divLike.attributes"/>
          <ref name="tei_att.typed.attributes"/>
          <ref name="tei_att.declaring.attributes"/>
+         <optional>
+            <attribute name="label">
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Contains the Label of the 2nd level division</a:documentation>
+            </attribute>
+         </optional>
          <empty/>
       </element>
    </define>
@@ -6610,14 +6604,12 @@ Suggested values include: 1] sent; 2] received; 3] transmitted; 4] redirected; 5
       <element name="div3">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(level-3 text division) contains a third-level subdivision of the front, body, or back of a text. [4.1.2. Numbered Divisions]</a:documentation>
          <group>
-      
             <zeroOrMore>
                <choice>
                   <ref name="tei_model.divTop"/>
                   <ref name="tei_model.global"/>
                </choice>
             </zeroOrMore>
-      
             <optional>
                <group>
                   <choice>
@@ -6627,24 +6619,18 @@ Suggested values include: 1] sent; 2] received; 3] transmitted; 4] redirected; 5
                               <ref name="tei_model.div4Like"/>
                               <ref name="tei_model.divGenLike"/>
                            </choice>
-            
                            <zeroOrMore>
                               <ref name="tei_model.global"/>
                            </zeroOrMore>
-            
                         </group>
                      </oneOrMore>
                      <group>
                         <oneOrMore>
                            <group>
-              
                               <ref name="tei_model.common"/>
-              
-              
                               <zeroOrMore>
                                  <ref name="tei_model.global"/>
                               </zeroOrMore>
-              
                            </group>
                         </oneOrMore>
                         <zeroOrMore>
@@ -6653,25 +6639,19 @@ Suggested values include: 1] sent; 2] received; 3] transmitted; 4] redirected; 5
                                  <ref name="tei_model.div4Like"/>
                                  <ref name="tei_model.divGenLike"/>
                               </choice>
-              
                               <zeroOrMore>
                                  <ref name="tei_model.global"/>
                               </zeroOrMore>
-              
                            </group>
                         </zeroOrMore>
                      </group>
                   </choice>
                   <zeroOrMore>
                      <group>
-          
                         <ref name="tei_model.divBottom"/>
-          
-          
                         <zeroOrMore>
                            <ref name="tei_model.global"/>
                         </zeroOrMore>
-          
                      </group>
                   </zeroOrMore>
                </group>
@@ -6681,6 +6661,11 @@ Suggested values include: 1] sent; 2] received; 3] transmitted; 4] redirected; 5
          <ref name="tei_att.divLike.attributes"/>
          <ref name="tei_att.typed.attributes"/>
          <ref name="tei_att.declaring.attributes"/>
+         <optional>
+            <attribute name="label">
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Contains the Label of the division (1st or 2nd level)</a:documentation>
+            </attribute>
+         </optional>
          <empty/>
       </element>
    </define>
@@ -7643,22 +7628,22 @@ Suggested values include: 1] main; 2] hom(homograph) ; 3] xref(cross reference) 
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">groups a sequence of entries within any kind of lexical resource, such as a dictionary or lexicon which function as a single unit, for example a set of homographs. [9.1. Dictionary Body and Overall Structure]</a:documentation>
          <choice>
             <group>
+        
                <optional>
                   <ref name="tei_form"/>
                </optional>
+        
+        
                <oneOrMore>
                   <ref name="tei_entry"/>
                </oneOrMore>
+        
             </group>
+      
          </choice>
          <ref name="tei_att.global.attributes"/>
          <ref name="tei_att.entryLike.attributes"/>
          <ref name="tei_att.sortable.attributes"/>
-         <optional>
-            <attribute name="label">
-               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Contains the Label of the Hyper-Synset (3rd level)</a:documentation>
-            </attribute>
-         </optional>
          <empty/>
       </element>
    </define>

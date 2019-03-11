@@ -49,6 +49,7 @@ public class IE_DBConnector {
 		return connection;
 	}
 	
+	@Deprecated
 	public static void createCoordinationOutputTable(Connection connection, IEType type) 
 			throws SQLException {
 		String sql = null;
@@ -101,7 +102,7 @@ public class IE_DBConnector {
 			}
 		} else {
 			if (type == IEType.COMPETENCE) {
-				sql = "CREATE TABLE Competences (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, SentenceID TEXT NOT NULL, Lemmata TEXT NOT NULL, Sentence TEXT NOT NULL, Comp TEXT, Importance TEXT)";
+				sql = "CREATE TABLE Competences (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, SentenceID TEXT NOT NULL, Lemmata TEXT NOT NULL, Sentence TEXT NOT NULL, Label TEXT, Comp TEXT, Importance TEXT)";
 			}
 			if (type == IEType.TOOL) {
 				sql = "CREATE TABLE Tools (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, SentenceID TEXT NOT NULL, Lemmata TEXT NOT NULL ,Sentence TEXT NOT NULL, Tool TEXT NOT NULL)";
@@ -253,7 +254,7 @@ public class IE_DBConnector {
 		} else {
 			// Für den Output der Matching-Workflows
 			prepStmt = connection.prepareStatement(
-					"INSERT INTO Competences (Jahrgang, Zeilennr, ParaID, SentenceID, Lemmata, Sentence, Comp,  Importance) VALUES(?,?,?,?,?,?,?,?)");
+					"INSERT INTO Competences (Jahrgang, Zeilennr, ParaID, SentenceID, Lemmata, Sentence, Label, Comp,  Importance) VALUES(?,?,?,?,?,?,?,?,?)");
 		}
 		for (ExtractionUnit extractionUnit : extractions.keySet()) {
 			Map<InformationEntity, List<Pattern>> ies = extractions.get(extractionUnit);
@@ -311,11 +312,17 @@ public class IE_DBConnector {
 						prepStmt.setString(7+indexAdder, "StringMatch"); // 7
 					}
 				} else {
+					StringBuilder sb = new StringBuilder();
+					for (String l : ie.getLabels())
+						sb.append(l + "|");
+					String labels = sb.toString();
+					labels = labels.substring(0, labels.length()-1);
 					prepStmt.setString(4, extractionUnit.getSentenceID().toString());
 					prepStmt.setString(5, lemmata.toString());
 					prepStmt.setString(6, sentence);
-					prepStmt.setString(7, ie.toString());
-					prepStmt.setString(8, ie.getModifier());
+					prepStmt.setString(7, labels);
+					prepStmt.setString(8, ie.toString());
+					prepStmt.setString(9, ie.getModifier());
 				}
 				prepStmt.addBatch();
 			}

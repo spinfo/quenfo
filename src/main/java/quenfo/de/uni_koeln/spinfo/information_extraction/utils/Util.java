@@ -85,6 +85,7 @@ public final class Util {
 	 * @param string
 	 * @return
 	 */
+	@Deprecated
 	public static boolean isAllUpperCase(String string) {
 
 		string = string.replaceAll("-", "");
