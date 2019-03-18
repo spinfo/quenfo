@@ -226,13 +226,13 @@ public class InformationEntity {
 		this.fromMorphemCoordination = fromMorphemCoordination;
 	}
 	
-	public void setOriginalEntity(List<TextToken> originalEntity) {
-		this.originalEntity = originalEntity;
-	}
-	
-	public List<TextToken> getOriginialEntity()	{
-		return originalEntity;
-	}
+//	public void setOriginalEntity(List<TextToken> originalEntity) {
+//		this.originalEntity = originalEntity;
+//	}
+//	
+//	public List<TextToken> getOriginialEntity()	{
+//		return originalEntity;
+//	}
 
 	public Set<String> getLabels() {
 		return labels;

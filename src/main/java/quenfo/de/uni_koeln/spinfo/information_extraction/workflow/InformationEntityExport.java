@@ -21,21 +21,21 @@ public class InformationEntityExport {
 		StringBuilder sb = new StringBuilder();
 		for(Map.Entry<ExtractionUnit, Map<InformationEntity, List<Pattern>>> eu : extracts.entrySet()) {
 			for(Map.Entry<InformationEntity, List<Pattern>> ieMap : eu.getValue().entrySet()) {
-				List<TextToken> ieTT = ieMap.getKey().getOriginialEntity();
+				//List<TextToken> ieTT = ieMap.getKey().getOriginialEntity();
 				StringBuilder tokens = new StringBuilder();
 				StringBuilder lemmas = new StringBuilder();
 				StringBuilder pos = new StringBuilder();
-				
-				for(TextToken tt : ieTT) {
-					tokens.append(tt.getString() + " ");
-					lemmas.append(tt.getLemma() + " ");
-					pos.append(tt.getPosTag() + " ");
-				}
+
+//				for(TextToken tt : ieTT) {
+//					tokens.append(tt.getToken() + " ");
+//					lemmas.append(tt.getLemma() + " ");
+//					pos.append(tt.getPosTag() + " ");
+//				}
 				sb.append(tokens.toString().trim()
 						+ "|" + lemmas.toString().trim()
 							+ "|" + pos.toString() + "\n");
 				
-				System.out.println(ieTT);
+//				System.out.println(ieTT);
 			}
 		}
 		

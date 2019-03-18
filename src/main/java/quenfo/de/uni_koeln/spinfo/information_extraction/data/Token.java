@@ -10,7 +10,8 @@ package quenfo.de.uni_koeln.spinfo.information_extraction.data;
  *  - ContextToken (Part of a ContextPattern)
  *  - TextToken (Part of an ExtractionUnit)
  */
-
+// TODO JB: "Token" is now part of CoordinateExpander (github repo)
+@Deprecated
 public abstract class Token {
 	
 	protected String posTag;

@@ -3,6 +3,8 @@ package quenfo.de.uni_koeln.spinfo.information_extraction.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uni_koeln.spinfo.data.NewToken;
+
 /**
  * @author geduldia
  * 
@@ -67,7 +69,7 @@ public class Pattern {
 	 * @param index
 	 * @return token at index
 	 */
-	public Token getTokenAt(int index){
+	public NewToken getTokenAt(int index){
 		return tokens.get(index);
 	}
 	/**
@@ -103,9 +105,9 @@ public class Pattern {
 		sb.append("ID:\t"+id+"\n");
 		sb.append("NAME:\t"+description+"\n");
 		for (int t = 0; t < tokens.size(); t++) {
-			Token token = tokens.get(t);
+			de.uni_koeln.spinfo.data.NewToken token = tokens.get(t);
 			sb.append("TOKEN:\t");
-			sb.append(token.getString()+"\t");
+			sb.append(token.getToken()+"\t");
 			sb.append(token.getLemma()+"\t");
 			sb.append(token.getPosTag()+"\t");
 			sb.append(token.isInformationEntity()+"\n");

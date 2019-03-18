@@ -31,7 +31,6 @@ public class CompareAMStoComps {
 	public static void main(String[] args) throws IOException {
 		IEJobs jobs = new IEJobs(competences, null, null, null, null, false);
 		Map<String, Set<InformationEntity>> competences = jobs.entities;
-		System.out.println(competences);
 		
 		Set<String> ams = readTEI();
 		
@@ -39,7 +38,7 @@ public class CompareAMStoComps {
 		int notContainedComps = 0;
 		
 		Set<String> notCategorized = new HashSet<>();
-		
+		System.out.println("ams Comps: " + ams.size());
 		for (Map.Entry<String, Set<InformationEntity>> e : competences.entrySet()) {
 			for (InformationEntity ie : e.getValue()) {
 				List<String> lemmas = ie.getLemmata();
@@ -53,7 +52,6 @@ public class CompareAMStoComps {
 					containedComps++;
 				else {
 					notContainedComps++;
-					//System.out.println(lemma);
 					notCategorized.add(lemma);
 				}
 			}

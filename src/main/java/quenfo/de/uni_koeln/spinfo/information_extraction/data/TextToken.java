@@ -1,5 +1,7 @@
 package quenfo.de.uni_koeln.spinfo.information_extraction.data;
 
+import de.uni_koeln.spinfo.data.NewToken;
+
 /**
  * @author geduldia
  * 
@@ -8,7 +10,7 @@ package quenfo.de.uni_koeln.spinfo.information_extraction.data;
  * known Information-Entity (= competence or tool) or (the first token of) an importanceTerm.
  *
  */
-public class TextToken extends Token {
+public class TextToken extends NewToken {
 	
 	//Falls das Token das erste Token einer Information-Entity ist: Anzahl der noch fehlenden Tokens im Satz
 	private int tokensToCompleteInformationEntity = 0;
@@ -78,11 +80,11 @@ public class TextToken extends Token {
 	 */
 	public boolean isEqualsPatternToken(PatternToken patternToken) {
 		// compare strings
-		if (patternToken.getString() != null) {
-			String[] strings = patternToken.getString().split("\\|");
+		if (patternToken.getToken() != null) {
+			String[] strings = patternToken.getToken().split("\\|");
 			boolean match = false;
 			for (String string : strings) {
-				match = string.equals(this.string);
+				match = string.equals(this.token);
 				if (match)
 					break;
 			}
@@ -154,7 +156,7 @@ public class TextToken extends Token {
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		sb.append(string + "\t" + lemma + "\t" + posTag + "\t");
+		sb.append(token + "\t" + lemma + "\t" + posTag + "\t");
 		if (this.ieToken) {
 			sb.append("isInformsationEntitiy" + "\t");
 		}

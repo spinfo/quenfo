@@ -18,6 +18,7 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.data.TextToken;
 import quenfo.de.uni_koeln.spinfo.information_extraction.preprocessing.MateTagger;
 import quenfo.de.uni_koeln.spinfo.information_extraction.utils.Util;
 
+@Deprecated
 public class CoordinationResolver {
 
 	private AbstractWordSplitter splitter;
@@ -154,7 +155,7 @@ public class CoordinationResolver {
 		String[] lemma = new String[completeEntity.size()];
 
 		for (int i = 0; i < completeEntity.size(); i++) {
-			tokens[i] = completeEntity.get(i).getString();
+			tokens[i] = completeEntity.get(i).getToken();
 			pos[i] = completeEntity.get(i).getPosTag();
 			lemma[i] = completeEntity.get(i).getLemma();
 		}
@@ -325,7 +326,7 @@ public class CoordinationResolver {
 			List<String> lemmaList = new ArrayList<String>(Arrays.asList(lemmata));
 
 			for (TextToken tt : missingPart) {
-				tokenList.add(tt.getString());
+				tokenList.add(tt.getToken());
 				posList.add(tt.getPosTag());
 				lemmaList.add(tt.getLemma());
 			}
@@ -468,7 +469,7 @@ public class CoordinationResolver {
 		for (int i = 0; i < extractionUnit.size(); i++) {
 			TextToken tt = extractionUnit.get(i);
 
-			if (tt.getString().equals(tokens[tokens.length - 1])) { // sobald der Satz am Beginn der IE ist
+			if (tt.getToken().equals(tokens[tokens.length - 1])) { // sobald der Satz am Beginn der IE ist
 				int j = i + 1;
 				do {
 					tt = extractionUnit.get(j);
