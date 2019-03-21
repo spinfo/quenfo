@@ -1,59 +1,53 @@
-package quenfo.de.uni_koeln.spinfo.information_extraction.applications;
+package quenfo.de.uni_koeln.spinfo.information_extraction.applicationsjb;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
-import java.util.Map;
+import java.util.Properties;
 
-import quenfo.de.uni_koeln.spinfo.information_extraction.data.ExtractionUnit;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.IEType;
-import quenfo.de.uni_koeln.spinfo.information_extraction.data.InformationEntity;
-import quenfo.de.uni_koeln.spinfo.information_extraction.data.Pattern;
 import quenfo.de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
 import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
-import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.InformationEntityExport;
 
 /**
- * @author Johanna Binnewitt
+ * @author geduldia
  * 
- *         Workflow to extract new competences and write them to a TXT file
+ *         Workflow to extract new tools
  * 
- *         Input: to class 3 (= applicants profile) classified paragraphs
+ *         Input: in class 3 (= applicants profile) and/or class 2 (=
+ *         jobbdescription) classified paragraphs
  * 
- *         Output: extracted competences 
+ *         Output: extracted tools
  *
  */
-@Deprecated
-public class ExtractCompetencesToTXT {
+public class ExtractNewTools {
 
 	// wird an den Namen der OutputDB angehängt
-	static String jahrgang = "2011";
+	static String jahrgang = null;
 
 	// Pfad zur Input-DB mit den klassifizierten Paragraphen
-	static String inputDB = "C:/sqlite/classification/CorrectableParagraphs_" + jahrgang + ".db";
+	static String inputDB = null;
 
 	// Output-Ordner
-	static String outputFolder = "C:/sqlite/information_extraction/competences/";
+	static String outputFolder = null;
 
 	// Name der Output-DB
-	static String outputDB = "CorrectableCompetences_" + jahrgang + ".db";
+	static String outputDB = null;
 
-	// txt-File mit allen bereits bekannten (validierten) Kompetenzen (die
-	// bekannten Kompetenzn helfen beim Auffinden neuer Kompetenzen)
-	static File competences = new File("information_extraction/data/competences/competences.txt");
+	// txt-File mit allen bereits bekannten (validierten) Tools (die
+	// bekannten Tools helfen beim Auffinden neuer Kompetenzen)
+	static File tools = null;
 
 	// txt-File mit bekannten (typischen) Extraktionsfehlern (würden ansonsten
 	// immer wieder vorgeschlagen werden)
-	static File noCompetences = new File("information_extraction/data/competences/noCompetences.txt");
+	static File noTools = null;
 
 	// txt-File mit den Extraktionspatterns
-	static File patternsFile = new File("information_extraction/data/competences/competenceContexts.txt");
-	
-	static File modifierFile = new File("information_extraction/data/competences/modifier.txt");
+	static File contextFile = null;
 
 	// falls nicht alle Paragraphen aus der Input-DB verwendet werden sollen:
 	// hier Anzahl der zu lesenden Paragraphen festlegen
@@ -68,15 +62,16 @@ public class ExtractCompetencesToTXT {
 	static boolean resolveCoordinations = true;
 	
 	// true, falls Goldstandard-Tabelle erzeugt werden soll
-	static boolean gold = false;
+		static boolean gold = false;
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
+		
+		loadProperties();
 
 		// Verbindung zur Input-DB
 		Connection inputConnection = null;
 		if (!new File(inputDB).exists()) {
-			System.out
-					.println("Input-DB '" + inputDB + "' does not exist\nPlease change configuration and start again.");
+			System.out.println("Database don't exists " + inputDB + "\nPlease change configuration and start again.");
 			System.exit(0);
 		} else {
 			inputConnection = IE_DBConnector.connect(inputDB);
@@ -97,7 +92,7 @@ public class ExtractCompetencesToTXT {
 			maxCount = tableSize - startPos;
 		}
 
-		// Verbindung zur Output-DB
+		// Connect to the output-DB
 		if (!new File(outputFolder).exists()) {
 			new File(outputFolder).mkdirs();
 		}
@@ -108,25 +103,40 @@ public class ExtractCompetencesToTXT {
 		}
 		outputConnection = IE_DBConnector.connect(outputFolder + outputDB);
 
-		// Start der Extraktion:
+		// Start der Extraktion
 		long before = System.currentTimeMillis();
-		// Index für die Spalte 'ClassTHREE' anlegen für schnelleren Zugriff
-		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTHREE");
-		Extractor extractor = new Extractor(outputConnection, competences, noCompetences, patternsFile, modifierFile,
-				IEType.COMPETENCE, resolveCoordinations);
+		// Index für die Spalten 'ClassTWO' und 'ClassTHREE' anlegen für
+		// schnelleren Zugriff
+		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTWO, ClassTHREE");
+		Extractor extractor = new Extractor(outputConnection, tools, noTools, contextFile, null, IEType.TOOL, false);
 		if (maxCount == -1) {
 			maxCount = tableSize;
 		}
-		Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> extracts = extractor.extract(startPos, maxCount, tableSize, inputConnection, outputConnection, gold);
-		InformationEntityExport.exportIEsToTXT(extracts);
-		
+		extractor.extract(startPos, maxCount, tableSize, inputConnection, outputConnection, gold);
 		long after = System.currentTimeMillis();
-		Double time = (((double) after - before) / 1000) / 60;
+		double time = (((double) after - before) / 1000) / 60;
 		if (time > 60.0) {
-			System.out.println("\nfinished Competence-Extraction in " + (time / 60) + " hours");
+			System.out.println("\nfinished Tool-Extraction in " + (time / 60) + " hours");
 		} else {
-			System.out.println("\nFinished Competence-Extraction in " + time + " minutes");
+			System.out.println("\nFinished Tool-Extraction in " + time + " minutes");
 		}
+	}
+	
+	private static void loadProperties() throws IOException {
+		Properties props = new Properties();		
+		InputStream is = MatchCompetences.class.getClassLoader().getResourceAsStream("config.properties");
+		props.load(is);
+		jahrgang = props.getProperty("jahrgang");
+		inputDB = props.getProperty("paraInputDB") + jahrgang + ".db";
+		outputFolder = props.getProperty("toolsIEOutputFolder");
+		outputDB = props.getProperty("toolsIEOutputDB") + jahrgang + ".db";
+		tools = new File(props.getProperty("tools"));
+		noTools = new File(props.getProperty("noTools"));
+		contextFile = new File(props.getProperty("toolsPatterns"));
+		maxCount = Integer.parseInt(props.getProperty("maxCount"));
+		startPos = Integer.parseInt(props.getProperty("startPos"));
+		resolveCoordinations = Boolean.parseBoolean(props.getProperty("expandCoordinates"));
+		gold = Boolean.parseBoolean(props.getProperty("gold"));
 
 	}
 }

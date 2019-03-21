@@ -1,7 +1,6 @@
-package quenfo.de.uni_koeln.spinfo.information_extraction.applications;
+package quenfo.de.uni_koeln.spinfo.information_extraction.applicationsjb;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -26,35 +25,34 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
 public class MatchCompetences {
 
 	// wird an den Namen der Output-DB angehängt
-	static String jahrgang = "2011";
+	static String jahrgang = null;
 
 	// Pfad zur Input-DB mit den klassifizierten Paragraphen
-	static String pararaphsDB = /* "D:/Daten/sqlite/CorrectableParagraphs.db"; */"C:/sqlite/classification/CorrectableParagraphs_"
-			+ jahrgang + ".db"; //
+	static String pararaphsDB = /* "D:/Daten/sqlite/CorrectableParagraphs.db"; */null; //
 
 	// Ordner in dem die neue Output-DB angelegt werden soll
-	static String outputFolder = /* "D:/Daten/sqlite/"; */"C:/sqlite/matching/competences/";
+	static String outputFolder = /* "D:/Daten/sqlite/"; */null;
 
 	// Name der Output-DB
-	static String outputDB = "CompetenceMatches_" + jahrgang + ".db";
+	static String outputDB = null;
 
 	// txt-File mit den validierten Kompetenzen
 	//static File competences = new File("information_extraction/data/competences/competences.txt");
 	static File notCatComps = null;//new File("information_extraction/data/competences/notCategorized.txt"); //TODO refactoring
 	
 	// tei-File mit kategorisierten Kompetenzen
-	static File catComps = new File("information_extraction/data/competences/tei_index/compdict.tei");
+	static File catComps = null;//new File("information_extraction/data/competences/tei_index/compdict.tei");
 	
-	// Ebene, auf der die Kompetenz zugeordnet werden soll(div1, div2, div3, entry, form, orth)
-	static String category = "div3";
+	// Ebene, auf der die Kompetenz zugeordnet werden soll(div1, div2, div3, form, orth)
+	static String category = null;//"div3";
 
 	// txt-File mit allen 'Modifier'-Ausdrücken
-	static File modifier = new File("information_extraction/data/competences/modifier.txt");
+	static File modifier = null;//new File("information_extraction/data/competences/modifier.txt");
 	
 	//static File tokensToRemove = new File("information_extraction/data/competences/fuellwoerter.txt");
 
 	// txt-File zur Speicherung der Match-Statistiken
-	static File statisticsFile = new File("information_extraction/data/competences/matchingStats.txt");
+	static File statisticsFile = null;//new File("information_extraction/data/competences/matchingStats.txt");
 
 	// Anzahl der Paragraphen aus der Input-DB, gegen die gematcht werden soll
 	// (-1 = alle)
@@ -65,9 +63,11 @@ public class MatchCompetences {
 	static int startPos = 0;
 	
 	// true, falls Koordinationen  in Informationseinheit aufgelöst werden sollen
-	static boolean resolveCoordinations = true;
+	static boolean resolveCoordinations = false;
 
 	public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException {
+		
+		loadProperties();
 		
 		// Verbindung mit Input-DB
 		Connection inputConnection = null;
@@ -114,6 +114,24 @@ public class MatchCompetences {
 		} else {
 			System.out.println("\nfinished matching in " + time + " minutes");
 		}
+	}
+
+	private static void loadProperties() throws IOException {
+		Properties props = new Properties();		
+		InputStream is = MatchCompetences.class.getClassLoader().getResourceAsStream("config.properties");
+		props.load(is);
+		jahrgang = props.getProperty("jahrgang");
+		pararaphsDB = props.getProperty("paraInputDB") + jahrgang + ".db";
+		outputFolder = props.getProperty("compIEOutputFolder");
+		outputDB = props.getProperty("compOutputDB") + jahrgang + ".db";
+		catComps = new File(props.getProperty("catComps"));
+		notCatComps = new File(props.getProperty("notCatComps"));
+		category = props.getProperty("category");
+		modifier = new File(props.getProperty("modifier"));
+		maxCount = Integer.parseInt(props.getProperty("maxCount"));
+		statisticsFile = new File(props.getProperty("statisticsFile"));
+		startPos = Integer.parseInt(props.getProperty("startPos"));
+		resolveCoordinations = Boolean.parseBoolean(props.getProperty("expandCoordinates"));
 	}
 
 }

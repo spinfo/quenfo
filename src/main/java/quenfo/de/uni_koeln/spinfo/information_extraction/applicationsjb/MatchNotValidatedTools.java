@@ -1,4 +1,4 @@
-package quenfo.de.uni_koeln.spinfo.information_extraction.applications;
+package quenfo.de.uni_koeln.spinfo.information_extraction.applicationsjb;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -9,6 +9,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Set;
+
+import org.apache.log4j.Logger;
 
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.IEType;
 import quenfo.de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
@@ -25,6 +27,8 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
  *
  */
 public class MatchNotValidatedTools {
+	
+	static Logger log = Logger.getLogger(MatchNotValidatedTools.class);
 
 	// wird an den Namen der Output-DB angehängt
 	static String jahrgang = "2011";
@@ -91,7 +95,7 @@ public class MatchNotValidatedTools {
 		Set<String> extractions = IE_DBConnector.readEntities(extractionsConnection, IEType.TOOL);
 		//Tool-Vorschläge in eine txt-Datei schreiben
 		//(Der Umweg über den Text-File wird genoommen, um den bereits bestehenden Workflow zum Matchen der validierten Tools nutzen zu können)
-		File notValidatedTools = new File("information_extraction/data/tools/notvalidatedTools.txt");
+		File notValidatedTools = new File("information_extraction/data/tools/notValidatedTools.txt");
 		PrintWriter out = new PrintWriter(new FileWriter(notValidatedTools));
 		for (String extracted : extractions) {
 			out.write("\n"+extracted);
@@ -107,10 +111,10 @@ public class MatchNotValidatedTools {
 		long after = System.currentTimeMillis();
 		double time = (((double) after - before)/1000)/60;
 		if(time > 60.0){
-			System.out.println("\nfinished matching in " + (time/60) +" hours");
+			log.info("finished matching in " + (time/60) +" hours");
 		}
 		else{
-			System.out.println("\nfinished matching in " + time +" minutes");
+			log.info("finished matching in " + time +" minutes");
 		}
 	}
 

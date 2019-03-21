@@ -164,7 +164,7 @@ public class CoordinationResolver {
 		//System.out.println("to resolve: " + Arrays.asList(tokens));
 		if (Arrays.asList(pos).contains("TRUNC")) { // Rechtsellipse Morphemkoordination
 			return resolveTruncEllipsis(tokens, pos, lemma, extractionUnit, lemmatizer, debug);
-		} else { // TODO Linksellipse, andere Koordinationen
+		} else { 
 			
 			int konIndex = Arrays.asList(pos).indexOf("KON");
 			if(tokens[konIndex+1].startsWith("-")) {
@@ -238,7 +238,7 @@ public class CoordinationResolver {
 			String[] result = new String[lemmataResolved.length - 1];
 			for (int i = 1; i < lemmataResolved.length; i++) {
 				result[i - 1] = lemmataResolved[i];
-				combinedTT.add(new TextToken(combiArray[i], lemmataResolved[i], null)); //TODO POS
+				combinedTT.add(new TextToken(combiArray[i], lemmataResolved[i], null)); 
 			}
 			toReturn.add(result);
 			resolvedTT.add(combinedTT);
@@ -420,7 +420,7 @@ public class CoordinationResolver {
 
 			String[] result = new String[lemmataResolved.length - 1];
 			for (int i = 1; i < lemmataResolved.length; i++) {
-				TextToken tt = new TextToken(combiArray[i], lemmataResolved[i], null); //TODO POS
+				TextToken tt = new TextToken(combiArray[i], lemmataResolved[i], null); 
 				result[i - 1] = lemmataResolved[i];
 				combinedTT.add(tt);
 			}

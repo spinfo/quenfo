@@ -15,8 +15,8 @@ import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data.ZoneClassify
 public class MutualInformationFilter {
 
 	/**
-	 * Filters FeatureUnits according to their Mutual Information values. TODO
-	 * what about multiclass units?
+	 * Filters FeatureUnits according to their Mutual Information values. 
+	 * TODO what about multiclass units?
 	 * 
 	 * @author geduldig
 	 * 

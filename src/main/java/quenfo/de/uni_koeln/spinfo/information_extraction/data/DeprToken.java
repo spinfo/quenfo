@@ -10,9 +10,9 @@ package quenfo.de.uni_koeln.spinfo.information_extraction.data;
  *  - ContextToken (Part of a ContextPattern)
  *  - TextToken (Part of an ExtractionUnit)
  */
-// TODO JB: "Token" is now part of CoordinateExpander (github repo)
+// JB: "Token" is now part of CoordinateExpander (github repo)
 @Deprecated
-public abstract class Token {
+public abstract class DeprToken {
 	
 	protected String posTag;
 	protected String lemma;	
@@ -26,7 +26,7 @@ public abstract class Token {
 	 * @param lemma
 	 * @param posTag
 	 */
-	public Token(String string, String lemma, String posTag) {
+	public DeprToken(String string, String lemma, String posTag) {
 		this(string, lemma, posTag, false);
 	}
 
@@ -36,7 +36,7 @@ public abstract class Token {
 	 * @param posTag
 	 * @param isInformationEntity
 	 */
-	public Token(String string, String lemma, String posTag, boolean isIEToken) {
+	public DeprToken(String string, String lemma, String posTag, boolean isIEToken) {
 		this.posTag = posTag;
 		this.string = string;
 		this.lemma = lemma;

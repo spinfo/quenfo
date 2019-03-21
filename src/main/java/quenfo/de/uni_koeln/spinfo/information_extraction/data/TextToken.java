@@ -1,6 +1,6 @@
 package quenfo.de.uni_koeln.spinfo.information_extraction.data;
 
-import de.uni_koeln.spinfo.data.NewToken;
+import de.uni_koeln.spinfo.data.Token;
 
 /**
  * @author geduldia
@@ -10,7 +10,7 @@ import de.uni_koeln.spinfo.data.NewToken;
  * known Information-Entity (= competence or tool) or (the first token of) an importanceTerm.
  *
  */
-public class TextToken extends NewToken {
+public class TextToken extends Token {
 	
 	//Falls das Token das erste Token einer Information-Entity ist: Anzahl der noch fehlenden Tokens im Satz
 	private int tokensToCompleteInformationEntity = 0;
@@ -158,7 +158,7 @@ public class TextToken extends NewToken {
 		StringBuffer sb = new StringBuffer();
 		sb.append(token + "\t" + lemma + "\t" + posTag + "\t");
 		if (this.ieToken) {
-			sb.append("isInformsationEntitiy" + "\t");
+			sb.append("isInformationEntity" + "\t");
 		}
 		if (this.noEntity) {
 			sb.append("isNoEntity" + "\t");

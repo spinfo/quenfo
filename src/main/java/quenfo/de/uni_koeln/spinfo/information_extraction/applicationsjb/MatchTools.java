@@ -1,4 +1,4 @@
-package quenfo.de.uni_koeln.spinfo.information_extraction.applications;
+package quenfo.de.uni_koeln.spinfo.information_extraction.applicationsjb;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,6 +6,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import org.apache.log4j.Logger;
 
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.IEType;
 import quenfo.de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
@@ -21,6 +23,8 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
  *
  */
 public class MatchTools {
+	
+	static Logger log = Logger.getLogger(MatchTools.class);
 
 	// wird an den Namen der Output-DB angehängt
 	static String jahrgang = "2011";
@@ -94,10 +98,10 @@ public class MatchTools {
 		long after = System.currentTimeMillis();
 		double time = (((double) after - before)/1000)/60;
 		if(time > 60.0){
-			System.out.println("\nfinished matching in " + (time/60) +" hours");
+			log.info("finished matching in " + (time/60) +" hours");
 		}
 		else{
-			System.out.println("\nfinished matching in " + time +" minutes");
+			log.info("finished matching in " + time +" minutes");
 		}
 	
 	}

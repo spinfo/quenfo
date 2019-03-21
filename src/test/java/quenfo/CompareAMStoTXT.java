@@ -35,7 +35,7 @@ public class CompareAMStoTXT {
 	public void test() throws IOException {
 
 
-		IEJobs jobs = new IEJobs(compFile, null, null, null, null, false);
+		IEJobs jobs = new IEJobs(compFile, null, null, null, null, false, null);
 		Map<String, Set<InformationEntity>> competences = jobs.entities;
 
 		Set<String> ams = readAMS();
@@ -47,7 +47,6 @@ public class CompareAMStoTXT {
 		
 		for (Map.Entry<String, Set<InformationEntity>> e : competences.entrySet()) {
 			for (InformationEntity ie : e.getValue()) {
-				//TODO Ie mit ams-Katalog abgleichen
 				List<String> lemmaList = ie.getLemmata();
 				String lemma = "";
 				if (lemmaList.size() == 1)
@@ -61,7 +60,6 @@ public class CompareAMStoTXT {
 					containedComps++;
 				else {
 					notContainedComps++;
-					System.out.println(lemma);
 					notCategorized.add(lemma);
 				}
 					

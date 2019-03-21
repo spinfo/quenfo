@@ -1,14 +1,18 @@
-package quenfo.de.uni_koeln.spinfo.information_extraction.applications;
+package quenfo.de.uni_koeln.spinfo.information_extraction.applicationsjb;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 import java.util.Set;
+
+import org.apache.log4j.Logger;
 
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.IEType;
 import quenfo.de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
@@ -25,29 +29,31 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
  *
  */
 public class MatchNotValidatedCompetences {
+	
+	static Logger log = Logger.getLogger(MatchNotValidatedCompetences.class);
 
 	// wird an den Namen der Output-DB angehängt
-	static String jahrgang = "2011";
+	static String jahrgang = null;//"2011";
 
 	// Pfad zur Input-DB mit den klassifizierten Paragraphen
-	static String paragraphsDB = /* "D:/Daten/sqlite/CorrectableParagraphs.db"; */"C:/sqlite/classification/CorrectableParagraphs_"
-			+ jahrgang + ".db"; //
+	static String paragraphsDB = /* "D:/Daten/sqlite/CorrectableParagraphs.db"; */null;//"C:/sqlite/classification/CorrectableParagraphs_"
+			//+ jahrgang + ".db"; //
 
 	// Ordner in dem die neue Output-DB angelegt werden soll
-	static String outputFolder = /* "D:/Daten/sqlite/"; */"C:/sqlite/matching/competences/"; //
+	static String outputFolder = /* "D:/Daten/sqlite/"; */null;//"C:/sqlite/matching/competences/"; //
 
 	// Name der Output-DB
-	static String outputDB = "NotValidatedCompetenceMatches_" + jahrgang + ".db";
+	static String outputDB = null;//"NotValidatedCompetenceMatches_" + jahrgang + ".db";
 
 	// DB mit den extrahierten Kompetenz-Vorschlägen
-	static String extratedCompsDB = "C:/sqlite/information_extraction/competences/CorrectableCompetences_" + jahrgang
-			+ ".db";
+	static String extractedCompsDB = null;//"C:/sqlite/information_extraction/competences/CorrectableCompetences_" + jahrgang
+			//+ ".db";
 
 	// txt-File mit den Modifizierern
-	static File modifier = new File("information_extraction/data/competences/modifier.txt");
+	static File modifier = null;//new File("information_extraction/data/competences/modifier.txt");
 
 	// txt-File zum Speichern der Match-Statistik
-	static File statisticsFile = new File("information_extraction/data/competences/notValidatedMatchingStats.txt");
+	static File statisticsFile = null;//new File("information_extraction/data/competences/notValidatedMatchingStats.txt");
 
 	// Anzahl der Paragraphen aus der Input-DB, gegen die gematcht werden soll
 	// (-1 = alle)
@@ -61,6 +67,9 @@ public class MatchNotValidatedCompetences {
 	static boolean expandCoordinates = false;
 
 	public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException {
+		
+		loadProperties();
+		
 		// Verbindung mit Input-DB
 		Connection inputConnection = null;
 		if (!new File(paragraphsDB).exists()) {
@@ -93,8 +102,8 @@ public class MatchNotValidatedCompetences {
 		}
 
 		// Einlesen der extrahierten Kompetenzvorschläge
-		System.out.println("read not validated Competences from DB");
-		Connection extractionsConnection = IE_DBConnector.connect(extratedCompsDB);
+		log.info("read not validated Competences from DB: " + extractedCompsDB);
+		Connection extractionsConnection = IE_DBConnector.connect(extractedCompsDB);
 		Set<String> extractions = IE_DBConnector.readEntities(extractionsConnection, IEType.COMPETENCE);
 		// Kompetenz-Vorschläge in eine txt-Datei schreiben
 		// (Der Umweg über den txt-File wird genommen, um den bereits
@@ -122,6 +131,28 @@ public class MatchNotValidatedCompetences {
 			System.out.println("\nfinished matching in " + time + " minutes");
 		}
 
+	}
+	
+	private static void loadProperties() throws IOException {
+		Properties props = new Properties();		
+		InputStream is = MatchCompetences.class.getClassLoader().getResourceAsStream("config.properties");
+		props.load(is);
+		jahrgang = props.getProperty("jahrgang");
+		paragraphsDB = props.getProperty("paraInputDB") + jahrgang + ".db";
+		outputFolder = props.getProperty("compMOutputFolder");
+		outputDB = props.getProperty("compMnotValOutputDB") + jahrgang + ".db";
+		extractedCompsDB = props.getProperty("compIEOutputFolder") 
+				+ props.getProperty("compIEOutputDB") + jahrgang + ".db";
+		//"C:/sqlite/information_extraction/competences/CorrectableCompetences_" + jahrgang
+		//+ ".db";
+//		catComps = new File(props.getProperty("catComps"));
+//		notCatComps = new File(props.getProperty("notCatComps"));
+//		category = props.getProperty("category");
+		modifier = new File(props.getProperty("modifier"));
+		maxCount = Integer.parseInt(props.getProperty("maxCount"));
+		statisticsFile = new File(props.getProperty("statisticsFile"));
+		startPos = Integer.parseInt(props.getProperty("startPos"));
+		expandCoordinates = Boolean.parseBoolean(props.getProperty("expandCoordinates"));
 	}
 
 }

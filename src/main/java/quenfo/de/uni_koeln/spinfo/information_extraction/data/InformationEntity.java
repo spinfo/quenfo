@@ -239,7 +239,7 @@ public class InformationEntity {
 	}
 	
 	public void addLabel(String label) {
-		
+		labels.add(label);
 	}
 
 

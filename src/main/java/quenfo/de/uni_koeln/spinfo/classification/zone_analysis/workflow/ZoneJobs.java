@@ -385,10 +385,10 @@ public class ZoneJobs {
 		if (classifier instanceof SVMClassifier) {
 			try {
 				Map<ClassifyUnit, boolean[]> classified = ((SVMClassifier) classifier).predict(paragraphs, expConfig, stmc);
-				// TODO....
+				// TODO ....
 				return classified;
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 		}

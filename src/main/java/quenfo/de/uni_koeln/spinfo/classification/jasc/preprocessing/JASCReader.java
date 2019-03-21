@@ -35,7 +35,7 @@ public class JASCReader {
 			// Get the first sheet
 			Sheet sheet = w.getSheet(0);
 			for (int i = 0; i < sheet.getRows(); i++) {
-				//TODO read text ids from file
+				//read text ids from file
 				
 				Cell idCell = sheet.getCell(0,i);
 				CellType type = idCell.getType();

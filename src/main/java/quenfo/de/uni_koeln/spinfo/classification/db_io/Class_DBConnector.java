@@ -133,6 +133,7 @@ public class Class_DBConnector {
 
 
 	//Nicht mehr in Gebrauch
+	@Deprecated
 	public static Map<ClassifyUnit, int[]> getTrainingDataFromClassesCorrectable(Connection connection)
 			throws SQLException {
 		Map<ClassifyUnit, int[]> toReturn = new HashMap<ClassifyUnit, int[]>();
@@ -163,6 +164,7 @@ public class Class_DBConnector {
 	}
 
 	//Nicht mehr in Gebrauch
+	@Deprecated
 	public static void updateTrainingData(Connection connection, Map<ClassifyUnit, int[]> td) throws SQLException {
 		connection.setAutoCommit(false);
 		String sql = "INSERT OR REPLACE INTO Trainingdata (Jahrgang, ZEILENNR, Text, ClassONE, ClassTWO, ClassTHREE, ClassFOUR) VALUES (?,?,?,?,?,?,?)";

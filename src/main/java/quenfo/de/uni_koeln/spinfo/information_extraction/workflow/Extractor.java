@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.log4j.Logger;
+
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.db_io.Class_DBConnector;
 import quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit;
@@ -30,6 +32,7 @@ import is2.lemmatizer.Lemmatizer;
 import is2.tag.Tagger;
 import is2.tools.Tool;
 
+
 /**
  * TODO JB: Refactoring
  * 20.02.19: reWriteFiles @Deprecated, auskommentierte Methoden gelöscht
@@ -43,6 +46,8 @@ import is2.tools.Tool;
  *
  */
 public class Extractor {
+	
+	Logger log = Logger.getLogger(getClass());
 
 	private IEJobs jobs;
 	private IEType type;
@@ -69,9 +74,10 @@ public class Extractor {
 		this.resolveCoordinations = resolveCoordinations;
 		this.entitiesFile = entities;
 		this.type = type;
-		this.jobs = new IEJobs(entities, null, modifiers, null, type, resolveCoordinations);
-		initialize();
 		this.possCompoundsFile = new File("src/test/resources/coordinations/possibleCompounds.txt");
+		this.jobs = new IEJobs(entities, null, modifiers, null, type, resolveCoordinations, possCompoundsFile);
+		initialize();
+		
 	}
 	
 	public Extractor(File entities, File modifiers, File amsComps, String category, IEType type,
@@ -79,9 +85,10 @@ public class Extractor {
 		this.resolveCoordinations = resolveCoordinations;
 		this.entitiesFile = entities;
 		this.type = type;
-		this.jobs = new IEJobs(entities, null, amsComps, category, modifiers, null, type, resolveCoordinations);
-		initialize();
 		this.possCompoundsFile = new File("src/test/resources/coordinations/possibleCompounds.txt");
+		this.jobs = new IEJobs(entities, null, amsComps, category, modifiers, null, type, resolveCoordinations, possCompoundsFile);
+		initialize();
+		
 	}
 
 
@@ -103,8 +110,9 @@ public class Extractor {
 		this.modifier = modifier;
 		this.contexts = contexts;
 		this.type = type;
-		this.jobs = new IEJobs(entitiesFile, noEntitiesFile, modifier, contexts, type, resolveCoordinations);// new
-		this.possCompoundsFile = new File("src/test/resources/coordinations/possibleCompounds.txt");																								// contexts,
+		this.possCompoundsFile = new File("src/test/resources/coordinations/possibleCompounds.txt");
+		this.jobs = new IEJobs(entitiesFile, noEntitiesFile, modifier, contexts, type, resolveCoordinations, possCompoundsFile);// new
+																										// contexts,
 																												// type);
 		if (outputConnection != null) {
 			// liest aus der Output-DB, die - falls vorhanen - manuell
@@ -245,7 +253,7 @@ public class Extractor {
 			classifyUnits = null;
 			extractions = null;
 			extractionUnits = null;
-			this.jobs = new IEJobs(entitiesFile, noEntitiesFile, modifier, contexts, type, resolveCoordinations);
+			this.jobs = new IEJobs(entitiesFile, noEntitiesFile, modifier, contexts, type, resolveCoordinations, possCompoundsFile);
 			jobs.addKnownEntities(knownEntities);
 			jobs.addNoEntities(noEntities);
 		}
@@ -281,7 +289,7 @@ public class Extractor {
 	}
 
 	
-	public void stringMatch(File statisticsFile, Connection inputConnection, Connection outputConnection, int maxCount,
+	public void stringMatch(File statisticsFile, Connection inputConnection, Connection outputConnection, String outputDBPath, int maxCount,
 			int startPos) throws SQLException, IOException {
 
 		// Falls die lexikalischen Infos (sentences, lemmata) noch nicht in der
@@ -317,7 +325,7 @@ public class Extractor {
 			if (maxCount > -1 && readParagraphs + paragraphsPerRound > maxCount) {
 				paragraphsPerRound = maxCount - readParagraphs;
 			}
-			System.out.println("\nread ClassifyUnit " + offset + " - " + (offset + paragraphsPerRound));
+			log.info("read ClassifyUnit " + offset + " - " + (offset + paragraphsPerRound));
 			classifyUnits = IE_DBConnector.readClassifyUnits(paragraphsPerRound, offset, inputConnection, jobs.type);
 			if (classifyUnits.isEmpty()) {
 				break;
@@ -326,12 +334,12 @@ public class Extractor {
 			offset = offset + classifyUnits.size();
 
 			// Paragraphen in Sätze splitten und in ExtractionUnits überführen
-			System.out.println("\ninitialize ExtractionUnits");
+			log.info("initialize ExtractionUnits");
 			extractionUnits = ExtractionUnitBuilder.initializeIEUnits(classifyUnits, lemmatizer, null, null);
-			System.out.println("--> " + extractionUnits.size());
+			log.info("--> " + extractionUnits.size() + " ExtractionUnits");
 
 			// Matching
-			System.out.println("\nmatch");
+			log.info("match");
 			jobs.annotateTokens(extractionUnits);
 			stringMatches = jobs.extractByStringMatch(extractionUnits, lemmatizer);
 			stringMatches = jobs.mergeInformationEntities(stringMatches);
@@ -342,7 +350,8 @@ public class Extractor {
 			}
 
 			// write results in DB
-			System.out.println("\nwrite results in output-DB");
+			String outputPath = outputConnection.getMetaData().getURL().replace("jdbc:sqlite:", "");
+			log.info("write results in output-DB: " + outputPath);
 			if (jobs.type == IEType.COMPETENCE) {
 				IE_DBConnector.writeCompetenceExtractions(stringMatches, outputConnection, false, false);
 			}
@@ -355,10 +364,13 @@ public class Extractor {
 				break;
 		}
 		// write statisticsFile
-		System.out.println("\nwrite Statistics-File");
+		log.info("write Statistics-File to: " + statisticsFile.getAbsolutePath());
 		writeStatistics(matchCounts, statisticsFile);
-		System.out.print("\nwrite new compounds to evaluate");
-		writeNewCoordinations();
+		if (possCompoundSplits.size() > 0) {
+			log.info("write new compounds to evaluate in: " + possCompoundsFile.getAbsolutePath());
+			writeNewCoordinations();
+		}
+		
 		lemmatizer = null;
 	}
 
@@ -422,7 +434,6 @@ public class Extractor {
 
 
 	private void writeNewCoordinations() {
-		System.out.print(": " + possCompoundSplits.size());
 		StringBuffer sb = new StringBuffer();
 		for (Map.Entry<String, String> e : possCompoundSplits.entrySet()) {
 			sb.append(e.getKey() + "|" + e.getValue() + "\n");

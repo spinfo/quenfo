@@ -1,6 +1,6 @@
 package quenfo.de.uni_koeln.spinfo.information_extraction.data;
 
-import de.uni_koeln.spinfo.data.NewToken;
+import de.uni_koeln.spinfo.data.Token;
 
 /**
  * @author geduldia
@@ -9,7 +9,7 @@ import de.uni_koeln.spinfo.data.NewToken;
  * The attributes string, lemma and posTag can be null, if values are not specified in the pattern
  *
  */
-public class PatternToken extends NewToken {
+public class PatternToken extends Token {
 
 	
 	/**
@@ -57,7 +57,7 @@ public class PatternToken extends NewToken {
 		StringBuffer sb = new StringBuffer();
 		sb.append(token + "\t" + lemma + "\t" + posTag + "\t");
 		if(this.ieToken){
-			sb.append("isInformsationEntitiy"+"\t");
+			sb.append("isInformationEntity"+"\t");
 		}
 		if(this.modifierToken){
 			sb.append("is (start of) modifier"+"\t");
