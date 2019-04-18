@@ -117,5 +117,7 @@ public class MatchNotValidatedTools {
 			log.info("finished matching in " + time +" minutes");
 		}
 	}
+	
+	//TODO load props
 
 }

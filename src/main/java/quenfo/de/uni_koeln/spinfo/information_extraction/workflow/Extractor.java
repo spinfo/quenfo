@@ -211,7 +211,7 @@ public class Extractor {
 			if (maxCount > -1 && readParagraphs + paragraphsPerRound > maxCount) {
 				paragraphsPerRound = maxCount - readParagraphs;
 			}
-			System.out.println("\nread ClassifyUnits from DB " + offset + " - " + (offset + paragraphsPerRound));
+			log.info("read ClassifyUnits from DB " + offset + " - " + (offset + paragraphsPerRound));
 			classifyUnits = IE_DBConnector.readClassifyUnits(paragraphsPerRound, offset, inputConnection, jobs.type);
 			if (classifyUnits.isEmpty()) {
 				finished = true;
@@ -226,9 +226,9 @@ public class Extractor {
 			offset = offset + classifyUnits.size();
 
 			// Paragraphen in Sätze splitten und in ExtractionUnits überführen
-			System.out.println("\ninitialize ExtractionUnits");
+			log.info("initialize ExtractionUnits");
 			extractionUnits = ExtractionUnitBuilder.initializeIEUnits(classifyUnits, lemmatizer, null, tagger);
-			System.out.println("--> " + extractionUnits.size());
+			log.info("--> " + extractionUnits.size());
 
 			// falls bei der Initialisierung noch lexikaische Daten generiert
 			// werden mussten, werden diese fürs nächste Mal in der Input-DB
