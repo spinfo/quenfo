@@ -3,6 +3,12 @@ package quenfo.rdf;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.ResultSetFormatter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -19,14 +25,28 @@ public class TestRDFParsing {
 	@Test
 	public void test() {
 		Model model = ModelFactory.createDefaultModel();
-		model = model.read("esco_v1.0.3.ttl");
+		model = model.read("transversal_skills_collection.ttl");
+		
+		String queryString = "SELECT ?x"
+				+ "WHERE { ?x	<http://www.w3.org/2004/02/skos/core#prefLabel>	\"http://www.w3.org/2004/02/skos/core#Concept\" ";
+		
+		Query query = QueryFactory.create(queryString);
+		QueryExecution qe = QueryExecutionFactory.create(query, model);
+		ResultSet results = qe.execSelect();
+		
+		ResultSetFormatter.out(System.out, results, query);
+		qe.close();
+		System.exit(0);
 		
 		Property prop = model.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
-		Resource res = model.createResource("http://data.europa.eu/esco/skill/238343b1-7b51-42b3-a9ed-cf24d3a236e7");
-		Selector selector = new SimpleSelector(null, prop, (RDFNode)null);
+		Property prefLabel = model.createProperty("http://www.w3.org/2004/02/skos/core#prefLabel");
+		Resource res = model.createResource("http://www.w3.org/2004/02/skos/core#Concept");
+		Selector selector = new SimpleSelector(null, prop, (RDFNode)res);
 		StmtIterator iter = model.listStatements(selector);
 		
+		
 		Set<RDFNode> objects = new HashSet<RDFNode>();
+		Set<Resource> subjects = new HashSet<Resource>();
 		
 		while (iter.hasNext()) {
 		    Statement stmt      = iter.nextStatement();  // get next statement
@@ -34,28 +54,21 @@ public class TestRDFParsing {
 		    Property  predicate = stmt.getPredicate();   // get the predicate
 		    RDFNode   object    = stmt.getObject();      // get the object
 		    objects.add(object);
-//		    if(!object.isURIResource()) {
-		    	
-//		    	String value = object.toString();
-////		    	if(value.contains("@de")) {
-//		    		System.out.print(subject.toString());
-//				    System.out.print(" " + predicate.toString() + " ");
-//				    if (object instanceof Resource) {
-//				       System.out.print(object.toString());
-//				    } else {
-//				        // object is a literal
-//				        System.out.print(" \"" + object.toString() + "\"");
-//				    }
-//
-//				    System.out.println(" .");
-//		    	}
-		    	
-		    	
-//		    }   
-		} 
-		for (RDFNode o : objects) {
-			System.out.println(o.toString());
+		    subjects.add(subject);
+
+		    Statement labels = subject.getProperty(prefLabel);
+		    String obj = labels.getObject().toString();
+		    if(obj.contains("@de"))
+		    	System.out.println(obj);
+  
 		}
+		
+//		for(Resource subject : subjects) {
+//			System.out.println(subject.toString());
+//		}
+//		for (RDFNode o : objects) {
+//			System.out.println(o.toString());
+//		}
 	}
 
 }

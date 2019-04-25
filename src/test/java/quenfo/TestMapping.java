@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -29,6 +30,7 @@ import org.jsoup.select.Elements;
 import org.junit.Test;
 
 import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 
 import de.uni_koeln.spinfo.preprocessing.MateTagger;
 import is2.lemmatizer.Lemmatizer;
@@ -41,33 +43,30 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.data.IEType;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.InformationEntity;
 import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.IEJobs;
 
-public class CompareAMStoTXT {
+public class TestMapping {
 
 	private File amsFile = new File("information_extraction/data/competences/tei_index/compdict.tei");
-	private File escoFile = new File("information_extraction/data/competences/skills_de.csv");
+	private File escoFile = new File("information_extraction/data/competences/esco_lemma.txt");
 	private File compFile = new File("information_extraction/data/competences/competences.txt");
-	private File notCatFile = new File("information_extraction/data/competences/notCategorized.txt");;
 
 	@Test
 	public void test() throws IOException, ClassNotFoundException, SQLException {
 
-		Set<String> jobsComp = readComps();
-		Set<String> ams = readAMS();
-		Set<String> esco = readESCO();
-
-		exportWordList(esco, "esco.txt");
+		Set<Entity> jobsComp = readComps();
+		Set<Entity> ams = readAMS();
+		Set<Entity> esco = readTXT(escoFile);
 
 		System.out.println(jobsComp.size() + " -- " + ams.size() + " -- " + esco.size());
 
-		Set<String> compsAms = new HashSet<String>(jobsComp);
+		Set<Entity> compsAms = new HashSet<Entity>(jobsComp);
 		compsAms.retainAll(ams);
 		System.out.println("Intersection Comps & AMS: " + compsAms.size());
 
-		Set<String> compsEsco = new HashSet<String>(jobsComp);
+		Set<Entity> compsEsco = new HashSet<Entity>(jobsComp);
 		compsEsco.retainAll(esco);
 		System.out.println("Intersection Comps & ESCO: " + compsEsco.size());
 
-		Set<String> escoAms = new HashSet<String>(esco);
+		Set<Entity> escoAms = new HashSet<Entity>(esco);
 		escoAms.retainAll(ams);
 		System.out.println("Intersection ESCO & AMS: " + escoAms.size());
 
@@ -75,7 +74,7 @@ public class CompareAMStoTXT {
 
 	}
 
-	private void computeSimilarities(Set<String> set1, Set<String> set2) throws SQLException, ClassNotFoundException {
+	private void computeSimilarities(Set<Entity> set1, Set<Entity> set2) throws SQLException, ClassNotFoundException {
 
 		Connection connection = Cat_DBConnector.connect("C:/sqlite/categorization/competences/ESCOSimilarity.db");
 		Cat_DBConnector.createPairsTable(connection, IEType.COMPETENCE);
@@ -87,20 +86,16 @@ public class CompareAMStoTXT {
 		Map<Entity, Double> scoresByEntity = new HashMap<Entity, Double>();
 		Map<Pair, Double> pairs = new HashMap<Pair, Double>();
 
-		int i = 0;
-		for (String l1 : set1) {
-//				List<String> lemmatas = ie.getLemmata();
+		for (Entity e1 : set1) {
 
-			if (( i % 100) == 0)
-				System.out.println(i++ + " " + l1);
-			Entity e1 = new Entity(l1);
+//			Entity e1 = new Entity(l1);
 
-			for (String l2 : set2) {
-				Entity e2 = new Entity(l2);
+			for (Entity e2 : set2) {
+//				Entity e2 = new Entity(l2);
 
-				double nw = sc.needlemanWunschSimilarity(l1, l2);
+				double nw = sc.needlemanWunschSimilarity(e1.getLemma(), e2.getLemma());
 				
-				if (nw <= minSim * (l1.length() + l2.length())) {
+				if (nw <= minSim * (e1.getLemma().length() + e2.getLemma().length())) {
 					continue;
 				}
 //					System.out.println(nw);
@@ -120,7 +115,7 @@ public class CompareAMStoTXT {
 				if (d < pair.getScore()) {
 					scoresByEntity.put(e2, pair.getScore());
 				}
-				int pairsPerRound = 1000;
+				int pairsPerRound = 100;
 //					System.out.println(pairs.size());
 				if (pairs.size() >= pairsPerRound) {
 					System.out.println("write " + pairs.size() + " pairs");
@@ -130,6 +125,21 @@ public class CompareAMStoTXT {
 			}
 		}
 
+	}
+	
+	private Set<Entity> readTXT(File file) throws IOException {
+		
+		BufferedReader br = new BufferedReader(new FileReader(file));
+		
+		
+		Set<Entity> stringSet = new HashSet<Entity>();
+		
+		String line = "";
+		while((line = br.readLine()) != null)
+			stringSet.add(new Entity(line));
+		br.close();
+		
+		return stringSet;
 	}
 
 	private Set<String> readESCO() throws IOException {
@@ -173,6 +183,8 @@ public class CompareAMStoTXT {
 		}
 
 		reader.close();
+		
+		
 		return escoLemmas;
 	}
 
@@ -184,20 +196,20 @@ public class CompareAMStoTXT {
 		osw.close();
 	}
 
-	private Set<String> readComps() throws IOException {
+	private Set<Entity> readComps() throws IOException {
 
 		IEJobs jobs = new IEJobs(compFile, null, null, null, null, false, null);
-		Set<String> jobsComp = new HashSet<String>();
+		Set<Entity> jobsComp = new HashSet<Entity>();
 		Map<String, Set<InformationEntity>> entities = jobs.entities;
 		for (Entry<String, Set<InformationEntity>> e : entities.entrySet()) {
 			for (InformationEntity ie : e.getValue()) {
-				jobsComp.add(ie.toString());
+				jobsComp.add(new Entity(ie.toString()));
 			}
 		}
 		return jobsComp;
 	}
 
-	private Set<String> readAMS() throws IOException {
+	private Set<Entity> readAMS() throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(amsFile), "UTF8"));
 
 		StringBuilder sb = new StringBuilder();
@@ -210,12 +222,12 @@ public class CompareAMStoTXT {
 
 		Document doc = Jsoup.parse(teiString, "", Parser.xmlParser());
 
-		Set<String> amsComps = new HashSet<String>();
+		Set<Entity> amsComps = new HashSet<Entity>();
 
 		Elements orthElements = doc.select("orth");
 		for (Element orthElement : orthElements) {
 			String comp = orthElement.text().toLowerCase();
-			amsComps.add(comp);
+			amsComps.add(new Entity(comp));
 		}
 
 		return amsComps;

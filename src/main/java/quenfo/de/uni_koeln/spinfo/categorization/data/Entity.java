@@ -21,6 +21,10 @@ public class Entity {
 	
 	private Set<Category> categories;
 	
+	public Entity(String lemma){
+		this.lemma = lemma;
+	}
+	
 	
 	public boolean isValidated() {
 		return validated;
@@ -36,10 +40,6 @@ public class Entity {
 
 	public void setCategories(Set<Category> categories) {
 		this.categories = categories;
-	}
-
-	public Entity(String lemma){
-		this.lemma = lemma;
 	}
 	
 	public void setLemma(String lemma){
