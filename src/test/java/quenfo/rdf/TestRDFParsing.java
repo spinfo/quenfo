@@ -25,10 +25,11 @@ public class TestRDFParsing {
 	@Test
 	public void test() {
 		Model model = ModelFactory.createDefaultModel();
-		model = model.read("transversal_skills_collection.ttl");
+//		model = model.read("information_extraction/data/competences/esco/transversal_skills_collection.ttl");
+		model = model.read("information_extraction/data/competences/esco/esco_v1.0.3.ttl");
 		
-		String queryString = "SELECT ?x"
-				+ "WHERE { ?x	<http://www.w3.org/2004/02/skos/core#prefLabel>	\"http://www.w3.org/2004/02/skos/core#Concept\" ";
+//		String queryString = "Select ?subjects Where { ?subjects	<http://www.w3.org/2004/02/skos/core#prefLabel>	\"http://www.w3.org/2004/02/skos/core#Concept\" }";
+		String queryString = "Select ?subjects ?objects Where { ?subjects	<http://www.w3.org/2004/02/skos/core#prefLabel>	?objects }";
 		
 		Query query = QueryFactory.create(queryString);
 		QueryExecution qe = QueryExecutionFactory.create(query, model);

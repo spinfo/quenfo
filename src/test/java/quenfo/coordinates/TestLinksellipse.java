@@ -1,4 +1,4 @@
-package quenfo;
+package quenfo.coordinates;
 
 import java.util.ArrayList;
 import java.util.Arrays;

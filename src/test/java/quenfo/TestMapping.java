@@ -46,7 +46,7 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.IEJobs;
 public class TestMapping {
 
 	private File amsFile = new File("information_extraction/data/competences/tei_index/compdict.tei");
-	private File escoFile = new File("information_extraction/data/competences/esco_lemma.txt");
+	private File escoFile = new File("information_extraction/data/competences/esco/esco_lemma.txt");
 	private File compFile = new File("information_extraction/data/competences/competences.txt");
 
 	@Test
