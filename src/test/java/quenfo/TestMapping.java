@@ -46,11 +46,15 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.IEJobs;
 public class TestMapping {
 
 	private File amsFile = new File("information_extraction/data/competences/tei_index/compdict.tei");
+	private File escoCSV = new File("information_extraction/data/competences/esco/skills_de.csv");
 	private File escoFile = new File("information_extraction/data/competences/esco/esco_lemma.txt");
 	private File compFile = new File("information_extraction/data/competences/competences.txt");
 
 	@Test
 	public void test() throws IOException, ClassNotFoundException, SQLException {
+		
+		readESCO();
+		System.exit(0);
 
 		Set<Entity> jobsComp = readComps();
 		Set<Entity> ams = readAMS();
@@ -143,19 +147,24 @@ public class TestMapping {
 	}
 
 	private Set<String> readESCO() throws IOException {
-		CSVReader reader = new CSVReader(new FileReader(escoFile));
+		CSVReader reader = new CSVReader(new FileReader(escoCSV));
 
 		String[] line = null;
 
 		// skills und synonyme extrahieren
-		List<String> esco = new ArrayList<String>();
+		Set<String> esco = new HashSet<String>();
 		while ((line = reader.readNext()) != null) {
 			String preffered = line[4];
 			String[] syns = line[5].split("\\n");
-			esco.add(preffered);
+			if(!esco.add(preffered))
+				System.out.println(preffered);
 			if (syns != null)
 				for (int i = 0; i < syns.length; i++) {
-					esco.add(syns[i].toLowerCase());
+					String syn = syns[i].toLowerCase();
+					if(syn.isEmpty())
+						continue;
+					if(!esco.add(syn))
+						System.out.println(syn);
 				}
 
 		}
@@ -223,11 +232,15 @@ public class TestMapping {
 		Document doc = Jsoup.parse(teiString, "", Parser.xmlParser());
 
 		Set<Entity> amsComps = new HashSet<Entity>();
+		Set<Entity> compsLabels = new HashSet<Entity>();
 
 		Elements orthElements = doc.select("orth");
 		for (Element orthElement : orthElements) {
 			String comp = orthElement.text().toLowerCase();
+			String label = orthElement.attr("label");
 			amsComps.add(new Entity(comp));
+			if(!compsLabels.add(new Entity(label)))
+				System.out.println(label);
 		}
 
 		return amsComps;

@@ -71,6 +71,21 @@
 			<artifactId>lucene-analyzers-common</artifactId>
 			<version>7.3.1</version>
 		</dependency>
+				<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-core -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>8.1.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queryparser</artifactId>
+			<version>8.1.0</version>
+		</dependency>
+		
+		
+		
 
 		<dependency>
 			<groupId>org.apache.mahout</groupId>
@@ -148,6 +163,12 @@
 			<type>pom</type>
 			<version>3.10.0</version>
 		</dependency>
+
+
+
+		
+
+
 
 	</dependencies>
 </project>
