@@ -32,18 +32,18 @@ public class MatchNotValidatedCompetences {
 	
 	static Logger log = Logger.getLogger(MatchNotValidatedCompetences.class);
 
-	// wird an den Namen der Output-DB angehängt
-	static String jahrgang = null;//"2011";
+//	// wird an den Namen der Output-DB angehängt
+//	static String jahrgang = null;//"2011";
 
 	// Pfad zur Input-DB mit den klassifizierten Paragraphen
-	static String paragraphsDB = /* "D:/Daten/sqlite/CorrectableParagraphs.db"; */null;//"C:/sqlite/classification/CorrectableParagraphs_"
+	static String paraInputDB = /* "D:/Daten/sqlite/CorrectableParagraphs.db"; */null;//"C:/sqlite/classification/CorrectableParagraphs_"
 			//+ jahrgang + ".db"; //
 
 	// Ordner in dem die neue Output-DB angelegt werden soll
-	static String outputFolder = /* "D:/Daten/sqlite/"; */null;//"C:/sqlite/matching/competences/"; //
+	static String compMOutputFolder = /* "D:/Daten/sqlite/"; */null;//"C:/sqlite/matching/competences/"; //
 
 	// Name der Output-DB
-	static String outputDB = null;//"NotValidatedCompetenceMatches_" + jahrgang + ".db";
+	static String compMnotValOutputDB = null;//"NotValidatedCompetenceMatches_" + jahrgang + ".db";
 
 	// DB mit den extrahierten Kompetenz-Vorschlägen
 	static String extractedCompsDB = null;//"C:/sqlite/information_extraction/competences/CorrectableCompetences_" + jahrgang
@@ -72,18 +72,18 @@ public class MatchNotValidatedCompetences {
 		
 		// Verbindung mit Input-DB
 		Connection inputConnection = null;
-		if (!new File(paragraphsDB).exists()) {
+		if (!new File(paraInputDB).exists()) {
 			System.out.println(
-					"Database don't exists " + paragraphsDB + "\nPlease change configuration and start again.");
+					"Database don't exists " + paraInputDB + "\nPlease change configuration and start again.");
 			System.exit(0);
 		} else {
-			inputConnection = IE_DBConnector.connect(paragraphsDB);
+			inputConnection = IE_DBConnector.connect(paraInputDB);
 		}
 		// Verbindung mit Output-DB
-		if (!new File(outputFolder).exists()) {
-			new File(outputFolder).mkdirs();
+		if (!new File(compMOutputFolder).exists()) {
+			new File(compMOutputFolder).mkdirs();
 		}
-		Connection outputConnection = IE_DBConnector.connect(outputFolder + outputDB);
+		Connection outputConnection = IE_DBConnector.connect(compMOutputFolder + compMnotValOutputDB);
 		IE_DBConnector.createExtractionOutputTable(outputConnection, IEType.COMPETENCE, false);
 
 		// Prüfe ob maxCount und startPos gültige Werte haben
@@ -122,7 +122,7 @@ public class MatchNotValidatedCompetences {
 		// vorhanden)
 		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTHREE");
 		Extractor extractor = new Extractor(notValidatedCompetences, modifier, IEType.COMPETENCE, expandCoordinates);
-		extractor.stringMatch(statisticsFile, inputConnection, outputConnection, (outputFolder+outputDB), maxCount, startPos);
+		extractor.stringMatch(statisticsFile, inputConnection, outputConnection, maxCount, startPos);
 		long after = System.currentTimeMillis();
 		double time = (((double) after - before) / 1000) / 60;
 		if (time > 60.0) {
@@ -137,10 +137,10 @@ public class MatchNotValidatedCompetences {
 		Properties props = new Properties();		
 		InputStream is = MatchCompetences.class.getClassLoader().getResourceAsStream("config.properties");
 		props.load(is);
-		jahrgang = props.getProperty("jahrgang");
-		paragraphsDB = props.getProperty("paraInputDB") + jahrgang + ".db";
-		outputFolder = props.getProperty("compMOutputFolder");
-		outputDB = props.getProperty("compMnotValOutputDB") + jahrgang + ".db";
+		String jahrgang = props.getProperty("jahrgang");
+		paraInputDB = props.getProperty("paraInputDB") + jahrgang + ".db";
+		compMOutputFolder = props.getProperty("compMOutputFolder");
+		compMnotValOutputDB = props.getProperty("compMnotValOutputDB") + jahrgang + ".db";
 		extractedCompsDB = props.getProperty("compIEOutputFolder") 
 				+ props.getProperty("compIEOutputDB") + jahrgang + ".db";
 		//"C:/sqlite/information_extraction/competences/CorrectableCompetences_" + jahrgang

@@ -66,11 +66,11 @@
 			<artifactId>lucene-snowball</artifactId>
 			<version>3.0.3</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-analyzers-common</artifactId>
 			<version>7.3.1</version>
-		</dependency>
+		</dependency> -->
 				<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-core -->
 		<dependency>
 			<groupId>org.apache.lucene</groupId>

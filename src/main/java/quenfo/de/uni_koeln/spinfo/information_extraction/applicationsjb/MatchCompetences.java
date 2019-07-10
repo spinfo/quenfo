@@ -24,17 +24,14 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
  */
 public class MatchCompetences {
 
-	// wird an den Namen der Output-DB angehängt
-	static String jahrgang = null;
-
 	// Pfad zur Input-DB mit den klassifizierten Paragraphen
-	static String pararaphsDB = /* "D:/Daten/sqlite/CorrectableParagraphs.db"; */null; //
+	static String paraInputDB = /* "D:/Daten/sqlite/CorrectableParagraphs.db"; */null; //
 
 	// Ordner in dem die neue Output-DB angelegt werden soll
-	static String outputFolder = /* "D:/Daten/sqlite/"; */null;
+	static String compMOutputFolder = /* "D:/Daten/sqlite/"; */null;
 
 	// Name der Output-DB
-	static String outputDB = null;
+	static String compMOutputDB = null;
 
 	// txt-File mit den validierten Kompetenzen
 	//static File competences = new File("information_extraction/data/competences/competences.txt");
@@ -63,7 +60,7 @@ public class MatchCompetences {
 	static int startPos = 0;
 	
 	// true, falls Koordinationen  in Informationseinheit aufgelöst werden sollen
-	static boolean resolveCoordinations = false;
+	static boolean expandCoordinates = false;
 
 	public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException {
 		
@@ -71,19 +68,19 @@ public class MatchCompetences {
 		
 		// Verbindung mit Input-DB
 		Connection inputConnection = null;
-		if (!new File(pararaphsDB).exists()) {
+		if (!new File(paraInputDB).exists()) {
 			System.out
-					.println("Database don't exists " + pararaphsDB + "\nPlease change configuration and start again.");
+					.println("Database don't exists " + paraInputDB + "\nPlease change configuration and start again.");
 			System.exit(0);
 		} else {
-			inputConnection = IE_DBConnector.connect(pararaphsDB);
+			inputConnection = IE_DBConnector.connect(paraInputDB);
 		}
 
 		// Verbindung mit Output-DB
-		if (!new File(outputFolder).exists()) {
-			new File(outputFolder).mkdirs();
+		if (!new File(compMOutputFolder).exists()) {
+			new File(compMOutputFolder).mkdirs();
 		}
-		Connection outputConnection = IE_DBConnector.connect(outputFolder + outputDB);
+		Connection outputConnection = IE_DBConnector.connect(compMOutputFolder + compMOutputDB);
 		IE_DBConnector.createExtractionOutputTable(outputConnection, IEType.COMPETENCE, false);
 		
 		// Prüfe ob maxCount und startPos gültige Werte haben
@@ -105,8 +102,8 @@ public class MatchCompetences {
 		long before = System.currentTimeMillis();
 		//erzeugt einen Index auf die Spalte 'ClassTHREE' (falls noch nicht vorhanden)
 		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTHREE");
-		Extractor extractor = new Extractor(notCatComps, modifier, catComps, category, IEType.COMPETENCE, resolveCoordinations);
-		extractor.stringMatch(statisticsFile, inputConnection, outputConnection, (outputFolder+outputDB), maxCount, startPos);
+		Extractor extractor = new Extractor(notCatComps, modifier, catComps, category, IEType.COMPETENCE, expandCoordinates);
+		extractor.stringMatch(statisticsFile, inputConnection, outputConnection, maxCount, startPos);
 		long after = System.currentTimeMillis();
 		double time = (((double) after - before) / 1000) / 60;
 		if (time > 60.0) {
@@ -120,10 +117,10 @@ public class MatchCompetences {
 		Properties props = new Properties();		
 		InputStream is = MatchCompetences.class.getClassLoader().getResourceAsStream("config.properties");
 		props.load(is);
-		jahrgang = props.getProperty("jahrgang");
-		pararaphsDB = props.getProperty("paraInputDB") + jahrgang + ".db";
-		outputFolder = props.getProperty("compIEOutputFolder");
-		outputDB = props.getProperty("compOutputDB") + jahrgang + ".db";
+		String jahrgang = props.getProperty("jahrgang");
+		paraInputDB = props.getProperty("paraInputDB") + jahrgang + ".db";
+		compMOutputFolder = props.getProperty("compMOutputFolder");
+		compMOutputDB = props.getProperty("compMOutputDB") + jahrgang + ".db";
 		catComps = new File(props.getProperty("catComps"));
 		notCatComps = new File(props.getProperty("notCatComps"));
 		category = props.getProperty("category");
@@ -131,7 +128,8 @@ public class MatchCompetences {
 		maxCount = Integer.parseInt(props.getProperty("maxCount"));
 		statisticsFile = new File(props.getProperty("statisticsFile"));
 		startPos = Integer.parseInt(props.getProperty("startPos"));
-		resolveCoordinations = Boolean.parseBoolean(props.getProperty("expandCoordinates"));
+		expandCoordinates = Boolean.parseBoolean(props.getProperty("expandCoordinates"));
+
 	}
 
 }

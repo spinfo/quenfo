@@ -48,10 +48,9 @@ public class IE_DBConnector {
 		connection = DriverManager.getConnection("jdbc:sqlite:" + dbFilePath);
 		return connection;
 	}
-	
+
 	@Deprecated
-	public static void createCoordinationOutputTable(Connection connection, IEType type) 
-			throws SQLException {
+	public static void createCoordinationOutputTable(Connection connection, IEType type) throws SQLException {
 		String sql = null;
 		connection.setAutoCommit(false);
 		Statement stmt = connection.createStatement();
@@ -62,13 +61,13 @@ public class IE_DBConnector {
 			sql = "DROP TABLE IF EXISTS Tools";
 		}
 		stmt.executeUpdate(sql);
-			if (type == IEType.COMPETENCE) {
-				sql = "CREATE TABLE Competences (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, Sentence TEXT NOT NULL, Comp TEXT, Coordinations TEXT, Notes TEXT)";
-			}
-			if (type == IEType.TOOL) {
-				sql = "CREATE TABLE Tools (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, Sentence TEXT NOT NULL, Tool TEXT NOT NULL, Coordinations TEXT, Notes TEXT)";
-			}
-		 
+		if (type == IEType.COMPETENCE) {
+			sql = "CREATE TABLE Competences (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, Sentence TEXT NOT NULL, Comp TEXT, Coordinations TEXT, Notes TEXT)";
+		}
+		if (type == IEType.TOOL) {
+			sql = "CREATE TABLE Tools (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, Sentence TEXT NOT NULL, Tool TEXT NOT NULL, Coordinations TEXT, Notes TEXT)";
+		}
+
 		stmt.executeUpdate(sql);
 		stmt.close();
 		connection.commit();
@@ -292,31 +291,34 @@ public class IE_DBConnector {
 				prepStmt.setString(3, paraID);
 
 				if (correctable) {
-					
+
 					int indexAdder = 0;
 					if (gold)
 						indexAdder = 1;
-					
+
 					prepStmt.setString(4, sentence);
 					prepStmt.setString(5, ie.toString());
-					if(gold)
+					if (gold)
 						prepStmt.setInt(6, ie.getFirstIndex());
-					prepStmt.setInt(6+indexAdder, ies.get(ie).size()); // 6
+					prepStmt.setInt(6 + indexAdder, ies.get(ie).size()); // 6
 					if (!ies.get(ie).isEmpty()) {
 						StringBuffer sb = new StringBuffer();
 						for (Pattern pattern : ies.get(ie)) {
 							sb.append("[" + pattern.getDescription() + "]  ");
 						}
-						prepStmt.setString(7+indexAdder, sb.toString()); // 7
+						prepStmt.setString(7 + indexAdder, sb.toString()); // 7
 					} else {
-						prepStmt.setString(7+indexAdder, "StringMatch"); // 7
+						prepStmt.setString(7 + indexAdder, "StringMatch"); // 7
 					}
 				} else {
 					StringBuilder sb = new StringBuilder();
-					for (String l : ie.getLabels())
-						sb.append(l + "|");
-					String labels = sb.toString();
-					labels = labels.substring(0, labels.length()-1);
+					String labels = "";
+					if (ie.getLabels() != null) { // TODO warum getLabels == null ?
+						for (String l : ie.getLabels())
+							sb.append(l + "|");
+						labels = sb.toString();
+						labels = labels.substring(0, labels.length() - 1);
+					}
 					prepStmt.setString(4, extractionUnit.getSentenceID().toString());
 					prepStmt.setString(5, lemmata.toString());
 					prepStmt.setString(6, sentence);
@@ -389,11 +391,11 @@ public class IE_DBConnector {
 					}
 					types.add(expression);
 				}
-				
+
 				int indexAdder = 0;
 				if (gold)
 					indexAdder = 1;
-				
+
 				prepStmt.setInt(1, jahrgang);
 				prepStmt.setInt(2, zeilennr);
 				prepStmt.setString(3, paraID);
@@ -402,13 +404,13 @@ public class IE_DBConnector {
 					prepStmt.setString(5, ie.toString());
 					if (gold)
 						prepStmt.setInt(6, ie.getFirstIndex());
-					prepStmt.setInt(6+indexAdder, ies.get(ie).size()); // 6
+					prepStmt.setInt(6 + indexAdder, ies.get(ie).size()); // 6
 					if (!ies.get(ie).isEmpty()) {
 						StringBuffer sb = new StringBuffer();
 						for (Pattern pattern : ies.get(ie)) {
 							sb.append("[" + pattern.getDescription() + "]  ");
 						}
-						prepStmt.setString(7+indexAdder, sb.toString()); // 7
+						prepStmt.setString(7 + indexAdder, sb.toString()); // 7
 					} else {
 						prepStmt.setString(3, "StringMatch");
 					}
@@ -428,8 +430,9 @@ public class IE_DBConnector {
 	}
 
 	/**
-	 * liest alle InformationEntites, die eine Morphemkoordination enthalten
-	 * und somit für die Koordinationsauflösung relevant sind
+	 * liest alle InformationEntites, die eine Morphemkoordination enthalten und
+	 * somit für die Koordinationsauflösung relevant sind
+	 * 
 	 * @param type
 	 * @param connection
 	 * @param type
@@ -441,25 +444,22 @@ public class IE_DBConnector {
 	public static Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> readGoldstandard(Connection connection,
 			IEType type, int startPos, int maxCount) throws SQLException {
 
-		Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> toReturn = new HashMap<ExtractionUnit,
-				Map<InformationEntity, List<Pattern>>>();
+		Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> toReturn = new HashMap<ExtractionUnit, Map<InformationEntity, List<Pattern>>>();
 		connection.setAutoCommit(false);
 		String query = null;
 		String topic = null;
 		String typeString = null;
 
-		if(type.equals(IEType.COMPETENCE)) {
+		if (type.equals(IEType.COMPETENCE)) {
 			topic = "Comp";
 			typeString = "Competences";
-		}	
-		else {
+		} else {
 			topic = "Tool";
 			typeString = "Tools";
 		}
-			
 
-		query = "SELECT Jahrgang, Zeilennr, ParaID, Sentence, " + topic + ", FirstIndex, ContextDescriptions, " 
-				+ topic + "Resolved FROM " + typeString + " LIMIT ? OFFSET ?;";
+		query = "SELECT Jahrgang, Zeilennr, ParaID, Sentence, " + topic + ", FirstIndex, ContextDescriptions, " + topic
+				+ "Resolved FROM " + typeString + " LIMIT ? OFFSET ?;";
 
 //		int queryLimit = -1;
 //		int currentId = 1;
@@ -505,7 +505,7 @@ public class IE_DBConnector {
 			firstIndex = result.getInt("FirstIndex");
 			resolvedCoo = result.getString(topic + "Resolved");
 			patternString = result.getString("ContextDescriptions");
-			if(resolvedCoo == null) //sammelt nur IEs mit Koordination
+			if (resolvedCoo == null) // sammelt nur IEs mit Koordination
 				continue;
 
 			ie = new InformationEntity(entity[0], false, false, firstIndex, resolvedCoo);

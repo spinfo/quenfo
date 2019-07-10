@@ -25,17 +25,14 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
  */
 public class ExtractNewCompetences {
 
-	// wird an den Namen der OutputDB angehängt
-	static String jahrgang = null;
-
 	// Pfad zur Input-DB mit den klassifizierten Paragraphen
-	static String inputDB = null;
+	static String paraInputDB = null;
 
 	// Output-Ordner
-	static String outputFolder = null;
+	static String compIEoutputFolder = null;
 
 	// Name der Output-DB
-	static String outputDB = null;
+	static String compIEOutputDB = null;
 
 	// txt-File mit allen bereits bekannten (validierten) Kompetenzen (die
 	// bekannten Kompetenzn helfen beim Auffinden neuer Kompetenzen)
@@ -46,9 +43,9 @@ public class ExtractNewCompetences {
 	static File noCompetences = null;
 
 	// txt-File mit den Extraktionspatterns
-	static File patternsFile = null;
+	static File compPatterns = null;
 	
-	static File modifierFile = null;
+	static File modifier = null;
 
 	// falls nicht alle Paragraphen aus der Input-DB verwendet werden sollen:
 	// hier Anzahl der zu lesenden Paragraphen festlegen
@@ -60,7 +57,7 @@ public class ExtractNewCompetences {
 	static int startPos = 0;
 	
 	// true, falls Koordinationen  in Informationseinheit aufgelöst werden sollen
-	static boolean resolveCoordinations = false;
+	static boolean expandCoordinates = false;
 	
 	// true, falls Goldstandard-Tabelle erzeugt werden soll
 	static boolean gold = false;
@@ -71,12 +68,12 @@ public class ExtractNewCompetences {
 		
 		// Verbindung zur Input-DB
 		Connection inputConnection = null;
-		if (!new File(inputDB).exists()) {
+		if (!new File(paraInputDB).exists()) {
 			System.out
-					.println("Input-DB '" + inputDB + "' does not exist\nPlease change configuration and start again.");
+					.println("Input-DB '" + paraInputDB + "' does not exist\nPlease change configuration and start again.");
 			System.exit(0);
 		} else {
-			inputConnection = IE_DBConnector.connect(inputDB);
+			inputConnection = IE_DBConnector.connect(paraInputDB);
 		}
 
 		// Prüfe ob maxCount und startPos gültige Werte haben
@@ -95,22 +92,22 @@ public class ExtractNewCompetences {
 		}
 
 		// Verbindung zur Output-DB
-		if (!new File(outputFolder).exists()) {
-			new File(outputFolder).mkdirs();
+		if (!new File(compIEoutputFolder).exists()) {
+			new File(compIEoutputFolder).mkdirs();
 		}
 		Connection outputConnection = null;
-		File outputfile = new File(outputFolder + outputDB);
+		File outputfile = new File(compIEoutputFolder + compIEOutputDB);
 		if (!outputfile.exists()) {
 			outputfile.createNewFile();
 		}
-		outputConnection = IE_DBConnector.connect(outputFolder + outputDB);
+		outputConnection = IE_DBConnector.connect(compIEoutputFolder + compIEOutputDB);
 
 		// Start der Extraktion:
 		long before = System.currentTimeMillis();
 		// Index für die Spalte 'ClassTHREE' anlegen für schnelleren Zugriff
 		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTHREE");
-		Extractor extractor = new Extractor(outputConnection, competences, noCompetences, patternsFile, modifierFile,
-				IEType.COMPETENCE, resolveCoordinations);
+		Extractor extractor = new Extractor(outputConnection, competences, noCompetences, compPatterns, modifier,
+				IEType.COMPETENCE, expandCoordinates);
 		if (maxCount == -1) {
 			maxCount = tableSize;
 		}
@@ -129,17 +126,17 @@ public class ExtractNewCompetences {
 		Properties props = new Properties();		
 		InputStream is = MatchCompetences.class.getClassLoader().getResourceAsStream("config.properties");
 		props.load(is);
-		jahrgang = props.getProperty("jahrgang");
-		inputDB = props.getProperty("paraInputDB") + jahrgang + ".db";
-		outputFolder = props.getProperty("compIEOutputFolder");
-		outputDB = props.getProperty("compIEOutputDB") + jahrgang + ".db";
+		String jahrgang = props.getProperty("jahrgang");
+		paraInputDB = props.getProperty("paraInputDB") + jahrgang + ".db";
+		compIEoutputFolder = props.getProperty("compIEOutputFolder");
+		compIEOutputDB = props.getProperty("compIEOutputDB") + jahrgang + ".db";
 		competences = new File(props.getProperty("competences"));
 		noCompetences = new File(props.getProperty("noCompetences"));
-		patternsFile = new File(props.getProperty("compPatterns"));
-		modifierFile = new File(props.getProperty("modifier"));
+		compPatterns = new File(props.getProperty("compPatterns"));
+		modifier = new File(props.getProperty("modifier"));
 		maxCount = Integer.parseInt(props.getProperty("maxCount"));
 		startPos = Integer.parseInt(props.getProperty("startPos"));
-		resolveCoordinations = Boolean.parseBoolean(props.getProperty("expandCoordinates"));
+		expandCoordinates = Boolean.parseBoolean(props.getProperty("expandCoordinates"));
 		gold = Boolean.parseBoolean(props.getProperty("gold"));
 		
 		

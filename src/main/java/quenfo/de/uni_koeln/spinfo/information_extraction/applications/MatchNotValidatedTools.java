@@ -103,7 +103,7 @@ public class MatchNotValidatedTools {
 		//erzeugt einen Index auf die Spalten 'ClassTWO' und 'ClassTHREE' (falls noch nicht vorhanden)
 		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTWO, ClassTHREE");
 		Extractor extractor = new Extractor(notValidatedTools, null, IEType.TOOL, resolveCoordinations);
-		extractor.stringMatch(statisticsFile, inputConnection, outputConnection, (outputFolder+outputDB), maxCount, startPos);
+		extractor.stringMatch(statisticsFile, inputConnection, outputConnection, maxCount, startPos);
 		long after = System.currentTimeMillis();
 		double time = (((double) after - before)/1000)/60;
 		if(time > 60.0){

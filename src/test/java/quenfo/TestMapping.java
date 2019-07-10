@@ -43,6 +43,15 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.data.IEType;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.InformationEntity;
 import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.IEJobs;
 
+/**
+ * Test, der prüft, wie groß die Überschneidung zwischen
+ * - extrahierten Kompetenzen & AMS
+ * - extrahierten Kompetenzen & ESCO
+ * - AMS & ESCO
+ * ist
+ * @author Johanna Binnewitt
+ *
+ */
 public class TestMapping {
 
 	private File amsFile = new File("information_extraction/data/competences/tei_index/compdict.tei");
@@ -54,7 +63,7 @@ public class TestMapping {
 	public void test() throws IOException, ClassNotFoundException, SQLException {
 		
 		readESCO();
-		System.exit(0);
+
 
 		Set<Entity> jobsComp = readComps();
 		Set<Entity> ams = readAMS();

@@ -27,7 +27,8 @@ public class ExtractNewCompetences {
 	static String jahrgang = "2011";
 
 	// Pfad zur Input-DB mit den klassifizierten Paragraphen
-	static String inputDB = "C:/sqlite/classification/CorrectableParagraphs_" + jahrgang + ".db";
+	//static String inputDB = "C:/sqlite/classification/CorrectableParagraphs_" + jahrgang + ".db";
+	static String inputDB = "C:/sqlite/classification/CorrectableParagraphs_textkernel.db";
 
 	// Output-Ordner
 	static String outputFolder = "C:/sqlite/information_extraction/competences/";

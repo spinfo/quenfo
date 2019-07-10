@@ -63,6 +63,10 @@ public class ConfigurableDatabaseClassifier {
 		SingleToMultiClassConverter stmc = new SingleToMultiClassConverter(6, 4, translations);
 		jobs = new ZoneJobs(stmc);
 	}
+	
+	public void classifyWithConfig(ExperimentConfiguration config, String tableName) throws ClassNotFoundException, IOException, SQLException {
+		classify(config, tableName);
+	}
 
 	public void classify(StringBuffer sb, String tableName) throws ClassNotFoundException, IOException, SQLException {
 		// get ExperimentConfiguration
@@ -136,7 +140,7 @@ public class ConfigurableDatabaseClassifier {
 		boolean askAgain = true;
 		long start = System.currentTimeMillis();
 		
-		List<String> allParagraphs = new ArrayList<String>();
+		
 
 		while (queryResult.next() && goOn) {
 			jobAdCount++;
@@ -170,12 +174,7 @@ public class ConfigurableDatabaseClassifier {
 			}
 
 			// 1. Split into paragraphs and create a ClassifyUnit per paragraph
-			List<String> paragraphs = ClassifyUnitSplitter.splitIntoParagraphs(jobAd);
-			
-			
-			allParagraphs.addAll(paragraphs); //TODO Delete
-			
-			
+			List<String> paragraphs = ClassifyUnitSplitter.splitIntoParagraphs(jobAd);		
 			
 			// if treat enc
 			if (config.getFeatureConfiguration().isTreatEncoding()) {
@@ -266,16 +265,7 @@ public class ConfigurableDatabaseClassifier {
 			}
 		}
 		
-		//TEST
-		StringBuilder sb = new StringBuilder();
-		for (String string : allParagraphs) {
-			sb.append(string + "\n");
-		}
-		FileWriter fw = new FileWriter(new File("sentences.txt"));
-		fw.write(sb.toString());
-		fw.close();
-		
-		//ENDE
+
 	}
 
 }

@@ -91,7 +91,6 @@ public class TrainingDataGenerator {
 						else{
 							utc = new ZoneClassifyUnit(content.toString(),paragraphID);
 						}
-					
 						utc.setActualClassID(classID);
 						classifiedData.add(utc);
 					}

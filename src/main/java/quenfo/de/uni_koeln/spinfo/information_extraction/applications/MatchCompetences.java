@@ -29,8 +29,9 @@ public class MatchCompetences {
 	static String jahrgang = "2011";
 
 	// Pfad zur Input-DB mit den klassifizierten Paragraphen
-	static String pararaphsDB = /* "D:/Daten/sqlite/CorrectableParagraphs.db"; */"C:/sqlite/classification/CorrectableParagraphs_"
-			+ jahrgang + ".db"; //
+	//static String pararaphsDB = /* "D:/Daten/sqlite/CorrectableParagraphs.db"; */"C:/sqlite/classification/CorrectableParagraphs_"
+	//		+ jahrgang + ".db"; //
+	static String paragraphsDB = "C:/sqlite/classification/CorrectableParagraphs_textkernel.db";
 
 	// Ordner in dem die neue Output-DB angelegt werden soll
 	static String outputFolder = /* "D:/Daten/sqlite/"; */"C:/sqlite/matching/competences/";
@@ -58,7 +59,7 @@ public class MatchCompetences {
 
 	// Anzahl der Paragraphen aus der Input-DB, gegen die gematcht werden soll
 	// (-1 = alle)
-	static int maxCount = -1;
+	static int maxCount = 4000;
 
 	// Falls nicht alle Paragraphen gematcht werden sollen, hier die
 	// Startposition angeben
@@ -71,12 +72,12 @@ public class MatchCompetences {
 		
 		// Verbindung mit Input-DB
 		Connection inputConnection = null;
-		if (!new File(pararaphsDB).exists()) {
+		if (!new File(paragraphsDB).exists()) {
 			System.out
-					.println("Database don't exists " + pararaphsDB + "\nPlease change configuration and start again.");
+					.println("Database don't exists " + paragraphsDB + "\nPlease change configuration and start again.");
 			System.exit(0);
 		} else {
-			inputConnection = IE_DBConnector.connect(pararaphsDB);
+			inputConnection = IE_DBConnector.connect(paragraphsDB);
 		}
 
 		// Verbindung mit Output-DB
@@ -106,7 +107,7 @@ public class MatchCompetences {
 		//erzeugt einen Index auf die Spalte 'ClassTHREE' (falls noch nicht vorhanden)
 		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTHREE");
 		Extractor extractor = new Extractor(notCatComps, modifier, catComps, category, IEType.COMPETENCE, resolveCoordinations);
-		extractor.stringMatch(statisticsFile, inputConnection, outputConnection, (outputFolder+outputDB), maxCount, startPos);
+		extractor.stringMatch(statisticsFile, inputConnection, outputConnection, maxCount, startPos);
 		long after = System.currentTimeMillis();
 		double time = (((double) after - before) / 1000) / 60;
 		if (time > 60.0) {

@@ -90,7 +90,7 @@ public class MatchTools {
 		long before = System.currentTimeMillis();
 		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTWO, ClassTHREE");
 		Extractor extractor = new Extractor(tools, null,IEType.TOOL, resolveCoordinations);
-		extractor.stringMatch(statisticsFile, inputConnection, outputConnection, (outputFolder+outputDB), maxCount, startPos);
+		extractor.stringMatch(statisticsFile, inputConnection, outputConnection, maxCount, startPos);
 		long after = System.currentTimeMillis();
 		double time = (((double) after - before)/1000)/60;
 		if(time > 60.0){

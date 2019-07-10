@@ -113,7 +113,7 @@ public class MatchNotValidatedCompetences {
 		// vorhanden)
 		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTHREE");
 		Extractor extractor = new Extractor(notValidatedCompetences, modifier, IEType.COMPETENCE, expandCoordinates);
-		extractor.stringMatch(statisticsFile, inputConnection, outputConnection, (outputFolder+outputDB), maxCount, startPos);
+		extractor.stringMatch(statisticsFile, inputConnection, outputConnection, maxCount, startPos);
 		long after = System.currentTimeMillis();
 		double time = (((double) after - before) / 1000) / 60;
 		if (time > 60.0) {

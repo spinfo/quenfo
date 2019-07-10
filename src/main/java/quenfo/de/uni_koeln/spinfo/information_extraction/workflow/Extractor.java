@@ -237,7 +237,7 @@ public class Extractor {
 
 			// Informationsextraktion
 			jobs.annotateTokens(extractionUnits);
-			System.out.println("\nextract " + type.name().toLowerCase() + "s");
+			log.info("extract " + type.name().toLowerCase() + "s");
 			extractions = jobs.extractEntities(extractionUnits, lemmatizer);
 
 			possCompoundSplits.putAll(jobs.getNewCompounds());
@@ -249,7 +249,7 @@ public class Extractor {
 
 			after = System.currentTimeMillis();
 			time = (((double) after - before) / 1000);
-			System.out.println("time: " + time);
+			log.info("time: " + time + "\n");
 			classifyUnits = null;
 			extractions = null;
 			extractionUnits = null;
@@ -261,12 +261,13 @@ public class Extractor {
 		tagger = null;
 
 		jobs.mergeInformationEntities(allExtractions);
-
+		
 		if (allExtractions.isEmpty()) {
-			System.out.println("\n no new " + jobs.type.name() + "s found\n");
+			log.info("no new " + jobs.type.name() + "s found\n");
 		} else {
 			// Speichern der Extraktionsergebnisse in der Output-DB
-			System.out.println("\nwrite extracted " + type.name().toLowerCase() + "s in output-DB ");
+			String outputPath = outputConnection.getMetaData().getURL().replace("jdbc:sqlite:", "");
+			log.info("write extracted " + type.name().toLowerCase() + "s in output-DB " + outputPath);
 			if (gold)
 				IE_DBConnector.createExtractionGoldOutputTable(outputConnection, type, true);
 			else
@@ -283,13 +284,13 @@ public class Extractor {
 		// (eigentlich nicht mehr notwendig, da im BIBB nicht mehr manuell
 		// annotiert wird)
 		reWriteFiles();
-		System.out.print("\nwrite new compounds to evaluate");
+		log.info("write new compounds to evaluate");
 		writeNewCoordinations();
 		return allExtractions;
 	}
 
 	
-	public void stringMatch(File statisticsFile, Connection inputConnection, Connection outputConnection, String outputDBPath, int maxCount,
+	public void stringMatch(File statisticsFile, Connection inputConnection, Connection outputConnection/*, String outputDBPath*/, int maxCount,
 			int startPos) throws SQLException, IOException {
 
 		// Falls die lexikalischen Infos (sentences, lemmata) noch nicht in der
@@ -350,14 +351,19 @@ public class Extractor {
 			}
 
 			// write results in DB
-			String outputPath = outputConnection.getMetaData().getURL().replace("jdbc:sqlite:", "");
-			log.info("write results in output-DB: " + outputPath);
-			if (jobs.type == IEType.COMPETENCE) {
-				IE_DBConnector.writeCompetenceExtractions(stringMatches, outputConnection, false, false);
+			if (stringMatches.isEmpty()) {
+				log.info("no " + jobs.type.name() + " matches found\n");
+			} else {
+				String outputPath = outputConnection.getMetaData().getURL().replace("jdbc:sqlite:", "");
+				log.info("write results in output-DB: " + outputPath);
+				if (jobs.type == IEType.COMPETENCE) {
+					IE_DBConnector.writeCompetenceExtractions(stringMatches, outputConnection, false, false);
+				}
+				if (jobs.type == IEType.TOOL) {
+					IE_DBConnector.writeToolExtractions(stringMatches, outputConnection, false, false);
+				}
 			}
-			if (jobs.type == IEType.TOOL) {
-				IE_DBConnector.writeToolExtractions(stringMatches, outputConnection, false, false);
-			}
+			
 
 			updateMatchCount(stringMatches, matchCounts);
 			if (maxCount > -1 && readParagraphs >= maxCount)

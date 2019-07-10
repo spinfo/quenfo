@@ -26,17 +26,14 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
  */
 public class ExtractNewTools {
 
-	// wird an den Namen der OutputDB angehängt
-	static String jahrgang = null;
-
 	// Pfad zur Input-DB mit den klassifizierten Paragraphen
-	static String inputDB = null;
+	static String paraInputDB = null;
 
 	// Output-Ordner
-	static String outputFolder = null;
+	static String toolsIEOutputFolder = null;
 
 	// Name der Output-DB
-	static String outputDB = null;
+	static String toolsIEOutputDB = null;
 
 	// txt-File mit allen bereits bekannten (validierten) Tools (die
 	// bekannten Tools helfen beim Auffinden neuer Kompetenzen)
@@ -47,7 +44,7 @@ public class ExtractNewTools {
 	static File noTools = null;
 
 	// txt-File mit den Extraktionspatterns
-	static File contextFile = null;
+	static File toolsPatterns = null;
 
 	// falls nicht alle Paragraphen aus der Input-DB verwendet werden sollen:
 	// hier Anzahl der zu lesenden Paragraphen festlegen
@@ -59,7 +56,7 @@ public class ExtractNewTools {
 	static int startPos = 0;
 	
 	// true, falls Koordinationen  in Informationseinheit aufgelöst werden sollen
-	static boolean resolveCoordinations = true;
+	static boolean expandCoordinates = true;
 	
 	// true, falls Goldstandard-Tabelle erzeugt werden soll
 		static boolean gold = false;
@@ -70,11 +67,11 @@ public class ExtractNewTools {
 
 		// Verbindung zur Input-DB
 		Connection inputConnection = null;
-		if (!new File(inputDB).exists()) {
-			System.out.println("Database don't exists " + inputDB + "\nPlease change configuration and start again.");
+		if (!new File(paraInputDB).exists()) {
+			System.out.println("Database don't exists " + paraInputDB + "\nPlease change configuration and start again.");
 			System.exit(0);
 		} else {
-			inputConnection = IE_DBConnector.connect(inputDB);
+			inputConnection = IE_DBConnector.connect(paraInputDB);
 		}
 
 		// Prüfe ob maxCount und startPos gültige Werte haben
@@ -93,22 +90,22 @@ public class ExtractNewTools {
 		}
 
 		// Connect to the output-DB
-		if (!new File(outputFolder).exists()) {
-			new File(outputFolder).mkdirs();
+		if (!new File(toolsIEOutputFolder).exists()) {
+			new File(toolsIEOutputFolder).mkdirs();
 		}
 		Connection outputConnection = null;
-		File outputfile = new File(outputFolder + outputDB);
+		File outputfile = new File(toolsIEOutputFolder + toolsIEOutputDB);
 		if (!outputfile.exists()) {
 			outputfile.createNewFile();
 		}
-		outputConnection = IE_DBConnector.connect(outputFolder + outputDB);
+		outputConnection = IE_DBConnector.connect(toolsIEOutputFolder + toolsIEOutputDB);
 
 		// Start der Extraktion
 		long before = System.currentTimeMillis();
 		// Index für die Spalten 'ClassTWO' und 'ClassTHREE' anlegen für
 		// schnelleren Zugriff
 		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTWO, ClassTHREE");
-		Extractor extractor = new Extractor(outputConnection, tools, noTools, contextFile, null, IEType.TOOL, false);
+		Extractor extractor = new Extractor(outputConnection, tools, noTools, toolsPatterns, null, IEType.TOOL, false);
 		if (maxCount == -1) {
 			maxCount = tableSize;
 		}
@@ -126,16 +123,16 @@ public class ExtractNewTools {
 		Properties props = new Properties();		
 		InputStream is = MatchCompetences.class.getClassLoader().getResourceAsStream("config.properties");
 		props.load(is);
-		jahrgang = props.getProperty("jahrgang");
-		inputDB = props.getProperty("paraInputDB") + jahrgang + ".db";
-		outputFolder = props.getProperty("toolsIEOutputFolder");
-		outputDB = props.getProperty("toolsIEOutputDB") + jahrgang + ".db";
+		String jahrgang = props.getProperty("jahrgang");
+		paraInputDB = props.getProperty("paraInputDB") + jahrgang + ".db";
+		toolsIEOutputFolder = props.getProperty("toolsIEOutputFolder");
+		toolsIEOutputDB = props.getProperty("toolsIEOutputDB") + jahrgang + ".db";
 		tools = new File(props.getProperty("tools"));
 		noTools = new File(props.getProperty("noTools"));
-		contextFile = new File(props.getProperty("toolsPatterns"));
+		toolsPatterns = new File(props.getProperty("toolsPatterns"));
 		maxCount = Integer.parseInt(props.getProperty("maxCount"));
 		startPos = Integer.parseInt(props.getProperty("startPos"));
-		resolveCoordinations = Boolean.parseBoolean(props.getProperty("expandCoordinates"));
+		expandCoordinates = Boolean.parseBoolean(props.getProperty("expandCoordinates"));
 		gold = Boolean.parseBoolean(props.getProperty("gold"));
 
 	}

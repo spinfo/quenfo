@@ -760,171 +760,83 @@ public class IEJobs {
 	 * finds known entities in unknown s and returns both
 	 * 
 	 * @param extractionUnits
+	 * @param lemmatizer 
 	 * @param patternExtractions
 	 * @return
 	 */
 	public Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> extractByStringMatch(
 			List<ExtractionUnit> extractionUnits, Tool lemmatizer) {
 		Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> extractions = new HashMap<ExtractionUnit, Map<InformationEntity, List<Pattern>>>();
-		List<Pattern> patternList = new ArrayList<Pattern>();
+		List<Pattern> List = new ArrayList<Pattern>();
 		for (ExtractionUnit extractionUnit : extractionUnits) {
-			
 			List<TextToken> tokens = extractionUnit.getTokenObjects();
-			// int skip = 0; //TODO Delete skip
+			int skip = 0;
 			for (int t = 0; t < tokens.size(); t++) {
-				if (t /* + skip */ >= tokens.size())
+				if (t + skip >= tokens.size())
 					break;
-				TextToken token = tokens.get(t /* + skip */);
+				Token token = tokens.get(t + skip);
 				String lemma = Util.normalizeLemma(token.getLemma());
 				if (entities.keySet().contains(lemma)) {
-
 					for (InformationEntity ie : entities.get(lemma)) {
 						if (ie.isSingleWordEntity()) {
 							token.setIEToken(true);
-							InformationEntity newIE = new InformationEntity(ie.getStartLemma(), true, ie.getLabels(),
-									false);
+							ie.getLabels();
+							InformationEntity newIE = new InformationEntity(ie.getStartLemma(), true, ie.getLabels(), false);
 							Map<InformationEntity, List<Pattern>> iesForUnit = extractions.get(extractionUnit);
 							if (iesForUnit == null)
 								iesForUnit = new HashMap<InformationEntity, List<Pattern>>();
-							iesForUnit.put(newIE, patternList);
+							iesForUnit.put(newIE, List);
 							extractions.put(extractionUnit, iesForUnit);
 
-							if ((t /* + skip */ + 2) >= tokens.size())
-								continue;
-							TextToken possibleEllipse = tokens.get(t /* + skip */ + 2);
-
-							if (possibleEllipse.getToken() == null)
-								continue;
-							if (possibleEllipse.getToken().startsWith("-")) {
-								List<InformationEntity> informationEntities = new ArrayList<InformationEntity>();
-
-								boolean isMorphemCoordination = true;
-								List<Token> completeEntity = new ArrayList<>();
-
-								int lastEllipse = tokens.size() - 2;
-								while (!tokens.get(lastEllipse).getToken().startsWith("-"))
-									lastEllipse--;
-								for (int i = t/* + skip */; i <= lastEllipse; i++) {
-									completeEntity.add(tokens.get(i));
-								}
-								List<List<Token>> combinations = ce.resolve(completeEntity, lemmatizer);
-								for (List<Token> list : combinations) {
-									List<String> lemmata = new ArrayList<String>();
-									for (Token currTT : list) {
-										lemmata.add(currTT.getLemma());
-									}
-									boolean isSingleWordEntity = true;
-									if (list.size() > 1)
-										isSingleWordEntity = false;
-									InformationEntity cooIE = new InformationEntity(lemmata.get(0), isSingleWordEntity,
-											isMorphemCoordination);
-									cooIE.setExpression(lemmata);
-									informationEntities.add(cooIE);
-								}
-
-								iesForUnit = extractions.get(extractionUnit);
-								for (InformationEntity cooIE : informationEntities) {
-
-									if (iesForUnit == null)
-										iesForUnit = new HashMap<InformationEntity, List<Pattern>>();
-									iesForUnit.put(cooIE, patternList);
-									extractions.put(extractionUnit, iesForUnit);
-								}
-							}
 							continue;
 						}
-
-						List<Token> completeEntity = new ArrayList<>();
-						List<String> entityPOS = new ArrayList<String>();
-
+						
+						
+						//speichert Token-Objekte, die die InformationEntity enthalten und ihre POS gesondert
+						List<Token> completeEntity = new ArrayList<Token>();
+						List<String> posList = new ArrayList<String>();
+						
 						boolean matches = false;
-						int stop = 0;
-
 						for (int c = 0; c < ie.getLemmata().size(); c++) {
 							if (tokens.size() <= t + c) {
 								matches = false;
-								stop = c;
 								break;
 							}
-							matches = ie.getLemmata().get(c)
-									.equals(Util.normalizeLemma(tokens.get(t + c /* + skip */).getLemma()));
+							matches = ie.getLemmata().get(c).equals(Util.normalizeLemma(tokens.get(t + c+ skip).getLemma()));
 							if (!matches) {
-								stop = c;
 								break;
 							}
-							TextToken tt = tokens.get(t + c /* + skip */);
+							
+							TextToken tt = tokens.get(t+c);
 							completeEntity.add(tt);
-							entityPOS.add(tt.getPosTag());
+							posList.add(tt.getPosTag());
 						}
-
 						if (matches) {
-							Set<String> labels = ie.getLabels();
-
-							// prüfen, ob Koordination übersehen wurde
-							try {
-								if (tokens.get(t + stop /* + skip */ + 2).getToken().startsWith("-")) {
-									completeEntity
-											.addAll(tokens.subList(t + stop /* + skip */, t + stop /* + skip */ + 2));
-									entityPOS.add(tokens.get(t + stop /* + skip */ + 1).getPosTag());
-									entityPOS.add(tokens.get(t + stop /* + skip */ + 2).getPosTag());
-
-								}
-							} catch (NullPointerException e) {
-							}
-
-							List<InformationEntity> informationEntities = new ArrayList<InformationEntity>();
-
-							boolean isMorphemCoordination = false;
-
-							// bei mehreren Tokens muss auf Koordination geprüft werden
-							// Konjunktion gilt als Schlüssel-POS für eine mögliche Koordination
-							if (ce != null && entityPOS.contains("KON")) {
-								isMorphemCoordination = true;
-								List<Token> euTokens = new ArrayList<Token>(tokens);
-								List<List<Token>> combinations = ce.resolve(completeEntity, euTokens, lemmatizer, false);
-								// System.out.println(combinations);
-								for (List<Token> list : combinations) {
-									List<String> lemmata = new ArrayList<String>();
-									for (Token currTT : list) {
-										lemmata.add(currTT.getLemma());
-									}
-
-									boolean isSingleWordEntity = true;
-									if (list.size() > 1)
-										isSingleWordEntity = false;
-									InformationEntity cooIE = new InformationEntity(lemmata.get(0), isSingleWordEntity,
-											labels, isMorphemCoordination);
-									cooIE.setExpression(lemmata);
-									informationEntities.add(cooIE);
-								}
-
-								Map<InformationEntity, List<Pattern>> iesForUnit = extractions.get(extractionUnit);
-								for (InformationEntity cooIE : informationEntities) {
-
-									if (iesForUnit == null)
-										iesForUnit = new HashMap<InformationEntity, List<Pattern>>();
-									iesForUnit.put(cooIE, patternList);
-									extractions.put(extractionUnit, iesForUnit);
-								}
-
-								token.setIEToken(true);
-								((TextToken) token).setTokensToCompleteInformationEntity(ie.getLemmata().size() - 1);
-								InformationEntity newIE = new InformationEntity(ie.getStartLemma(), false, labels,
-										isMorphemCoordination);
-								newIE.setExpression(ie.getLemmata());
-								iesForUnit = extractions.get(extractionUnit);
-								if (iesForUnit == null)
-									iesForUnit = new HashMap<InformationEntity, List<Pattern>>();
-								iesForUnit.put(newIE, patternList);
-								extractions.put(extractionUnit, iesForUnit);
-							}
+							token.setIEToken(true);
+							((TextToken) token).setTokensToCompleteInformationEntity(ie.getLemmata().size() - 1);
+//							System.out.println(token);
+//							System.out.println(extractionUnit.getSentence());
+//							System.out.println(ie.getLemmata());
+							InformationEntity newIE = new InformationEntity(ie.getStartLemma(), false, false);
+							newIE.setExpression(ie.getLemmata());
+							Map<InformationEntity, List<Pattern>> iesForUnit = extractions.get(extractionUnit);
+							if (iesForUnit == null)
+								iesForUnit = new HashMap<InformationEntity, List<Pattern>>();
+							iesForUnit.put(newIE, List);
+							extractions.put(extractionUnit, iesForUnit);
+							
+							//TODO match auf koordinierte Ausdrücke überprüfen
+							if(posList.contains("KON"))
+								System.out.println(extractionUnit.getSentence() + "\n" + newIE + "\n");
 						}
 					}
-
 				}
+//				if (token.isInformationEntity()) {
+//					skip += ((TextToken) token).getTokensToCompleteInformationEntity();
+//					System.out.println("skip: " +skip);
+//				}
 			}
 		}
-
 		return extractions;
 	}
 

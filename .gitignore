@@ -38,3 +38,7 @@ information_extraction/data/competences/esco/
 
 esco_v1.0.3.ttl
 
+classification/db/text_kernel.db
+classification/db/text_kernel_0705.db
+classification/db/text_kernel_cleaned.db
+raw_sentences.txt
