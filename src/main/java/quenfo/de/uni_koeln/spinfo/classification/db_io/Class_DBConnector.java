@@ -85,6 +85,7 @@ public class Class_DBConnector {
 	public static boolean insertClassifiedParagraphsinDB(Connection connection, List<ClassifyUnit> results,
 			int jahrgang, int zeilennummer, boolean correctable) throws SQLException {
 		boolean[] classIDs;
+		
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();

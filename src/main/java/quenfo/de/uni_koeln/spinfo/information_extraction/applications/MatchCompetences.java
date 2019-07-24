@@ -31,7 +31,7 @@ public class MatchCompetences {
 	// Pfad zur Input-DB mit den klassifizierten Paragraphen
 	//static String pararaphsDB = /* "D:/Daten/sqlite/CorrectableParagraphs.db"; */"C:/sqlite/classification/CorrectableParagraphs_"
 	//		+ jahrgang + ".db"; //
-	static String paragraphsDB = "C:/sqlite/classification/CorrectableParagraphs_textkernel.db";
+	static String paragraphsDB = "C:/sqlite/classification/CorrectableParagraphs_textkernel_2407.db";
 
 	// Ordner in dem die neue Output-DB angelegt werden soll
 	static String outputFolder = /* "D:/Daten/sqlite/"; */"C:/sqlite/matching/competences/";

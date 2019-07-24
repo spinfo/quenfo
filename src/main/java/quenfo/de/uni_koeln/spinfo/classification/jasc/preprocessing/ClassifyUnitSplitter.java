@@ -32,6 +32,7 @@ public class ClassifyUnitSplitter {
 		toReturn.add(merged.toString());
 		return toReturn;
 	}
+	
 
 	/**
 	 * Splits a String into reasonable paragraphs by performing the following
@@ -41,6 +42,7 @@ public class ClassifyUnitSplitter {
 	 * or is job title
 	 */
 	public static List<String> splitIntoParagraphs(String s) {
+		System.out.println("----------------------------!!!!!!!!!!!!!!!!!!--------------------------");
 		List<String> toReturn = new ArrayList<String>();
 		List<String> splitted = mergeLists(splitAtEmptyLine(s));
 
@@ -53,6 +55,11 @@ public class ClassifyUnitSplitter {
 
 		toReturn = mergeLists(toReturn);
 		toReturn = mergeWhatBelongsTogether(toReturn);
+		
+		for(String para : toReturn) {
+			System.out.println(para);
+			System.out.println("----------------------------------!!!!---------------------------------");
+		}
 
 		return toReturn;
 	}

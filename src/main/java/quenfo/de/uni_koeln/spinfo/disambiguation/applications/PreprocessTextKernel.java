@@ -39,6 +39,8 @@ public class PreprocessTextKernel {
 	static int fetchSize = 100;
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
+		
+		SentenceWriter sw = new SentenceWriter(new File("information_extraction/data/openNLPmodels/de-sent.bin"));
 
 		// Connect to input database
 		Connection inputConnection = null;
@@ -53,7 +55,7 @@ public class PreprocessTextKernel {
 		List<ClassifyUnit> jobAds = readDB(inputConnection);
 		System.out.println(jobAds.size() + " JobAds gefunden");
 		
-		SentenceWriter.writeSentences(jobAds);
+		sw.writeSentencesToTXT(jobAds);
 		System.out.println("Sentences written");
 		WSDJobs jobs = new WSDJobs();
 		jobAds = jobs.preprocessJobAds(jobAds);
