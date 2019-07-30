@@ -1,6 +1,34 @@
 package quenfo.de.uni_koeln.spinfo.information_extraction.utils;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.StmtIterator;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
+import org.jsoup.select.Elements;
+
+import quenfo.de.uni_koeln.spinfo.information_extraction.data.InformationEntity;
 
 /**
  * utility class that contains methods for data processing, e.g. string normalization
@@ -70,64 +98,146 @@ public final class Util {
 				break;
 			}
 		}
-		// if(!before.trim().equals(lemma.trim())){
-		// System.out.println("\nbefore: "+ before);
-		// System.out.println("after: "+lemma);
-		// }
 
 		return lemma;
 	}
 	
-	/**
-	 * proofs if all letters in the string are upper case (if so, the hyphen must
-	 * not be deleted)
-	 * 
-	 * @param string
-	 * @return
-	 */
-	@Deprecated
-	public static boolean isAllUpperCase(String string) {
-
-		string = string.replaceAll("-", "");
-
-		int i = 0;
-		try {
-			// character ist entweder kein Buchstabe oder ein großgeschriebener Buchstabe
-			while (!Character.isLetter(string.charAt(i)) || Character.isUpperCase(string.charAt(i))) {
-				i++;
-			}
-		} catch (StringIndexOutOfBoundsException e) {
-			return true;
-		}
-		return false;
-	}
 	
 	
-	/**
-	 * checks if list b is a sublist of list a
-	 * @param a
-	 * @param b
-	 * @return
-	 */
-	@Deprecated
-	public static boolean containsList(List<String> a, List<String> b) {
-
+	public static Map<String, Set<InformationEntity>> readRDF(File rdfFile, Map<String, Set<InformationEntity>> entities) {
 		
-		if (a.size() < b.size()) {
-			return false;
+		System.out.println("Read RDF Model ...");
+		Model model = ModelFactory.createDefaultModel();
+		model = model.read(rdfFile.getAbsolutePath());
+
+		String querySkills = "Select	*	Where { ?subj	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>	<http://data.europa.eu/esco/model#Skill> }";
+		Query query = QueryFactory.create(querySkills);
+		QueryExecution qe = QueryExecutionFactory.create(query, model);
+		org.apache.jena.query.ResultSet allSkills = qe.execSelect();
+
+		List<Property> props = new ArrayList<>();
+		props.add(model.createProperty("http://www.w3.org/2004/02/skos/core#prefLabel"));
+		props.add(model.createProperty("http://www.w3.org/2004/02/skos/core#altLabel"));
+
+		while (allSkills.hasNext()) {
+			// Label und Synonyme parsen
+			Resource skill = allSkills.nextSolution().getResource("?subj");
+			
+			String cat = ""; //TODO JB: broader Cat parsen
+
+			for (Property p : props) {
+
+				StmtIterator iter = skill.listProperties(p, "de");
+				while (iter.hasNext()) {
+					String label = iter.next().getString().toLowerCase();
+					
+					// Label normalisieren und
+					String[] split = label.split(" ");
+					String keyword;
+					try {
+						keyword = Util.normalizeLemma(split[0]);
+					} catch (ArrayIndexOutOfBoundsException e) {
+						continue;
+					}
+					Set<InformationEntity> iesForKeyword = entities.get(keyword);
+					if (iesForKeyword == null)
+						iesForKeyword = new HashSet<InformationEntity>();
+					InformationEntity ie = new InformationEntity(keyword, split.length == 1, cat, false);
+					if (!ie.isSingleWordEntity()) {
+						for (String string : split) {
+							ie.addLemma(Util.normalizeLemma(string));
+
+						}
+					}
+					if (iesForKeyword.contains(ie)) {
+						for (InformationEntity curr : iesForKeyword) {
+							if (curr.equals(ie)) {
+								curr.addLabel(cat);
+								iesForKeyword.add(curr);
+							}
+						}
+					} else
+						iesForKeyword.add(ie);
+
+					entities.put(keyword, iesForKeyword);
+				}
+			}			
 		}
-		for (int i = 0; i <= a.size() - b.size(); i++) {
-			boolean match = false;
-			for (int j = 0; j < b.size(); j++) {
-				match = a.get(i + j).equals(b.get(j));
-				if (!match)
-					break;
-			}
-			if (match) {
-				return true;
-			}
-		}
-		return false;
+		return entities;		
 	}
+	
+	
+	
+	public static Map<String, Set<InformationEntity>> readTEI(File teiFile, String category, Map<String, Set<InformationEntity>> entities) throws IOException, FileNotFoundException {
+		
+		
+		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(teiFile), "UTF8"));
+
+		StringBuilder sb = new StringBuilder();
+		String line = "";
+		while ((line = br.readLine()) != null) {
+			sb.append(line);
+		}
+		br.close();
+		String teiString = sb.toString();
+
+		Document doc = Jsoup.parse(teiString, "", Parser.xmlParser());
+
+		Map<String, Set<String>> allOrths = new HashMap<>();
+
+		Elements catElements = doc.select(category);
+		for (Element catElement : catElements) {
+			String cat = catElement.attr("label");
+			Elements orthElements = catElement.select("orth");
+			for (Element orthElement : orthElements) {
+				String orth = orthElement.text();
+				if (orth.equals(""))
+					continue;
+
+				Set<String> labels = allOrths.get(orth);
+				if (labels == null)
+					labels = new HashSet<String>();
+				labels.add(cat);
+				allOrths.put(orth, labels);
+
+				String[] split = orth.split(" ");
+				String keyword;
+				try {
+					keyword = Util.normalizeLemma(split[0]);
+				} catch (ArrayIndexOutOfBoundsException e) {
+					continue;
+				}
+				Set<InformationEntity> iesForKeyword = entities.get(keyword);
+				if (iesForKeyword == null)
+					iesForKeyword = new HashSet<InformationEntity>();
+				InformationEntity ie = new InformationEntity(keyword, split.length == 1, cat, false);
+				if (!ie.isSingleWordEntity()) {
+					for (String string : split) {
+						ie.addLemma(Util.normalizeLemma(string));
+
+					}
+				}
+				if (iesForKeyword.contains(ie)) {
+					for (InformationEntity curr : iesForKeyword) {
+						if (curr.equals(ie)) {
+							curr.addLabel(cat);
+							iesForKeyword.add(curr);
+						}
+					}
+				} else
+					iesForKeyword.add(ie);
+
+				entities.put(keyword, iesForKeyword);
+
+			}
+
+		}
+		
+		return entities;
+	}
+	
+
+	
+
 
 }

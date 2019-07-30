@@ -15,6 +15,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -22,6 +31,8 @@ import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.io.Files;
 
 import de.uni_koeln.spinfo.workflow.CoordinateExpander;
 import is2.tools.Tool;
@@ -132,6 +143,10 @@ public class IEJobs {
 	private void initialize(File knownEntities, File negativeEntities, File teiFile, String category,
 			File modifiersFile, File patternsFile, boolean resolveCoordinations, File possCoordinates)
 			throws IOException {
+		
+		
+		
+		
 		if (resolveCoordinations)
 			this.ce = new CoordinateExpander(possCoordinates);
 
@@ -160,67 +175,7 @@ public class IEJobs {
 
 	private void readTEIFile(File teiFile, String category) throws IOException {
 
-		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(teiFile), "UTF8"));
-
-		StringBuilder sb = new StringBuilder();
-		String line = "";
-		while ((line = br.readLine()) != null) {
-			sb.append(line);
-		}
-		br.close();
-		String teiString = sb.toString();
-
-		Document doc = Jsoup.parse(teiString, "", Parser.xmlParser());
-
-		Map<String, Set<String>> allOrths = new HashMap<>();
-
-		Elements catElements = doc.select(category);
-		for (Element catElement : catElements) {
-			String cat = catElement.attr("label");
-			Elements orthElements = catElement.select("orth");
-			for (Element orthElement : orthElements) {
-				String orth = orthElement.text();
-				if (orth.equals(""))
-					continue;
-
-				Set<String> labels = allOrths.get(orth);
-				if (labels == null)
-					labels = new HashSet<String>();
-				labels.add(cat);
-				allOrths.put(orth, labels);
-
-				String[] split = orth.split(" ");
-				String keyword;
-				try {
-					keyword = Util.normalizeLemma(split[0]);
-				} catch (ArrayIndexOutOfBoundsException e) {
-					continue;
-				}
-				Set<InformationEntity> iesForKeyword = entities.get(keyword);
-				if (iesForKeyword == null)
-					iesForKeyword = new HashSet<InformationEntity>();
-				InformationEntity ie = new InformationEntity(keyword, split.length == 1, cat, false);
-				if (!ie.isSingleWordEntity()) {
-					for (String string : split) {
-						ie.addLemma(Util.normalizeLemma(string));
-
-					}
-				}
-				if (iesForKeyword.contains(ie)) {
-					for (InformationEntity curr : iesForKeyword) {
-						if (curr.equals(ie)) {
-							curr.addLabel(cat);
-							iesForKeyword.add(curr);
-						}
-					}
-				} else
-					iesForKeyword.add(ie);
-
-				entities.put(keyword, iesForKeyword);
-
-			}
-
-		}
+		entities = Util.readTEI(teiFile, category, entities);
 
 	}
 
@@ -232,40 +187,52 @@ public class IEJobs {
 	 * @throws IOException
 	 */
 	private void readKnownEntitiesFromFile(File entitiesFile) throws IOException {
-		BufferedReader in = new BufferedReader(new FileReader(entitiesFile));
-		String line = in.readLine();
-		while (line != null) {
-			if (line.equals("")) {
-				line = in.readLine();
-				continue;
-			}
-			String[] split = line.split(" ");
-			String keyword;
-			try {
-				keyword = Util.normalizeLemma(split[0]);
-			} catch (ArrayIndexOutOfBoundsException e) {
-				line = in.readLine();
-				continue;
-			}
-			Set<InformationEntity> iesForKeyword = entities.get(keyword);
-			if (iesForKeyword == null)
-				iesForKeyword = new HashSet<InformationEntity>();
-			// nicht kategorisierte IEs haben kein Label
-			InformationEntity ie = new InformationEntity(keyword, split.length == 1, "", false);
-			if (!ie.isSingleWordEntity()) {
-				for (String string : split) {
-					ie.addLemma(Util.normalizeLemma(string));
-
+		
+		String extension = Files.getFileExtension(entitiesFile.getAbsolutePath());
+		if(extension.equals("txt")) {
+			BufferedReader in = new BufferedReader(new FileReader(entitiesFile));
+			String line = in.readLine();
+			while (line != null) {
+				if (line.equals("")) {
+					line = in.readLine();
+					continue;
 				}
+				String[] split = line.split(" ");
+				String keyword;
+				try {
+					keyword = Util.normalizeLemma(split[0]);
+				} catch (ArrayIndexOutOfBoundsException e) {
+					line = in.readLine();
+					continue;
+				}
+				Set<InformationEntity> iesForKeyword = entities.get(keyword);
+				if (iesForKeyword == null)
+					iesForKeyword = new HashSet<InformationEntity>();
+				// nicht kategorisierte IEs haben kein Label
+				InformationEntity ie = new InformationEntity(keyword, split.length == 1, "", false);
+				if (!ie.isSingleWordEntity()) {
+					for (String string : split) {
+						ie.addLemma(Util.normalizeLemma(string));
+
+					}
+				}
+				boolean isnew = iesForKeyword.add(ie);
+				if (isnew) {
+					knownEntities++;
+				}
+				entities.put(keyword, iesForKeyword);
+				line = in.readLine();
 			}
-			boolean isnew = iesForKeyword.add(ie);
-			if (isnew) {
-				knownEntities++;
-			}
-			entities.put(keyword, iesForKeyword);
-			line = in.readLine();
+			in.close();
+		} else if (extension.equals("ttl")) {
+			entities = Util.readRDF(entitiesFile, entities);
+		} else {
+			System.err.println("unbekanntes Dateiformat: " + entitiesFile.getAbsolutePath());
 		}
-		in.close();
+		
+		
+		
+		
 	}
 
 	// Liest die Begriffe (Modifizierer oder Falsch-Extraktionen) aus dem

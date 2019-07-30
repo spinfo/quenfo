@@ -97,7 +97,7 @@ public class ZoneJobs {
 
 		Set<Integer> textIDs = texts.keySet();
 		for (Integer textID : textIDs) {
-			List<String> splitAtEmptyLine = ClassifyUnitSplitter.splitIntoParagraphs(texts.get(textID));
+			Set<String> splitAtEmptyLine = ClassifyUnitSplitter.splitIntoParagraphs(texts.get(textID));
 			for (String content : splitAtEmptyLine) {
 				JASCClassifyUnit unitToClassify = new JASCClassifyUnit(content.replaceAll("\\/", "\\_"), textID);
 				paragraphs.add(unitToClassify);

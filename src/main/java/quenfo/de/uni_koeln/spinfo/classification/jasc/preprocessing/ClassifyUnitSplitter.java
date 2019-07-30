@@ -1,7 +1,9 @@
 package quenfo.de.uni_koeln.spinfo.classification.jasc.preprocessing;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,11 +43,11 @@ public class ClassifyUnitSplitter {
 	 * doesn't end with dot and second line doesn't start with upper case char
 	 * or is job title
 	 */
-	public static List<String> splitIntoParagraphs(String s) {
-		System.out.println("----------------------------!!!!!!!!!!!!!!!!!!--------------------------");
+	public static Set<String> splitIntoParagraphs(String s) {
+//		System.out.println("----------------------------!!!!!!!!!!!!!!!!!!--------------------------");
 		List<String> toReturn = new ArrayList<String>();
 		List<String> splitted = mergeLists(splitAtEmptyLine(s));
-
+		
 		for (String string : splitted) {
 			string = string.trim();
 			if (string.length() > 0 && !containsOnlyNonWordChars(string)) {
@@ -56,12 +58,12 @@ public class ClassifyUnitSplitter {
 		toReturn = mergeLists(toReturn);
 		toReturn = mergeWhatBelongsTogether(toReturn);
 		
-		for(String para : toReturn) {
-			System.out.println(para);
-			System.out.println("----------------------------------!!!!---------------------------------");
-		}
+//		for(String para : toReturn) {
+//			System.out.println(para);
+//			System.out.println("----------------------------------!!!!---------------------------------");
+//		}
 
-		return toReturn;
+		return new HashSet<>(toReturn);
 	}
 
 	private static boolean looksLikeJobTitle(String string) {
@@ -113,7 +115,6 @@ public class ClassifyUnitSplitter {
 			i++;
 		}
 		toReturn.add(previous);
-
 		return toReturn;
 	}
 

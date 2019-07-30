@@ -1,12 +1,12 @@
 package quenfo.de.uni_koeln.spinfo.classification.core.helpers;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class EncodingProblemTreatment {
 
-	public static List<String> normalizeEncoding(List<String> paragraphs) {
-		List<String> toReturn = new ArrayList<String>();
+	public static Set<String> normalizeEncoding(Set<String> paragraphs) {
+		Set<String> toReturn = new HashSet<String>();
 		for (String paragraph : paragraphs) {
 
 			toReturn.add(normalizeEncoding(paragraph));

@@ -28,13 +28,13 @@ public class ExtractNewCompetences {
 
 	// Pfad zur Input-DB mit den klassifizierten Paragraphen
 	//static String inputDB = "C:/sqlite/classification/CorrectableParagraphs_" + jahrgang + ".db";
-	static String inputDB = "C:/sqlite/classification/CorrectableParagraphs_textkernel.db";
+	static String inputDB = "C:/sqlite/classification/CorrectableParagraphs_textkernel_3007.db";
 
 	// Output-Ordner
 	static String outputFolder = "C:/sqlite/information_extraction/competences/";
 
 	// Name der Output-DB
-	static String outputDB = "CorrectableCompetences_" + jahrgang + ".db";
+	static String outputDB = "CorrectableCompetences_textkernel.db";
 
 	// txt-File mit allen bereits bekannten (validierten) Kompetenzen (die
 	// bekannten Kompetenzn helfen beim Auffinden neuer Kompetenzen)

@@ -2,7 +2,6 @@ package quenfo.de.uni_koeln.spinfo.classification.jasc.workflow;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
@@ -14,8 +13,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import quenfo.de.uni_koeln.spinfo.classification.core.classifier.model.Model;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
@@ -112,7 +113,7 @@ public class ConfigurableDatabaseClassifier {
 		;
 		int jobAdCount = 0;
 		int paraCount = 0;
-		query = "SELECT ZEILENNR, Jahrgang, STELLENBESCHREIBUNG FROM " + tableName + " LIMIT ? OFFSET ?;";
+		query = "SELECT ZEILENNR, Jahrgang, STELLENBESCHREIBUNG FROM " + tableName + " WHERE LANG='de' LIMIT ? OFFSET ?;";
 
 		PreparedStatement prepStmt = inputDb.prepareStatement(query);
 		prepStmt.setInt(1, queryLimit);
@@ -138,11 +139,11 @@ public class ConfigurableDatabaseClassifier {
 
 		boolean goOn = true;
 		boolean askAgain = true;
-		long start = System.currentTimeMillis();
-		
+		long start = System.currentTimeMillis();	
 		
 
-		while (queryResult.next() && goOn) {
+		while (queryResult.next() && goOn) {			
+			
 			jobAdCount++;
 			String jobAd = null;
 			zeilenNr = queryResult.getInt("ZEILENNR");
@@ -174,8 +175,11 @@ public class ConfigurableDatabaseClassifier {
 			}
 
 			// 1. Split into paragraphs and create a ClassifyUnit per paragraph
-			List<String> paragraphs = ClassifyUnitSplitter.splitIntoParagraphs(jobAd);		
-			
+			Set<String> paragraphs = ClassifyUnitSplitter.splitIntoParagraphs(jobAd);		
+			Set<String> paraSet = new HashSet<String>(paragraphs);
+			if (paragraphs.size() != paraSet.size())
+				System.out.println(zeilenNr);
+			//System.exit(0);
 			// if treat enc
 			if (config.getFeatureConfiguration().isTreatEncoding()) {
 				paragraphs = EncodingProblemTreatment.normalizeEncoding(paragraphs);
@@ -204,21 +208,22 @@ public class ConfigurableDatabaseClassifier {
 			List<ClassifyUnit> results = new ArrayList<ClassifyUnit>();
 			for (ClassifyUnit cu : classified.keySet()) {
 				((ZoneClassifyUnit) cu).setClassIDs(classified.get(cu));
-				// System.out.println();
-				// System.out.println(cu.getContent());
-				// System.out.print("-----> CLASS: ");
+//				 System.out.println();
+//				 System.out.println(cu.getContent());
+//				 System.out.print("-----> CLASS: ");
 				boolean[] ids = ((ZoneClassifyUnit) cu).getClassIDs();
 				boolean b = false;
 				for (int i = 0; i < ids.length; i++) {
 					if (ids[i]) {
 						if (b) {
-							// System.out.print("& " + (i + 1));
+//							 System.out.print("& " + (i + 1));
 						} else {
-							// System.out.println((i + 1));
+//							 System.out.println((i + 1));
 						}
 						b = true;
 					}
 				}
+
 				results.add(cu);
 			}
 			Class_DBConnector.insertClassifiedParagraphsinDB(corrConnection, results, jahrgang, zeilenNr, true);
@@ -263,9 +268,7 @@ public class ConfigurableDatabaseClassifier {
 				}
 				start = System.currentTimeMillis();
 			}
-		}
 		
-
+		}
 	}
-
 }

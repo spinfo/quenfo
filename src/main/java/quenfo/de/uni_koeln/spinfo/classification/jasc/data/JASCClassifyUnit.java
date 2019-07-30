@@ -2,6 +2,7 @@ package quenfo.de.uni_koeln.spinfo.classification.jasc.data;
 
 import java.util.UUID;
 
+import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data.ZoneClassifyUnit;
 
 /** 

@@ -530,16 +530,16 @@ public class CoordinationResolver {
 
 			// Fälle, bei denen der Ergänzungsstrich als Bindestrich bleiben muss (PC-
 			// // MS-Office- // ...)
-			boolean ellipseIsUppercase = Util.isAllUpperCase(ellipse);
-			if (!compound.equals("")) {
-				if (ellipseIsUppercase) {
-					// Bindestrich beibehalten, Compound großschreiben
-					compound = Character.toUpperCase(compound.charAt(0)) + compound.substring(1);
-				} else {
-					ellipse = ellipse.replaceAll("-", "");
-				}
-			}
-			konjuncts.get(i)[1] = ellipse + compound;
+			//boolean ellipseIsUppercase = Util.isAllUpperCase(ellipse);
+//			if (!compound.equals("")) {
+//				if (ellipseIsUppercase) {
+//					// Bindestrich beibehalten, Compound großschreiben
+//					compound = Character.toUpperCase(compound.charAt(0)) + compound.substring(1);
+//				} else {
+//					ellipse = ellipse.replaceAll("-", "");
+//				}
+//			}
+//			konjuncts.get(i)[1] = ellipse + compound;
 		}
 		return konjuncts;
 	}
