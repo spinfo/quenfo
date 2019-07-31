@@ -31,7 +31,7 @@ public class MatchCompetences {
 	// Pfad zur Input-DB mit den klassifizierten Paragraphen
 	//static String pararaphsDB = /* "D:/Daten/sqlite/CorrectableParagraphs.db"; */"C:/sqlite/classification/CorrectableParagraphs_"
 	//		+ jahrgang + ".db"; //
-	static String paragraphsDB = "C:/sqlite/classification/CorrectableParagraphs_textkernel_3007.db";
+	static String paragraphsDB = "C:/sqlite/classification/CorrectableParagraphs_textkernel.db";
 
 	// Ordner in dem die neue Output-DB angelegt werden soll
 	static String outputFolder = /* "D:/Daten/sqlite/"; */"C:/sqlite/matching/competences/";
@@ -42,6 +42,7 @@ public class MatchCompetences {
 	// txt-File mit den validierten Kompetenzen
 	//static File competences = new File("information_extraction/data/competences/competences.txt");
 	static File notCatComps = new File("information_extraction/data/competences/esco/esco_v1.0.3.ttl");//new File("information_extraction/data/competences/notCategorized.txt"); //TODO refactoring
+//	static File notCatComps = new File("information_extraction/data/competences/esco/ict_skills_collection.ttl");
 	
 	// tei-File mit kategorisierten Kompetenzen
 //	static File catComps = new File("information_extraction/data/competences/tei_index/compdict.tei");
