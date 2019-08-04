@@ -1,6 +1,8 @@
 package quenfo.de.uni_koeln.spinfo.information_extraction.data;
 
 import de.uni_koeln.spinfo.data.Token;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * @author geduldia
@@ -10,6 +12,8 @@ import de.uni_koeln.spinfo.data.Token;
  * known Information-Entity (= competence or tool) or (the first token of) an importanceTerm.
  *
  */
+@Data
+@EqualsAndHashCode(callSuper=true)
 public class TextToken extends Token {
 	
 	//Falls das Token das erste Token einer Information-Entity ist: Anzahl der noch fehlenden Tokens im Satz
@@ -29,50 +33,8 @@ public class TextToken extends Token {
 	public TextToken(String string, String lemma, String posTag) {
 		super(string, lemma, posTag);
 	}
-
-	/**
-	 * @return if this is the first Token of an InformationEntity: number of tokens to complete the InformationEntity )
-	 */
-	public int getTokensToCompleteInformationEntity() {
-		return tokensToCompleteInformationEntity;
-	}
-
 	
-	/**
-	 * @param tokensToCompleteInformationEntity
-	 */
-	public void setTokensToCompleteInformationEntity(int tokensToCompleteInformationEntity) {
-		this.tokensToCompleteInformationEntity = tokensToCompleteInformationEntity;
-	}
-
-	/**
-	 * @return if this is the first token of a modifier: number of tokens to complete the modifier
-	 */
-	public int getTokensToCompleteModifier() {
-		return tokensToCompleteModifier;
-	}
-
-	/**
-	 * @param tokensToCompleteModifier
-	 */
-	public void setTokensToCompleteModifier(int tokensToCompleteModifier) {
-		this.tokensToCompleteModifier = tokensToCompleteModifier;
-	}
-
-	/**
-	 * @return returns true if token is a known typical mistake
-	 */
-	public boolean isNoEntity() {
-		return noEntity;
-	}
-
-	/**
-	 * @param isNoEntity
-	 */
-	public void setNoEntity(boolean isNoEntity) {
-		this.noEntity = isNoEntity;
-	}
-
+	
 	/**
 	 * compares this TextToken to the given PatternToken
 	 * @param patternToken
@@ -150,23 +112,70 @@ public class TextToken extends Token {
 		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		sb.append(token + "\t" + lemma + "\t" + posTag + "\t");
-		if (this.ieToken) {
-			sb.append("isInformationEntity" + "\t");
-		}
-		if (this.noEntity) {
-			sb.append("isNoEntity" + "\t");
-		}
-		if (this.modifierToken) {
-			sb.append("is (start of) modifier" + "\t");
-		}
-		return sb.toString();
-	}
+//	/* (non-Javadoc)
+//	 * @see java.lang.Object#toString()
+//	 */
+//	@Override
+//	public String toString() {
+//		StringBuffer sb = new StringBuffer();
+//		sb.append(token + "\t" + lemma + "\t" + posTag + "\t");
+//		if (this.ieToken) {
+//			sb.append("isInformationEntity" + "\t");
+//		}
+//		if (this.noEntity) {
+//			sb.append("isNoEntity" + "\t");
+//		}
+//		if (this.modifierToken) {
+//			sb.append("is (start of) modifier" + "\t");
+//		}
+//		return sb.toString();
+//	}
+	
+	
+
+//	/**
+//	 * @return if this is the first Token of an InformationEntity: number of tokens to complete the InformationEntity )
+//	 */
+//	public int getTokensToCompleteInformationEntity() {
+//		return tokensToCompleteInformationEntity;
+//	}
+//
+//	
+//	/**
+//	 * @param tokensToCompleteInformationEntity
+//	 */
+//	public void setTokensToCompleteInformationEntity(int tokensToCompleteInformationEntity) {
+//		this.tokensToCompleteInformationEntity = tokensToCompleteInformationEntity;
+//	}
+//
+//	/**
+//	 * @return if this is the first token of a modifier: number of tokens to complete the modifier
+//	 */
+//	public int getTokensToCompleteModifier() {
+//		return tokensToCompleteModifier;
+//	}
+//
+//	/**
+//	 * @param tokensToCompleteModifier
+//	 */
+//	public void setTokensToCompleteModifier(int tokensToCompleteModifier) {
+//		this.tokensToCompleteModifier = tokensToCompleteModifier;
+//	}
+//
+//	/**
+//	 * @return returns true if token is a known typical mistake
+//	 */
+//	public boolean isNoEntity() {
+//		return noEntity;
+//	}
+//
+//	/**
+//	 * @param isNoEntity
+//	 */
+//	public void setNoEntity(boolean isNoEntity) {
+//		this.noEntity = isNoEntity;
+//	}
+
+
 
 }

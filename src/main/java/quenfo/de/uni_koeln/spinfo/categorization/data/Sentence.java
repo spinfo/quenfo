@@ -1,20 +1,21 @@
 package quenfo.de.uni_koeln.spinfo.categorization.data;
 
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Setter;
 import quenfo.de.uni_koeln.spinfo.categorization.workflow.Cat_Jobs;
 
+@Data
+@EqualsAndHashCode( of = {"id"})
 public class Sentence {
 	
 	String id;
+	@Setter(AccessLevel.NONE)
 	String lemmata;
 	String trimmed;
 	
-	public String getTrimmed() {
-		return trimmed;
-	}
 
-	public void setTrimmed(String trimmed) {
-		this.trimmed = trimmed;
-	}
 
 	public Sentence(String id){
 		this.id = id;
@@ -25,29 +26,39 @@ public class Sentence {
 		this.lemmata = Cat_Jobs.normalizeSentence(lemmata);
 	}
 	
-	
-	@Override
-	public boolean equals(Object o){
-		Sentence s = (Sentence) o;
-		return s.id.equals(this.id);
-	}
-
-	public String getLemmata() {
-		return lemmata;
-	}
+//	public String getLemmata() {
+//		return lemmata;
+//	}
 
 	public void setLemmata(String lemmata) {
 		this.lemmata = Cat_Jobs.normalizeSentence(lemmata);
 	}
-
-	public String getId() {
-		return id;
-	}
 	
-	@Override
-	public int hashCode(){
-		return id.hashCode();
-	}
+	
+//	@Override
+//	public boolean equals(Object o){
+//		Sentence s = (Sentence) o;
+//		return s.id.equals(this.id);
+//	}
+//	
+//	@Override
+//	public int hashCode(){
+//		return id.hashCode();
+//	}
+
+//	public String getTrimmed() {
+//	return trimmed;
+//}
+//
+//public void setTrimmed(String trimmed) {
+//	this.trimmed = trimmed;
+//}
+
+//	public String getId() {
+//		return id;
+//	}
+	
+
 	
 	
 	

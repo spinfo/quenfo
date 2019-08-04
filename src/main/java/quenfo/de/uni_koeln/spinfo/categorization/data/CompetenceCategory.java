@@ -1,5 +1,6 @@
 package quenfo.de.uni_koeln.spinfo.categorization.data;
 
+import lombok.Data;
 
 /**
  * @author geduldia
@@ -11,6 +12,7 @@ package quenfo.de.uni_koeln.spinfo.categorization.data;
  * - thirdLevelCategore (z.B. 'Logistik-Kenntnisse' - noch feinere Unterteilung von AMS. Zur Evaluation und Kategorisierung wird aber die SecondLevelCategory verwendet)
  * 
  */
+@Data
 public class CompetenceCategory extends Category{
 	
 	private String thirdLevelCategory;
@@ -42,6 +44,6 @@ public class CompetenceCategory extends Category{
 	
 	@Override
 	public boolean equals(Object o){
-		return ((Category) o).getsecondLevelCategory().equals(this.getsecondLevelCategory());
+		return ((Category) o).getSecondLevelCategory().equals(this.getSecondLevelCategory());
 	}
 }

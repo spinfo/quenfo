@@ -508,8 +508,9 @@ public class IE_DBConnector {
 			if (resolvedCoo == null) // sammelt nur IEs mit Koordination
 				continue;
 
-			ie = new InformationEntity(entity[0], false, false, firstIndex, resolvedCoo);
-			ie.setExpression(Arrays.asList(entity));
+			ie = new InformationEntity(entity[0], false, firstIndex);
+			ie.setLemmata(Arrays.asList(entity));
+			ie.setCoordinates(resolvedCoo);
 			List<Pattern> patterns = new ArrayList<Pattern>();
 			String[] descriptions = patternString.split("\\]\\s\\[");
 			for (int i = 0; i < descriptions.length; i++) {

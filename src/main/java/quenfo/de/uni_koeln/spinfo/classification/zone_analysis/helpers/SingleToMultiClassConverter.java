@@ -70,6 +70,12 @@ public class SingleToMultiClassConverter {
 		return -1;
 	}
 
+	/**
+	 * transformiert singleClassID in boolsches Array
+	 * singleClassID = -1 wird auf "Letzte Klasse" = true gesetzt
+	 * @param singleClassID
+	 * @return
+	 */
 	public boolean[] getMultiClasses(int singleClassID){
 		
 		if(singleClassID==7){

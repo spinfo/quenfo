@@ -1,5 +1,6 @@
 package quenfo.de.uni_koeln.spinfo.information_extraction.workflow;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -8,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.uni_koeln.spinfo.data.Token;
+import de.uni_koeln.spinfo.workflow.CoordinateExpander;
 import is2.lemmatizer.Lemmatizer;
 import is2.tag.Tagger;
 import is2.tools.Tool;
@@ -15,7 +18,6 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.data.ExtractionUnit;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.IEType;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.InformationEntity;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.Pattern;
-import quenfo.de.uni_koeln.spinfo.information_extraction.data.TextToken;
 import quenfo.de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
 import quenfo.de.uni_koeln.spinfo.information_extraction.preprocessing.MateTagger;
 
@@ -40,7 +42,8 @@ public class CoordinationEvaluator {
 		InformationEntity ie = null;
 		List<Pattern> pattern = null;
 
-		CoordinationResolver cr = new CoordinationResolver();
+//		CoordinationResolver cr = new CoordinationResolver();
+		CoordinateExpander ce = new CoordinateExpander(new File("src/test/resources/coordinations/possibleCompounds.txt"));
 
 		for (Map.Entry<ExtractionUnit, Map<InformationEntity, List<Pattern>>> e : ies.entrySet()) {
 			eu = e.getKey();
@@ -61,10 +64,15 @@ public class CoordinationEvaluator {
 				String[] lemmas = eu.getLemmata();
 				String[] pos = eu.getPosTags();
 
-				List<TextToken> completeEntity = new ArrayList<TextToken>();
-				List<TextToken> extractionUnit = new ArrayList<TextToken>();
+//				List<TextToken> completeEntity = new ArrayList<TextToken>();
+//				List<TextToken> extractionUnit = new ArrayList<TextToken>();
 
-				TextToken token = null;
+//				TextToken token = null;
+				
+				List<Token> completeEntity = new ArrayList<Token>();
+				List<Token> extractionUnit = new ArrayList<Token>();
+				
+				Token token = null;
 				boolean finished = false;
 				for (int i = 0; i < tokens.length; i++) {
 
@@ -72,9 +80,11 @@ public class CoordinationEvaluator {
 					lemmas[i] = lemmas[i].replaceAll("[^A-Za-zäÄüÜöÖß-]", "");
 
 					if (pos == null) {
-						token = new TextToken(tokens[i], lemmas[i], null);
+						token = new Token(tokens[i], lemmas[i], null);
+//						token = new TextToken(tokens[i], lemmas[i], null);
 					} else {
-						token = new TextToken(tokens[i], lemmas[i], pos[i]);
+						token = new Token(tokens[i], lemmas[i], pos[i]);
+//						token = new TextToken(tokens[i], lemmas[i], pos[i]);
 					}
 
 					extractionUnit.add(token);
@@ -88,10 +98,10 @@ public class CoordinationEvaluator {
 				// Morphemkoordinationen auflösen und mit Goldstandard vergleichen
 				List<String> goldResults = ie.getCoordinations();
 				if(Arrays.asList(pos).contains("KON")) {
-					List<List<TextToken>> resultTextToken = cr.resolve(completeEntity, extractionUnit, lemmatizer, false);
+					List<List<Token>> resultTextToken = ce.resolve(completeEntity, extractionUnit, lemmatizer, false);
 					List<String[]> result = new ArrayList<String[]>();
 					
-					for(List<TextToken> ttList : resultTextToken) {
+					for(List<Token> ttList : resultTextToken) {
 						String[] coordination = new String[ttList.size()];
 						for(int i = 0; i < ttList.size(); i++) {
 							coordination[i] = ttList.get(i).getLemma();
@@ -106,7 +116,8 @@ public class CoordinationEvaluator {
 						for (String[] r : result) {
 							System.out.println(Arrays.asList(r));
 						}
-						cr.resolve(completeEntity, extractionUnit, lemmatizer, true);
+						ce.resolve(completeEntity, extractionUnit, lemmatizer, true);
+
 						System.out.println("-----");
 					}
 
@@ -119,8 +130,8 @@ public class CoordinationEvaluator {
 						if (rLemmas.size() > 1) {
 							isSingleWordEntity = false;
 						}
-						currIE = new InformationEntity(rLemmas.get(0), isSingleWordEntity, true);
-						currIE.setExpression(rLemmas);
+						currIE = new InformationEntity(rLemmas.get(0), isSingleWordEntity);
+						currIE.setLemmata(rLemmas);
 						resolvedIEs.put(currIE, pattern);
 					}
 				}

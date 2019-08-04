@@ -72,7 +72,7 @@ public class ExtractionUnitBuilder {
 					extractionUnit.setSentence(sentence);
 					extractionUnit.setJobAdID(((JASCClassifyUnit) cu).getParentID());
 					extractionUnit.setSecondJobAdID(((JASCClassifyUnit) cu).getSecondParentID());
-					extractionUnit.setClassifyUnitID(cu.getID());
+					extractionUnit.setClassifyUnitID(cu.getId());
 					extractionUnit.setClassifyUnitTableID(((JASCClassifyUnit) cu).getTableID());
 					extractionUnit.setJobAdID(((JASCClassifyUnit) cu).getParentID());
 
@@ -86,6 +86,7 @@ public class ExtractionUnitBuilder {
 					if (tokens != null) {
 						extractionUnit.setTokens(tokens.get(i).split(" \\| "));
 					}
+//					System.out.println(extractionUnit);
 					extractionUnits.add(extractionUnit);
 				}
 			}

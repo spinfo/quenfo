@@ -113,17 +113,21 @@ public class TrainingDataGenerator {
 					content.append(line + "\n");
 				}
 				line = in.readLine();
-
+				
 			}
 			if (/** classes.length **/
 			classID != 0) {
 				JASCClassifyUnit utc = new JASCClassifyUnit(content.toString(),
 						parentID, secondParentID, paragraphID);
 				utc.setActualClassID(classID);
+				
 				classifiedData.add(utc);
 			}
 			in.close();
 		}
+		
+		
+		
 		return classifiedData;
 	}
 
@@ -272,7 +276,7 @@ public class TrainingDataGenerator {
 				PrintWriter out = new PrintWriter(new FileWriter(trainingDataFile));
 				out.write("deletions:"+deletions+"\n");
 				for (ClassifyUnit unitToClassify : toWrite) {
-					out.print(unitToClassify.getID() + "\t");
+					out.print(unitToClassify.getId() + "\t");
 					if(unitToClassify instanceof JASCClassifyUnit){
 						out.print(((JASCClassifyUnit) unitToClassify).getParentID() +"-"+((JASCClassifyUnit) unitToClassify).getSecondParentID()+"\t");
 					}

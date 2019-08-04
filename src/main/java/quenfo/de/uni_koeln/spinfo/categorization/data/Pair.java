@@ -1,5 +1,12 @@
 package quenfo.de.uni_koeln.spinfo.categorization.data;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
+@Data
+@ToString(of = {"e1", "e2"})
+@EqualsAndHashCode(of = {"e1", "e2"})
 public class Pair implements Comparable<Pair> {
 
 	private Entity e1;
@@ -30,52 +37,52 @@ public class Pair implements Comparable<Pair> {
 		}
 	}
 
-	public Entity getE1() {
-		return e1;
-	}
+//	public Entity getE1() {
+//		return e1;
+//	}
+//
+//	public void setE1(Entity e1) {
+//		this.e1 = e1;
+//	}
+//
+//	public Entity getE2() {
+//		return e2;
+//	}
+//
+//	public void setE2(Entity e2) {
+//		this.e2 = e2;
+//	}
+//
+//	public double getScore() {
+//		return score;
+//	}
+//
+//	public void setScore(double score) {
+//		this.score = score;
+//	}
 
-	public void setE1(Entity e1) {
-		this.e1 = e1;
-	}
-
-	public Entity getE2() {
-		return e2;
-	}
-
-	public void setE2(Entity e2) {
-		this.e2 = e2;
-	}
-
-	public double getScore() {
-		return score;
-	}
-
-	public void setScore(double score) {
-		this.score = score;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		Pair pair = (Pair) o;
-		if (this.e1.equals(pair.getE1())) {
-			return this.e2.equals(pair.getE2());
-		}
-		if (this.e1.equals(pair.getE2())) {
-			return this.e2.equals(pair.getE1());
-		}
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		String s = e1.getLemma() + e2.getLemma();
-		return s.hashCode();
-	}
-
-	@Override
-	public String toString() {
-		return this.e1 + " - " + this.e2;
-	}
+//	@Override
+//	public boolean equals(Object o) {
+//		Pair pair = (Pair) o;
+//		if (this.e1.equals(pair.getE1())) {
+//			return this.e2.equals(pair.getE2());
+//		}
+//		if (this.e1.equals(pair.getE2())) {
+//			return this.e2.equals(pair.getE1());
+//		}
+//		return false;
+//	}
+//
+//	@Override
+//	public int hashCode() {
+//		String s = e1.getLemma() + e2.getLemma();
+//		return s.hashCode();
+//	}
+//
+//	@Override
+//	public String toString() {
+//		return this.e1 + " - " + this.e2;
+//	}
 
 	@Override
 	public int compareTo(Pair pair) {

@@ -66,26 +66,23 @@
 			<artifactId>lucene-snowball</artifactId>
 			<version>3.0.3</version>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-analyzers-common</artifactId>
-			<version>7.3.1</version>
-		</dependency> -->
-				<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-core -->
+		<!-- <dependency> <groupId>org.apache.lucene</groupId> <artifactId>lucene-analyzers-common</artifactId> 
+			<version>7.3.1</version> </dependency> -->
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-core -->
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-core</artifactId>
 			<version>8.1.0</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-queryparser</artifactId>
 			<version>8.1.0</version>
 		</dependency>
-		
-		
-		
+
+
+
 
 		<dependency>
 			<groupId>org.apache.mahout</groupId>
@@ -137,7 +134,7 @@
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.17</version>
-		</dependency> 
+		</dependency>
 
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -149,7 +146,7 @@
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.7.5</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
 		<dependency>
 			<groupId>com.opencsv</groupId>
@@ -165,8 +162,16 @@
 		</dependency>
 
 
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.8</version>
+			<scope>provided</scope>
+		</dependency>
 
-		
+
+
+
 
 
 

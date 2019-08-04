@@ -184,7 +184,7 @@ public final class Util {
 					Set<InformationEntity> iesForKeyword = entities.get(keyword);
 					if (iesForKeyword == null)
 						iesForKeyword = new HashSet<InformationEntity>();
-					InformationEntity ie = new InformationEntity(keyword, split.length == 1, cat, false);
+					InformationEntity ie = new InformationEntity(keyword, split.length == 1, cat);
 					if (!ie.isSingleWordEntity()) {
 						for (String string : split) {
 							ie.addLemma(Util.normalizeLemma(string));
@@ -250,7 +250,7 @@ public final class Util {
 				Set<InformationEntity> iesForKeyword = entities.get(keyword);
 				if (iesForKeyword == null)
 					iesForKeyword = new HashSet<InformationEntity>();
-				InformationEntity ie = new InformationEntity(keyword, split.length == 1, cat, false);
+				InformationEntity ie = new InformationEntity(keyword, split.length == 1, cat);
 				if (!ie.isSingleWordEntity()) {
 					for (String string : split) {
 						ie.addLemma(Util.normalizeLemma(string));

@@ -1,15 +1,28 @@
 package quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.helpers.SingleToMultiClassConverter;
 
+//TODO JB lombok?
+@Data
+@ToString(callSuper=true)
+@EqualsAndHashCode(of = {}, callSuper=true)
 public class ZoneClassifyUnit extends ClassifyUnit{
 	
 	protected int actualClassID;
+
+	@Setter(AccessLevel.NONE)
 	boolean[] classIDs;
 	private static int NUMBEROFSINGLECLASSES;
 	private static int NUMBEROFMULTICLASSES;
@@ -45,14 +58,13 @@ public class ZoneClassifyUnit extends ClassifyUnit{
 	
 	
 	
-	public boolean[] getClassIDs() {
-		return classIDs;
-	}	
+//	public boolean[] getClassIDs() {
+//		return classIDs;
+//	}	
 
 	public void setClassIDs(boolean[] classIDs) {
 		if(classIDs == null) return;
 		this.classIDs = classIDs;
-		
 		if(actualClassID == -1){
 			if(CONVERTER != null){
 				actualClassID = CONVERTER.getSingleClass(classIDs);
@@ -68,9 +80,9 @@ public class ZoneClassifyUnit extends ClassifyUnit{
 		}
 	}
 	
-	public int getActualClassID() {
-		return actualClassID;
-	}
+//	public int getActualClassID() {
+//		return actualClassID;
+//	}
 
 	public void setActualClassID(int classID){
 		this.actualClassID = classID;
@@ -83,7 +95,7 @@ public class ZoneClassifyUnit extends ClassifyUnit{
 				if(classID > 0){
 					classIDs[classID-1] = true;
 				}
-			}	
+			}
 		}
 		
 	}

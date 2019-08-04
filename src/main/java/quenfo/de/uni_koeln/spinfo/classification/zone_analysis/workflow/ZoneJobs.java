@@ -11,12 +11,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
+
+import org.apache.log4j.Logger;
 
 import quenfo.de.uni_koeln.spinfo.classification.core.classifier.model.Model;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
@@ -42,6 +45,8 @@ import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.helpers.SingleToM
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.preprocessing.TrainingDataGenerator;
 
 public class ZoneJobs {
+
+	private static Logger log = Logger.getLogger(ZoneJobs.class);
 
 	public ZoneJobs() throws IOException {
 		System.out.println("ZoneJobs: Achtung - keine Translations gesetzt");
@@ -74,16 +79,15 @@ public class ZoneJobs {
 	MutualInformationFilter mi_filter = new MutualInformationFilter();
 
 	/**
-	 * A method to read job advertisements from the specified file and split
-	 * them into paragraphs
+	 * A method to read job advertisements from the specified file and split them
+	 * into paragraphs
 	 * 
-	 * @param dataFile
-	 *            A file containing job advertisements
+	 * @param dataFile A file containing job advertisements
 	 * @return A list of paragraphs from the job ads contained in the data file
 	 * @throws IOException
 	 */
 	public List<JASCClassifyUnit> getParagraphsFromJobAdFile(File dataFile) throws IOException {
-
+		
 		/* Read the source file */
 		JASCReader reader = new JASCReader();
 		SortedMap<Integer, String> texts = reader.getJobAds(dataFile);
@@ -106,13 +110,10 @@ public class ZoneJobs {
 		return paragraphs;
 	}
 
-
-
 	/**
 	 * A method to get pre-categorized paragraphs from the specified file
 	 * 
-	 * @param trainingDataFile
-	 *            file with pre-categorized paragraphs
+	 * @param trainingDataFile file with pre-categorized paragraphs
 	 * @return A list of pre-categorized paragraphs
 	 * @throws IOException
 	 */
@@ -121,20 +122,21 @@ public class ZoneJobs {
 		TrainingDataGenerator tdg = new TrainingDataGenerator(trainingDataFile, stmc.getNumberOfCategories(),
 				stmc.getNumberOfClasses(), stmc.getTranslations());
 		List<ClassifyUnit> paragraphs = tdg.getTrainingData();
-		
-		if(treatEncoding){
+
+		if (treatEncoding) {
 			for (ClassifyUnit classifyUnit : paragraphs) {
 				String content = classifyUnit.getContent();
 				classifyUnit.setContent(EncodingProblemTreatment.normalizeEncoding(content));
 			}
 		}
-		
+
 		return paragraphs;
 	}
 
-	public List<ClassifyUnit> getCategorizedParagraphsFromDB(Connection trainingConnection, boolean treatEncoding )
+	@Deprecated
+	public List<ClassifyUnit> getCategorizedParagraphsFromDB(Connection trainingConnection, boolean treatEncoding)
 			throws ClassNotFoundException, SQLException {
-		
+
 		List<ClassifyUnit> toReturn = new ArrayList<ClassifyUnit>();
 		Statement stmt = trainingConnection.createStatement();
 		String sql = "SELECT Jahrgang, ZEILENNR, Text, ClassONE, ClassTWO, ClassTHREE, ClassFOUR  FROM trainingData";
@@ -150,19 +152,17 @@ public class ZoneJobs {
 			}
 			ZoneClassifyUnit.setNumberOfCategories(stmc.getNumberOfCategories(), stmc.getNumberOfClasses(),
 					stmc.getTranslations());
-			if(treatEncoding){
-				cu = new JASCClassifyUnit(EncodingProblemTreatment.normalizeEncoding(content), parentID, secondParentID);
-			}
-			else{
+			if (treatEncoding) {
+				cu = new JASCClassifyUnit(EncodingProblemTreatment.normalizeEncoding(content), parentID,
+						secondParentID);
+			} else {
 				cu = new JASCClassifyUnit(content, parentID, secondParentID);
-			}	
+			}
 			((ZoneClassifyUnit) cu).setClassIDs(classIDs);
 			toReturn.add(cu);
 		}
 		return toReturn;
 	}
-
-
 
 	private boolean parseIntToBool(int toParse) {
 		if (toParse == 0) {
@@ -175,39 +175,34 @@ public class ZoneJobs {
 	/**
 	 * Initializes the feature units (as tokens) of each classify unit.
 	 * 
-	 * @param paragraphs
-	 *            Classify units to initialize
+	 * @param paragraphs Classify units to initialize
 	 * @return Classify units with initialized feature units (tokens)
 	 */
 	public List<ClassifyUnit> initializeClassifyUnits(List<ClassifyUnit> paragraphs) {
 		List<ClassifyUnit> toProcess = new ArrayList<ClassifyUnit>();
 		for (ClassifyUnit paragraph : paragraphs) {
-			// System.out.println(((ZoneClassifyUnit)
-			// paragraph).getActualClassID());
-			ZoneClassifyUnit newParagraph = new ZoneClassifyUnit(paragraph.getContent(), paragraph.getID());
-		
+			ZoneClassifyUnit newParagraph = new ZoneClassifyUnit(paragraph.getContent(), paragraph.getId());
+			
+			
+			
 			newParagraph.setClassIDs(((ZoneClassifyUnit) paragraph).getClassIDs());
 			newParagraph.setActualClassID(((ZoneClassifyUnit) paragraph).getActualClassID());
 			List<String> tokens = tokenizer.tokenize(newParagraph.getContent());
-			if(tokens == null){
+			if (tokens == null) {
 				continue;
 			}
 			newParagraph.setFeatureUnits(tokens);
-			
-			
 			toProcess.add(newParagraph);
 		}
 		return toProcess;
 	}
 
 	/**
-	 * Sets the feature units of each classify unit by following the
-	 * instructions within the specified feature unit configuration.
+	 * Sets the feature units of each classify unit by following the instructions
+	 * within the specified feature unit configuration.
 	 * 
-	 * @param paragraphs
-	 *            Classify units with initialized features
-	 * @param fuc
-	 *            feature unit configuration
+	 * @param paragraphs Classify units with initialized features
+	 * @param fuc        feature unit configuration
 	 * @return Classify units with features
 	 * @throws IOException
 	 */
@@ -262,13 +257,11 @@ public class ZoneJobs {
 	/**
 	 * Initializes the feature vectors of the classify units.
 	 * 
-	 * @param paragraphs
-	 *            Classify units with features
-	 * @param fq
-	 *            The feature quantifier that should be used.
-	 * @param featureUnitOrder
-	 *            Pre-determined oder of pre-determined features. If null, a new
-	 *            fuo will be generated using the specified features.
+	 * @param paragraphs       Classify units with features
+	 * @param fq               The feature quantifier that should be used.
+	 * @param featureUnitOrder Pre-determined oder of pre-determined features. If
+	 *                         null, a new fuo will be generated using the specified
+	 *                         features.
 	 * @return Classify units with feature vectors
 	 */
 	public List<ClassifyUnit> setFeatureVectors(List<ClassifyUnit> paragraphs, AbstractFeatureQuantifier fq,
@@ -281,10 +274,8 @@ public class ZoneJobs {
 	}
 
 	/**
-	 * @param cus
-	 *            the classify units
-	 * @param expConfig
-	 *            the experiment configuration
+	 * @param cus       the classify units
+	 * @param expConfig the experiment configuration
 	 * @return a model for the specified experiment configuration
 	 * @throws IOException
 	 */
@@ -324,10 +315,8 @@ public class ZoneJobs {
 	}
 
 	/**
-	 * @param cus
-	 *            the classify units
-	 * @param expConfig
-	 *            the experiment configuration
+	 * @param cus       the classify units
+	 * @param expConfig the experiment configuration
 	 * @return a model for the specified experiment configuration
 	 * @throws IOException
 	 */
@@ -363,18 +352,13 @@ public class ZoneJobs {
 		}
 	}
 
-	
-
 	/**
-	 * Classifies the specified classify units with the specified classifier,
-	 * based on the specified model
+	 * Classifies the specified classify units with the specified classifier, based
+	 * on the specified model
 	 * 
-	 * @param paragraphs
-	 *            Units to classify
-	 * @param classifier
-	 *            Classifier to use
-	 * @param model
-	 *            Model to train the classifier
+	 * @param paragraphs Units to classify
+	 * @param classifier Classifier to use
+	 * @param model      Model to train the classifier
 	 * @return A map of all classify units as key and the guessed categories as
 	 *         values
 	 */
@@ -384,11 +368,12 @@ public class ZoneJobs {
 		ZoneAbstractClassifier classifier = (ZoneAbstractClassifier) expConfig.getClassifier();
 		if (classifier instanceof SVMClassifier) {
 			try {
-				Map<ClassifyUnit, boolean[]> classified = ((SVMClassifier) classifier).predict(paragraphs, expConfig, stmc);
+				Map<ClassifyUnit, boolean[]> classified = ((SVMClassifier) classifier).predict(paragraphs, expConfig,
+						stmc);
 				// TODO ....
 				return classified;
 			} catch (IOException e) {
-				
+
 				e.printStackTrace();
 			}
 		}
@@ -401,15 +386,13 @@ public class ZoneJobs {
 	}
 
 	/**
-	 * Merges the results of the second map into the first map. For every
-	 * classify unit each class will be matched that matches in the first OR in
-	 * the second map.
+	 * Merges the results of the second map into the first map. For every classify
+	 * unit each class will be matched that matches in the first OR in the second
+	 * map.
 	 * 
-	 * @param all
-	 *            A map containg all classify units
-	 * @param other
-	 *            A map that should not contain more or other classify units
-	 *            than the
+	 * @param all   A map containg all classify units
+	 * @param other A map that should not contain more or other classify units than
+	 *              the
 	 * @return A map of all classify units as key and the guessed categories as
 	 *         values
 	 */
@@ -465,26 +448,33 @@ public class ZoneJobs {
 	 * possibly-multiple-true-values-boolean arrays (Short: It translates
 	 * single-value-6-classes to multiple-value-4-classes)
 	 * 
-	 * @param untranslated
-	 *            A map with boolean arrays each containing no more than one
-	 *            true value (6 single-value classes)
-	 * @return A map with boolean arrays each possibly containing more than one
-	 *         true value (4 multiple-value classes)
+	 * @param untranslated A map with boolean arrays each containing no more than
+	 *                     one true value (6 single-value classes)
+	 * @return A map with boolean arrays each possibly containing more than one true
+	 *         value (4 multiple-value classes)
 	 */
 	public Map<ClassifyUnit, boolean[]> translateClasses(Map<ClassifyUnit, boolean[]> untranslated) {
 		Map<ClassifyUnit, boolean[]> translated = new HashMap<ClassifyUnit, boolean[]>();
 		Set<ClassifyUnit> keySet = untranslated.keySet();
+		
+		//log.info(keySet.toString());
+		
 		for (ClassifyUnit classifyUnit : keySet) {
-			boolean[] classIDs = ((ZoneClassifyUnit) classifyUnit).getClassIDs();
+			ZoneClassifyUnit zcu = (ZoneClassifyUnit) classifyUnit;
+
+			//log.info(zcu.toString());
+			boolean[] classIDs = zcu.getClassIDs();
 			int singleClassID = -1;
 			for (int i = 0; i < classIDs.length; i++) {
-				if (classIDs[i]) {
+				if (classIDs[i])
 					singleClassID = i + 1;
-				}
 			}
 			boolean[] multiClasses = stmc.getMultiClasses(singleClassID);
-			((ZoneClassifyUnit) classifyUnit).setClassIDs(multiClasses);
-			boolean[] newClassIDs = untranslated.get(classifyUnit);
+			zcu.setClassIDs(multiClasses);
+			
+			boolean[] newClassIDs = untranslated.get(zcu);
+//			log.info(untranslated.containsKey(zcu));
+//			log.info(Arrays.asList(newClassIDs).toString());
 			singleClassID = -1;
 			for (int i = 0; i < newClassIDs.length; i++) {
 				if (newClassIDs[i]) {
@@ -496,7 +486,6 @@ public class ZoneJobs {
 		}
 		return translated;
 	}
-
 
 	public SingleToMultiClassConverter getStmc() {
 		return stmc;

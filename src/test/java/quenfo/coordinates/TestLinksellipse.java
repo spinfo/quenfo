@@ -1,18 +1,18 @@
 package quenfo.coordinates;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
 
+import de.uni_koeln.spinfo.data.Token;
+import de.uni_koeln.spinfo.workflow.CoordinateExpander;
 import is2.lemmatizer.Lemmatizer;
 import is2.tag.Tagger;
 import is2.tools.Tool;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.ExtractionUnit;
-import quenfo.de.uni_koeln.spinfo.information_extraction.data.TextToken;
 import quenfo.de.uni_koeln.spinfo.information_extraction.preprocessing.MateTagger;
-import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.CoordinationResolver;
 
 public class TestLinksellipse {
 
@@ -25,7 +25,8 @@ public class TestLinksellipse {
 		testSentences.add("Fehlersuche und -behebung");
 		testSentences.add("SAP-Kenntnisse und -Erfahrungen");
 		
-		CoordinationResolver cr = new CoordinationResolver();
+//		CoordinationResolver cr = new CoordinationResolver();
+		CoordinateExpander ce = new CoordinateExpander(new File("src/test/resources/coordinations/resolvedCompounds.txt"));
 		Tool lemmatizer = new Lemmatizer(
 				"information_extraction/data/sentencedata_models/ger-tagger+lemmatizer+morphology+graph-based-3.6/lemma-ger-3.6.model",
 				false);
@@ -40,9 +41,9 @@ public class TestLinksellipse {
 			String[] lemmas = eu.getLemmata();
 			String[] pos = eu.getPosTags();
 
-			List<TextToken> completeEntity = new ArrayList<TextToken>();
+			List<Token> completeEntity = new ArrayList<Token>();
 
-			TextToken token = null;
+			Token token = null;
 
 			for (int i = 0; i < tokens.length; i++) {
 
@@ -50,17 +51,17 @@ public class TestLinksellipse {
 				lemmas[i] = lemmas[i].replaceAll("[^A-Za-zäÄüÜöÖß-]", "");
 
 				if (pos == null) {
-					token = new TextToken(tokens[i], lemmas[i], null);
+					token = new Token(tokens[i], lemmas[i], null);
 				} else {
-					token = new TextToken(tokens[i], lemmas[i], pos[i]);
+					token = new Token(tokens[i], lemmas[i], pos[i]);
 				}
 				
 				completeEntity.add(token);
 
 			}
 			
-			List<List<TextToken>> result = cr.resolve(completeEntity, lemmatizer);
-			for(List<TextToken> r : result) {
+			List<List<Token>> result = ce.resolve(completeEntity, lemmatizer);
+			for(List<Token> r : result) {
 				System.out.println(r);
 			}
 			System.out.println("--------------");

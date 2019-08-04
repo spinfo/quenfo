@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import quenfo.de.uni_koeln.spinfo.classification.core.classifier.model.Model;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ExperimentConfiguration;
@@ -32,6 +34,8 @@ import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.workflow.Experime
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.workflow.ZoneJobs;
 
 public class ConfigurableDatabaseClassifier {
+	
+	private static Logger log = Logger.getLogger(ConfigurableDatabaseClassifier.class);
 
 	private Connection inputDb, corrConnection, origConnection, trainingDb;
 	int queryLimit, fetchSize, currentId;

@@ -1,6 +1,8 @@
 package quenfo.de.uni_koeln.spinfo.information_extraction.data;
 
 import de.uni_koeln.spinfo.data.Token;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * @author geduldia
@@ -9,6 +11,8 @@ import de.uni_koeln.spinfo.data.Token;
  * The attributes string, lemma and posTag can be null, if values are not specified in the pattern
  *
  */
+@Data
+@EqualsAndHashCode(callSuper=true)
 public class PatternToken extends Token {
 
 	
@@ -31,16 +35,16 @@ public class PatternToken extends Token {
 		super(string, lemma, posTag, isInformationEntity);
 	}
 	
-	public void setLemma(String lemma){
-		this.lemma = lemma;
-	}
-	
-	public void setPosTag(String posTag){
-		this.posTag = posTag;
-	}
-	public void setString(String string){
-		this.token = string;
-	}
+//	public void setLemma(String lemma){
+//		this.lemma = lemma;
+//	}
+//	
+//	public void setPosTag(String posTag){
+//		this.posTag = posTag;
+//	}
+//	public void setString(String string){
+//		this.token = string;
+//	}
 	
 	public String getLemma(){
 		if(isModifier()) return "IMPORTANCE";

@@ -28,6 +28,7 @@ information_extraction/data/competences/esco/
 /src/test/resources/coordinations/
 
 /data/
+/lib/
 
 *.log
 .classpath

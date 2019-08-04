@@ -209,7 +209,7 @@ public class IEJobs {
 				if (iesForKeyword == null)
 					iesForKeyword = new HashSet<InformationEntity>();
 				// nicht kategorisierte IEs haben kein Label
-				InformationEntity ie = new InformationEntity(keyword, split.length == 1, "", false);
+				InformationEntity ie = new InformationEntity(keyword, split.length == 1, "");
 				if (!ie.isSingleWordEntity()) {
 					for (String string : split) {
 						ie.addLemma(Util.normalizeLemma(string));
@@ -314,7 +314,7 @@ public class IEJobs {
 					for (String string : ints) {
 						pointer.add(Integer.parseInt(string));
 					}
-					pattern.setPointer(pointer);
+					pattern.setExtractionPointer(pointer);
 					patterns.add(pattern);
 					pattern = new Pattern();
 				}
@@ -352,7 +352,7 @@ public class IEJobs {
 	// als solche aus
 	private void annotateEntities(List<TextToken> tokens) {
 		for (int t = 0; t < tokens.size(); t++) {
-			de.uni_koeln.spinfo.data.Token currentToken = tokens.get(t);
+			Token currentToken = tokens.get(t);
 			String lemma = Util.normalizeLemma(currentToken.getLemma());
 			if (entities.keySet().contains(lemma)) {
 				for (InformationEntity ie : entities.get(lemma)) {
@@ -378,6 +378,7 @@ public class IEJobs {
 						currentToken.setIEToken(true);
 						((TextToken) currentToken).setTokensToCompleteInformationEntity(ie.getLemmata().size() - 1);
 					}
+					log.info(currentToken.toString());
 				}
 			}
 		}
@@ -466,7 +467,7 @@ public class IEJobs {
 		Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> toReturn = new HashMap<ExtractionUnit, Map<InformationEntity, List<Pattern>>>();
 
 		List<TextToken> ieTokens;
-		Token textToken;
+		Token token;
 		Token patternToken;
 		int entityPointer;
 		int requiredForModifier;
@@ -489,22 +490,22 @@ public class IEJobs {
 						int i = t + requiredForModifier + requiredForEntity;
 						if (i + c >= ieTokens.size())
 							continue;
-						textToken = ieTokens.get(i + c);
+						token = ieTokens.get(i + c);
 
 						patternToken = pattern.getTokenAt(c);
-						match = ((TextToken) textToken).isEqualsPatternToken((PatternToken) patternToken);
+						match = ((TextToken) token).isEqualsPatternToken((PatternToken) patternToken);
 						if (!match) {
 							break;
 						}
 						// token und patternToken matchen
-						if (pattern.getPointer().get(0) == c) {
+						if (pattern.getExtractionPointer().get(0) == c) {
 							entityPointer = i + c;
 						}
 						if (patternToken.isInformationEntity()) {
-							requiredForEntity = ((TextToken) textToken).getTokensToCompleteInformationEntity();
+							requiredForEntity = ((TextToken) token).getTokensToCompleteInformationEntity();
 						}
 						if (patternToken.isModifier()) {
-							requiredForModifier = ((TextToken) textToken).getTokensToCompleteModifier();
+							requiredForModifier = ((TextToken) token).getTokensToCompleteModifier();
 						}
 					}
 					if (match) {
@@ -512,27 +513,27 @@ public class IEJobs {
 						entityToken = ieTokens.get(entityPointer);
 						String normLemma = Util.normalizeLemma(entityToken.getLemma());
 
-						int entity_size = pattern.getPointer().size();
+						int entity_size = pattern.getExtractionPointer().size();
 						if (entity_size == 1) {
 							if (entityToken.isModifier() || entityToken.isNoEntity()) {
 								ie = null;
 								continue;
 							}
 							if (normLemma.length() > 1 && !(entityToken.getLemma().equals("--"))) {
-								ie = new InformationEntity(normLemma, true, false);
+								ie = new InformationEntity(normLemma, true);
 							} else {
 								ie = null;
 								continue;
 							}
 						} else {
 							if (normLemma.length() > 1 && !(entityToken.getLemma().equals("--"))) {
-								ie = new InformationEntity(normLemma, false, false);
+								ie = new InformationEntity(normLemma, false);
 							} else {
 								ie = null;
 								continue;
 							}
 							List<Token> completeEntity = new ArrayList<>();
-							for (int p = 0; p < pattern.getPointer().size(); p++) {
+							for (int p = 0; p < pattern.getExtractionPointer().size(); p++) {
 								TextToken currentToken = ieTokens.get(entityPointer + p);
 								String s = Util.normalizeLemma(currentToken.getLemma());
 								if (!s.trim().equals("") && !s.trim().equals("--")) {
@@ -542,7 +543,7 @@ public class IEJobs {
 							if (completeEntity.size() > 1) { // Entität besteht aus mehr als eine Token
 								List<String> entities = new ArrayList<String>();
 
-								boolean isMorphemCoordination = false;
+//								boolean isMorphemCoordination = false;
 
 								// prüfen, ob es sich um eine morphemkoordination handelt
 								for (Token tt : completeEntity) {
@@ -551,7 +552,7 @@ public class IEJobs {
 
 									// sobald ein KON auftaucht, wird die morphemkoordination aufgelöst
 									if (ce != null && tt.getPosTag().equals("KON")) {
-										isMorphemCoordination = true;
+//										isMorphemCoordination = true;
 										List<Token> euTokens = new ArrayList<Token>(ieTokens);
 										List<List<Token>> combinations = ce.resolve(completeEntity, euTokens,
 												lemmatizer, false);
@@ -561,22 +562,22 @@ public class IEJobs {
 											for (Token currTT : list) {
 												lemmata.add(currTT.getLemma());
 											}
-											ie = new InformationEntity(lemmata.get(0), false, true);
-											ie.setExpression(lemmata);
+											ie = new InformationEntity(lemmata.get(0), false);
+											ie.setLemmata(lemmata);
 											informationEntities.add(ie);
 										}
 									}
 								}
 
-								ie = new InformationEntity(entities.get(0), false, isMorphemCoordination,
+								ie = new InformationEntity(entities.get(0), false,
 										entityPointer);
-								ie.setExpression(entities);
+								ie.setLemmata(entities);
 
 							} else if (completeEntity.size() < 1) { // Entität besteht aus weniger als einem Token
 								ie = null;
 								continue;
 							} else { // Entität besteht aus genau einem Token
-								ie = new InformationEntity(completeEntity.get(0).getToken(), true, false,
+								ie = new InformationEntity(completeEntity.get(0).getToken(), true,
 										entityPointer);
 								log.info(ie.toString());
 							}
@@ -670,7 +671,7 @@ public class IEJobs {
 		for (String s : toDelete) {
 			lemmata.remove(s);
 		}
-		e.setExpression(lemmata);
+		e.setLemmata(lemmata);
 	}
 
 	/**
@@ -748,7 +749,7 @@ public class IEJobs {
 						if (ie.isSingleWordEntity()) {
 							token.setIEToken(true);
 							ie.getLabels();
-							InformationEntity newIE = new InformationEntity(ie.getStartLemma(), true, ie.getLabels(), false);
+							InformationEntity newIE = new InformationEntity(ie.getStartLemma(), true, ie.getLabels());
 							Map<InformationEntity, List<Pattern>> iesForUnit = extractions.get(extractionUnit);
 							if (iesForUnit == null)
 								iesForUnit = new HashMap<InformationEntity, List<Pattern>>();
@@ -784,8 +785,8 @@ public class IEJobs {
 //							System.out.println(token);
 //							System.out.println(extractionUnit.getSentence());
 //							System.out.println(ie.getLemmata());
-							InformationEntity newIE = new InformationEntity(ie.getStartLemma(), false, false);
-							newIE.setExpression(ie.getLemmata());
+							InformationEntity newIE = new InformationEntity(ie.getStartLemma(), false);
+							newIE.setLemmata(ie.getLemmata());
 							Map<InformationEntity, List<Pattern>> iesForUnit = extractions.get(extractionUnit);
 							if (iesForUnit == null)
 								iesForUnit = new HashMap<InformationEntity, List<Pattern>>();
@@ -844,7 +845,7 @@ public class IEJobs {
 			}
 			if (longestMatchingModifer != null) {
 				for (InformationEntity ie : extractionUnits.get(extractionUnit).keySet()) {
-					ie.setImportance(longestMatchingModifer);
+					ie.setModifier(longestMatchingModifer);
 				}
 			}
 		}
@@ -872,7 +873,7 @@ public class IEJobs {
 			Set<InformationEntity> iesForKeyword = this.entities.get(keyword);
 			if (iesForKeyword == null)
 				iesForKeyword = new HashSet<InformationEntity>();
-			InformationEntity ie = new InformationEntity(keyword, split.length == 1, false);
+			InformationEntity ie = new InformationEntity(keyword, split.length == 1);
 			if (!ie.isSingleWordEntity()) {
 				for (String string : split) {
 					ie.addLemma(Util.normalizeLemma(string));
@@ -881,9 +882,11 @@ public class IEJobs {
 			boolean isnew = iesForKeyword.add(ie);
 			if (isnew) {
 				knownEntities++;
-			}
+			} 
 			this.entities.put(keyword, iesForKeyword);
 		}
+		
+		
 	}
 
 	/**

@@ -25,7 +25,7 @@ public class SuffixTreeFeatureGenerator {
 		//buid Suffixtree
 		SuffixTree<String,List<String>> tree = new SuffixTree<String, List<String>>();
 		for (ClassifyUnit cu : cus) {
-			tree.add(cu.getFeatureUnits(), cu.getID());			
+			tree.add(cu.getFeatureUnits(), cu.getId());			
 		}		
 		//get interesting Edges (edges with nodes with more than one visitor)
 		List<Edge<String,List<String>>> interestingEdges = getInterestingEdges(tree.getRoot());

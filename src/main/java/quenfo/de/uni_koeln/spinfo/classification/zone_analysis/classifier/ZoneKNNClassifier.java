@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.log4j.Logger;
+
 import quenfo.de.uni_koeln.spinfo.classification.core.classifier.model.Model;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.FeatureUnitConfiguration;
@@ -24,6 +26,8 @@ import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data.ZoneClassify
  *
  */
 public class ZoneKNNClassifier extends ZoneAbstractClassifier{
+	
+	private static Logger log = Logger.getLogger(ZoneKNNClassifier.class);
 
 	private static final long serialVersionUID = 1L;
 	
@@ -94,6 +98,7 @@ public class ZoneKNNClassifier extends ZoneAbstractClassifier{
 	
 	@Override
 	public boolean[] classify(ClassifyUnit cu, Model model){
+		//log.info(cu.toString());
 		int numberOfClasses = ( (ZoneClassifyUnit) cu).getClassIDs().length;
 		boolean[] toReturn = new boolean[numberOfClasses];
 		

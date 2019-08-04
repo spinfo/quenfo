@@ -1,5 +1,8 @@
 package quenfo.de.uni_koeln.spinfo.categorization.data;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 /**
  * @author geduldia
  *
@@ -11,6 +14,8 @@ package quenfo.de.uni_koeln.spinfo.categorization.data;
 
  * shortkey: z.B. 1A oder 2B
  */
+@Data
+@EqualsAndHashCode(of = {"shortKey"}, callSuper = true)
 public class ToolCategory extends Category{
 	
 	private String shortKey;
@@ -20,16 +25,16 @@ public class ToolCategory extends Category{
 		this.shortKey = shortKey;
 	}
 	
-	@Override
-	public boolean equals(Object o){
-		if(((Category)o).getfirstLevelCategory().equals(this.getfirstLevelCategory())){
-			if(((ToolCategory)o).getShortKey().equals(this.shortKey)){
-				if(((Category)o).getsecondLevelCategory().equals(this.getsecondLevelCategory()));
-				return true;
-			}
-		}
-		return false;
-	}
+//	@Override
+//	public boolean equals(Object o){
+//		if(((Category)o).getFirstLevelCategory().equals(this.getFirstLevelCategory())){
+//			if(((ToolCategory)o).getShortKey().equals(this.shortKey)){
+//				if(((Category)o).getSecondLevelCategory().equals(this.getSecondLevelCategory()));
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
 
 
 

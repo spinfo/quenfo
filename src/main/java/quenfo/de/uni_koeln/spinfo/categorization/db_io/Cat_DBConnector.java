@@ -152,8 +152,8 @@ public class Cat_DBConnector {
 					StringBuffer sb1 = new StringBuffer();
 					StringBuffer sb2 = new StringBuffer();
 					for (Category cat : cats1) {
-						sb1.append(" | " + cat.getfirstLevelCategory());
-						sb2.append(" | " + cat.getsecondLevelCategory());
+						sb1.append(" | " + cat.getFirstLevelCategory());
+						sb2.append(" | " + cat.getSecondLevelCategory());
 					}
 					stmt.setString(6, sb1.toString().substring(3));
 					stmt.setString(7, sb2.toString().substring(3));
@@ -166,8 +166,8 @@ public class Cat_DBConnector {
 					StringBuffer sb1 = new StringBuffer();
 					StringBuffer sb2 = new StringBuffer();
 					for (Category cat : cats2) {
-						sb1.append(" | " + cat.getfirstLevelCategory());
-						sb2.append(" | " + cat.getsecondLevelCategory());
+						sb1.append(" | " + cat.getFirstLevelCategory());
+						sb2.append(" | " + cat.getSecondLevelCategory());
 					}
 					stmt.setString(8, sb1.toString().substring(3));
 					stmt.setString(9, sb2.toString().substring(3));
@@ -275,8 +275,8 @@ public class Cat_DBConnector {
 					StringBuffer sb2 = new StringBuffer();
 					Set<Category> cats = entity.getCategories();
 					for (Category c : cats) {
-						sb1.append(" | "+ c.getfirstLevelCategory());
-						sb2.append(" | "+c.getsecondLevelCategory());
+						sb1.append(" | "+ c.getFirstLevelCategory());
+						sb2.append(" | "+c.getSecondLevelCategory());
 					}
 					stmt.setString(4, sb1.toString().substring(3));
 					stmt.setString(5, sb2.toString().substring(3));
