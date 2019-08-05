@@ -52,7 +52,7 @@ public class TestRDFParsing {
 		while (iter.hasNext()) {
 		    Statement stmt      = iter.nextStatement();  // get next statement
 		    Resource  subject   = stmt.getSubject();     // get the subject
-		    Property  predicate = stmt.getPredicate();   // get the predicate
+//		    Property  predicate = stmt.getPredicate();   // get the predicate
 		    RDFNode   object    = stmt.getObject();      // get the object
 		    objects.add(object);
 		    subjects.add(subject);

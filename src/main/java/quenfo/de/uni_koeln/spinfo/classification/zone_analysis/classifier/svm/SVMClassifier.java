@@ -14,8 +14,9 @@ import quenfo.de.uni_koeln.spinfo.classification.core.data.ExperimentConfigurati
 import quenfo.de.uni_koeln.spinfo.classification.core.data.FeatureUnitConfiguration;
 import quenfo.de.uni_koeln.spinfo.classification.core.feature_engineering.feature_weighting.AbstractFeatureQuantifier;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.ZoneAbstractClassifier;
-import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data.ZoneClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.helpers.SingleToMultiClassConverter;
+import quenfo.svmtut.svm_predict;
+import quenfo.svmtut.svm_train;
 
 public class SVMClassifier extends ZoneAbstractClassifier {
 	
@@ -56,7 +57,7 @@ public class SVMClassifier extends ZoneAbstractClassifier {
 		
 		//read and interpret outputFile
 		BufferedReader in = new BufferedReader(new FileReader(new File(outputFileName)));
-		int numberOfClasses = ((ZoneClassifyUnit) cus.get(0)).getClassIDs().length;
+//		int numberOfClasses = ((ZoneClassifyUnit) cus.get(0)).getClassIDs().length;
 		String line = in.readLine();
 		int i = 0;
 		while(line != null){

@@ -8,10 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedMap;
 
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
@@ -25,7 +23,6 @@ public class Class_DBConnector {
 		// register the driver
 		Class.forName("org.sqlite.JDBC");
 		connection = DriverManager.getConnection("jdbc:sqlite:" + dbFilePath);
-		String url = connection.getMetaData().getURL();
 		return connection;
 	}
 

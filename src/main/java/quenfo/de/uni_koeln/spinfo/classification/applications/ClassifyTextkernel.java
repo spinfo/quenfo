@@ -1,9 +1,7 @@
 package quenfo.de.uni_koeln.spinfo.classification.applications;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -33,11 +31,11 @@ public class ClassifyTextkernel {
 
 		// Name der korrigierbaren Output-DB (Input für alle späteren
 		// IE-Applications )
-		static String corrOutputDB = "CorrectableParagraphs_textkernel_0208.db";
+		static String corrOutputDB = "CorrectableParagraphs_textkernel_0508.db";
 
 		// Name der (nicht korrigierbaren) Output-DB (dient nur zur Dokumentation
 		// der originalen Klassifikationsergebnisse)
-		static String origOutputDB = "OriginalParagraphs_textkernel_0208.db";
+		static String origOutputDB = "OriginalParagraphs_textkernel_0508.db";
 		
 		// Pfad zur Datei mit den Trainingsdaten
 		static String trainingdataFile = "classification/data/trainingSets/trainingdata_anonymized.tsv";
@@ -92,14 +90,14 @@ public class ClassifyTextkernel {
 			// Connect to output database (and training database)
 			Connection corrConnection = null;
 			Connection origConnection = null;
-			Connection trainingConnection = null;
+
 			File corrDBFile = new File(outputFolder + corrOutputDB);
 			File origDBFile = new File(outputFolder + origOutputDB);
 
 			// if outputdatabase already exists
 			if (corrDBFile.exists()) {
-				corrConnection = Class_DBConnector.connect(outputFolder + corrOutputDB);
-				origConnection = Class_DBConnector.connect(outputFolder + origOutputDB);
+				corrConnection = Class_DBConnector.connect(corrDBFile.getPath());//(outputFolder + corrOutputDB);
+				origConnection = Class_DBConnector.connect(origDBFile.getPath());//(outputFolder + origOutputDB);
 			}
 
 			// if output database does not exist
@@ -123,7 +121,7 @@ public class ClassifyTextkernel {
 			// start classifying				
 			long before = System.currentTimeMillis();
 			ConfigurableDatabaseClassifier dbClassfy = new ConfigurableDatabaseClassifier(inputConnection, corrConnection,
-					origConnection, trainingConnection, queryLimit, fetchSize,
+					origConnection, queryLimit, fetchSize,
 
 					startId, trainingdataFile);
 			try {

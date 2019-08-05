@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import is2.data.SentenceData09;
 import lombok.AccessLevel;
 import lombok.Data;

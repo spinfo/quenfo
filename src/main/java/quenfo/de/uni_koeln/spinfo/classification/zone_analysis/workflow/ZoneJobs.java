@@ -11,14 +11,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
-
 import org.apache.log4j.Logger;
 
 import quenfo.de.uni_koeln.spinfo.classification.core.classifier.model.Model;
@@ -36,8 +32,6 @@ import quenfo.de.uni_koeln.spinfo.classification.core.feature_engineering.featur
 import quenfo.de.uni_koeln.spinfo.classification.core.helpers.ClassifyUnitFilter;
 import quenfo.de.uni_koeln.spinfo.classification.core.helpers.EncodingProblemTreatment;
 import quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit;
-import quenfo.de.uni_koeln.spinfo.classification.jasc.preprocessing.ClassifyUnitSplitter;
-import quenfo.de.uni_koeln.spinfo.classification.jasc.preprocessing.JASCReader;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.ZoneAbstractClassifier;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.svm.SVMClassifier;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data.ZoneClassifyUnit;
@@ -78,37 +72,6 @@ public class ZoneJobs {
 	private SingleToMultiClassConverter stmc;
 	MutualInformationFilter mi_filter = new MutualInformationFilter();
 
-	/**
-	 * A method to read job advertisements from the specified file and split them
-	 * into paragraphs
-	 * 
-	 * @param dataFile A file containing job advertisements
-	 * @return A list of paragraphs from the job ads contained in the data file
-	 * @throws IOException
-	 */
-	public List<JASCClassifyUnit> getParagraphsFromJobAdFile(File dataFile) throws IOException {
-		
-		/* Read the source file */
-		JASCReader reader = new JASCReader();
-		SortedMap<Integer, String> texts = reader.getJobAds(dataFile);
-		// System.out.println(texts);
-
-		List<String> textsAsString = new ArrayList<String>(texts.values());
-		Collections.reverse(textsAsString);
-
-		/* Split to atomic classification units (here: paragraphs) */
-		List<JASCClassifyUnit> paragraphs = new ArrayList<JASCClassifyUnit>();
-
-		Set<Integer> textIDs = texts.keySet();
-		for (Integer textID : textIDs) {
-			Set<String> splitAtEmptyLine = ClassifyUnitSplitter.splitIntoParagraphs(texts.get(textID));
-			for (String content : splitAtEmptyLine) {
-				JASCClassifyUnit unitToClassify = new JASCClassifyUnit(content.replaceAll("\\/", "\\_"), textID);
-				paragraphs.add(unitToClassify);
-			}
-		}
-		return paragraphs;
-	}
 
 	/**
 	 * A method to get pre-categorized paragraphs from the specified file
@@ -297,7 +260,7 @@ public class ZoneJobs {
 			// exportModel(expConfig.getModelFile(), model);
 			return model;
 		} else {
-			System.out.println("read model..");
+			log.info("read model..");
 			// read model...
 			FileInputStream fis = new FileInputStream(modelFile);
 			ObjectInputStream in = new ObjectInputStream(fis);

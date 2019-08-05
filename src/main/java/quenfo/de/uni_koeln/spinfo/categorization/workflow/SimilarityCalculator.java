@@ -3,10 +3,11 @@ package quenfo.de.uni_koeln.spinfo.categorization.workflow;
 public class SimilarityCalculator {
 
 	private int gap = -1;
-	private int mismatch = -1;
-	private int match = 3;
-
-	private int[][] d;
+	// TODO JB: mismatch und match werden nicht aufgerufen?
+//	private int mismatch = -1;
+//	private int match = 3;
+//
+//	private int[][] d;
 
 	public SimilarityCalculator() {
 
@@ -18,8 +19,8 @@ public class SimilarityCalculator {
 	 * @param gap
 	 */
 	public SimilarityCalculator(int match, int mismatch, int gap) {
-		this.match = match;
-		this.mismatch = mismatch;
+//		this.match = match;
+//		this.mismatch = mismatch;
 		this.gap = gap;
 	}
 

@@ -3,21 +3,13 @@ package quenfo;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -30,8 +22,6 @@ import org.jsoup.select.Elements;
 import org.junit.Test;
 
 import com.opencsv.CSVReader;
-import com.opencsv.CSVWriter;
-
 import de.uni_koeln.spinfo.preprocessing.MateTagger;
 import is2.lemmatizer.Lemmatizer;
 import is2.tools.Tool;
@@ -206,14 +196,7 @@ public class TestMapping {
 		return escoLemmas;
 	}
 
-	private void exportWordList(Set<String> wordList, String path) throws IOException {
-		OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(path), "UTF8");
-		for (String s : wordList) {
-			osw.append(s + "\n");
-		}
-		osw.close();
-	}
-
+	
 	private Set<Entity> readComps() throws IOException {
 
 		IEJobs jobs = new IEJobs(compFile, null, null, null, null, false, null);

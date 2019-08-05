@@ -1,6 +1,5 @@
 package quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -8,7 +7,6 @@ import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
@@ -16,7 +14,7 @@ import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.helpers.SingleToM
 
 //TODO JB lombok?
 @Data
-@ToString(callSuper=true)
+@ToString(of = {}, callSuper=true)
 @EqualsAndHashCode(of = {}, callSuper=true)
 public class ZoneClassifyUnit extends ClassifyUnit{
 	

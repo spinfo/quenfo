@@ -1,9 +1,6 @@
 package quenfo.com.maxgarfinkel.suffixTree;
 
 import java.util.Iterator;
-import java.util.List;
-
-import org.apache.log4j.Logger;
 
 public class Edge<T, S extends Iterable<T>> implements Iterable<T> {
 	private final int start;
@@ -14,7 +11,6 @@ public class Edge<T, S extends Iterable<T>> implements Iterable<T> {
 	private Node<T, S> terminal = null;
 	private SuffixTree<T,S> tree = null;
 	
-	private Logger logger = Logger.getLogger(this.getClass());
 
 	/**
 	 * Create a new <code>Edge</code> object.

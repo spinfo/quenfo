@@ -28,6 +28,7 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.data.InformationEntity;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.Pattern;
 import quenfo.de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
 import quenfo.de.uni_koeln.spinfo.information_extraction.preprocessing.ExtractionUnitBuilder;
+import quenfo.de.uni_koeln.spinfo.jpatut.DatabaseTransformer;
 import is2.lemmatizer.Lemmatizer;
 import is2.tag.Tagger;
 import is2.tools.Tool;
@@ -216,6 +217,8 @@ public class Extractor {
 			if (classifyUnits.isEmpty()) {
 				finished = true;
 			}
+	
+			
 			readParagraphs += classifyUnits.size();
 			if (readParagraphs >= maxCount) {
 				finished = true;

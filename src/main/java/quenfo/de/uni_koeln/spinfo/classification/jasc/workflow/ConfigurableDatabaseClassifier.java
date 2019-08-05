@@ -13,7 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,19 +36,18 @@ public class ConfigurableDatabaseClassifier {
 	
 	private static Logger log = Logger.getLogger(ConfigurableDatabaseClassifier.class);
 
-	private Connection inputDb, corrConnection, origConnection, trainingDb;
+	private Connection inputDb, corrConnection, origConnection/*, trainingDb*/;
 	int queryLimit, fetchSize, currentId;
 
 	private String trainingDataFileName;
 	private ZoneJobs jobs;
 
 	public ConfigurableDatabaseClassifier(Connection inputDb, Connection corrConnection, Connection origConnection,
-			Connection trainingDb, int queryLimit, int fetchSize, int currentId, String trainingDataFileName)
+			int queryLimit, int fetchSize, int currentId, String trainingDataFileName)
 					throws IOException {
 		this.inputDb = inputDb;
 		this.corrConnection = corrConnection;
 		this.origConnection = origConnection;
-		this.trainingDb = trainingDb;
 		this.queryLimit = queryLimit;
 		this.fetchSize = fetchSize;
 		this.currentId = currentId;
@@ -98,8 +96,8 @@ public class ConfigurableDatabaseClassifier {
 					"\nthere are no training paragraphs in the specified training-DB. \nPlease check configuration and try again");
 			System.exit(0);
 		}
-		System.out.println("training paragraphs: " + trainingData.size() + "\n");
-		System.out.println("\n...classifying...\n");
+		log.info("training paragraphs: " + trainingData.size());
+		log.info("...classifying...");
 
 		trainingData = jobs.initializeClassifyUnits(trainingData);
 		trainingData = jobs.setFeatures(trainingData, config.getFeatureConfiguration(), true);
@@ -115,8 +113,8 @@ public class ConfigurableDatabaseClassifier {
 		String query = null;
 		int zeilenNr = 0, jahrgang = 0;
 		;
-		int jobAdCount = 0;
-		int paraCount = 0;
+//		int jobAdCount = 0;
+//		int paraCount = 0;
 		query = "SELECT ZEILENNR, Jahrgang, STELLENBESCHREIBUNG FROM " + tableName + " WHERE LANG='de' LIMIT ? OFFSET ?;";
 
 		PreparedStatement prepStmt = inputDb.prepareStatement(query);
@@ -143,12 +141,12 @@ public class ConfigurableDatabaseClassifier {
 
 		boolean goOn = true;
 		boolean askAgain = true;
-		long start = System.currentTimeMillis();	
+//		long start = System.currentTimeMillis();	
 		
 
 		while (queryResult.next() && goOn) {			
 			
-			jobAdCount++;
+//			jobAdCount++;
 			String jobAd = null;
 			zeilenNr = queryResult.getInt("ZEILENNR");
 			jahrgang = queryResult.getInt("Jahrgang");
@@ -180,17 +178,14 @@ public class ConfigurableDatabaseClassifier {
 
 			// 1. Split into paragraphs and create a ClassifyUnit per paragraph
 			Set<String> paragraphs = ClassifyUnitSplitter.splitIntoParagraphs(jobAd);		
-			Set<String> paraSet = new HashSet<String>(paragraphs);
-			if (paragraphs.size() != paraSet.size())
-				System.out.println(zeilenNr);
-			//System.exit(0);
+
 			// if treat enc
 			if (config.getFeatureConfiguration().isTreatEncoding()) {
 				paragraphs = EncodingProblemTreatment.normalizeEncoding(paragraphs);
 			}
 			List<ClassifyUnit> classifyUnits = new ArrayList<ClassifyUnit>();
 			for (String string : paragraphs) {
-				paraCount++;
+//				paraCount++;
 				classifyUnits.add(new JASCClassifyUnit(string, jahrgang, zeilenNr));
 			}
 			// prepare ClassifyUnits
@@ -238,8 +233,8 @@ public class ConfigurableDatabaseClassifier {
 
 			// time needed
 			if (done % fetchSize == 0) {
-				long end = System.currentTimeMillis();
-				long time = (end - start) / 1000;
+//				long end = System.currentTimeMillis();
+//				long time = (end - start) / 1000;
 
 				// continue?
 				if (askAgain) {
@@ -255,12 +250,12 @@ public class ConfigurableDatabaseClassifier {
 						if (answer.toLowerCase().trim().equals("c")) {
 							goOn = true;
 							answered = true;
-							System.out.println("\n...classifying...\n");
+							log.info("\n...classifying...\n");
 						} else if (answer.toLowerCase().trim().equals("d")) {
 							goOn = true;
 							askAgain = false;
 							answered = true;
-							System.out.println("\n...classifying...\n");
+							log.info("\n...classifying...\n");
 						} else if (answer.toLowerCase().trim().equals("s")) {
 							goOn = false;
 							answered = true;
@@ -270,7 +265,7 @@ public class ConfigurableDatabaseClassifier {
 						}
 					}
 				}
-				start = System.currentTimeMillis();
+//				start = System.currentTimeMillis();
 			}
 		
 		}

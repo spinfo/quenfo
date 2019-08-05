@@ -197,6 +197,7 @@ public class IE_DBConnector {
 				if (sentences != null && !(sentences.equals(""))) {
 					((JASCClassifyUnit) classifyUnit)
 							.setSentences((sentences.replace(" | ", " ").replace("<root> ", "")));
+					System.out.println(((JASCClassifyUnit) classifyUnit).getSentences());
 					((JASCClassifyUnit) classifyUnit).setTokens(sentences);
 				}
 			} catch (SQLException e) {

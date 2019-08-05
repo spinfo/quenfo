@@ -2,8 +2,6 @@ package quenfo.com.maxgarfinkel.suffixTree;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
-
 /**
  * A suffix tree implementation using Ukkonen's algorithm capable of generating a generialised suffix tree.
  * 
@@ -29,7 +27,7 @@ public class SuffixTree<I,S extends Iterable<I>> {
 	private Node<I,S> lastNodeInserted = null;
 	int nodeCounter;
 	
-	private Logger logger = Logger.getLogger(SuffixTree.class);
+//	private Logger logger = Logger.getLogger(SuffixTree.class);
 
 	/**
 	 * Constructs an empty suffix tree.

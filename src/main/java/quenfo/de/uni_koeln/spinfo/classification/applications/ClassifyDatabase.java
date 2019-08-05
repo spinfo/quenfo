@@ -85,7 +85,7 @@ public class ClassifyDatabase {
 		// Connect to output database (and training database)
 		Connection corrConnection = null;
 		Connection origConnection = null;
-		Connection trainingConnection = null;
+		
 		File corrDBFile = new File(outputFolder + corrOutputDB);
 		File origDBFile = new File(outputFolder + origOutputDB);
 
@@ -159,7 +159,7 @@ public class ClassifyDatabase {
 		long before = System.currentTimeMillis();
 		
 		ConfigurableDatabaseClassifier dbClassfy = new ConfigurableDatabaseClassifier(inputConnection, corrConnection,
-				origConnection, trainingConnection, queryLimit, fetchSize,
+				origConnection, queryLimit, fetchSize,
 
 				startId, trainingdataFile);
 		try {

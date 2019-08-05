@@ -2,6 +2,13 @@ package quenfo.de.uni_koeln.spinfo.classification.jasc.data;
 
 import java.util.UUID;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -17,10 +24,17 @@ import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data.ZoneClassify
  * @author geduldia
  *
  */
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @Data
-@ToString(callSuper = true)
+@ToString(of = {}, callSuper = true)
 @EqualsAndHashCode(of = {}, callSuper=true)
 public class JASCClassifyUnit extends ZoneClassifyUnit {
+	
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long jpaID;
 
 	private int parentID;
 	
@@ -49,6 +63,13 @@ public class JASCClassifyUnit extends ZoneClassifyUnit {
 	
 	public JASCClassifyUnit(String content, int parentID) {
 		this(content, parentID, UUID.randomUUID());
+	}
+	
+	/**
+	 * default constructor for jpa
+	 */
+	public JASCClassifyUnit() {
+		this("",-1);
 	}
 
 //	public int getParentID() {

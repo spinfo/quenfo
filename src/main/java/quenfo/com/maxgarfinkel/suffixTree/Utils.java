@@ -3,7 +3,6 @@ package quenfo.com.maxgarfinkel.suffixTree;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 public class Utils {
@@ -84,11 +83,11 @@ public class Utils {
 			// loop again to find all suffix links.
 			sb.append("edge [color=red]\n");
 			for (Map.Entry<Node<T,S>, Integer> entry : nodeMap.entrySet()) {
-				Node n1 = entry.getKey();
+				Node<T,S> n1 = entry.getKey();
 				int id1 = entry.getValue();
 	
 				if (n1.hasSuffixLink()) {
-					Node n2 = n1.getSuffixLink();
+					Node<T,S> n2 = n1.getSuffixLink();
 					Integer id2 = nodeMap.get(n2);
 					// if(id2 != null)
 					sb.append(id1).append(" -> ").append(id2).append(" ;\n");

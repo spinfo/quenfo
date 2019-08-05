@@ -1,4 +1,4 @@
-package quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.svm;
+package quenfo.svmtut;
 import libsvm.*;
 import java.applet.*;
 import java.awt.*;

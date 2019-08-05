@@ -14,158 +14,185 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
-		<jackson.version>2.9.7</jackson.version>
+
+
+		<!-- Versions -->
+		<!-- <jackson.version>2.9.7</jackson.version> -->
+		<jwsplitter.version>4.4</jwsplitter.version>
+		<junit.version>4.11</junit.version>
+		<anna.version>3.5</anna.version>
+		<srl.version>4.31</srl.version>
+		<!-- <commons-lang3.version>3.0</commons-lang3.version> -->
+		<!-- <commons-math3.version>3.6.1</commons-math3.version> -->
+		<libsvm.version>3.17</libsvm.version>
+		<jxl.version>2.6.12</jxl.version>
+		<!-- <guava.version>23.0</guava.version> -->
+		<!-- <snowball.version>3.0.3</snowball.version> -->
+		<lucene.version>8.1.0</lucene.version>
+		<mahout.version>0.9</mahout.version>
+		<!-- <mahout-math.version>0.13.0</mahout-math.version> -->
+		<opennlp.version>1.8.4</opennlp.version>
+		<sqlite.version>3.21.0.1</sqlite.version>
+		<weka.version>3.8.2</weka.version>
+		<jsoup.version>1.8.3</jsoup.version>
+		<log4j.version>1.2.17</log4j.version>
+		<slf4j.version>1.7.5</slf4j.version>
+		<opencsv.version>4.0</opencsv.version>
+		<jena.version>3.10.0</jena.version>
+		<lombok.version>1.18.8</lombok.version>
+		<eclipselink.version>2.5.1</eclipselink.version>
+		<persistence.version>2.0.0</persistence.version>
+		<derby.version>10.8.3.0</derby.version>
 	</properties>
+
+
+
 	<dependencies>
-		<dependency>
-			<groupId>de.danielnaber</groupId>
-			<artifactId>jwordsplitter</artifactId>
-			<version>4.4</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.mate-tools</groupId>
-			<artifactId>anna</artifactId>
-			<version>3.5</version>
-		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/com.googlecode.mate-tools/srl -->
+
+		<!-- Java Persistence API -->
 		<dependency>
-			<groupId>com.googlecode.mate-tools</groupId>
-			<artifactId>srl</artifactId>
-			<version>4.31</version>
+			<groupId>org.eclipse.persistence</groupId>
+			<artifactId>eclipselink</artifactId>
+			<version>${eclipselink.version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.0</version>
-		</dependency>
-		<dependency>
-			<groupId>tw.edu.ntu.csie</groupId>
-			<artifactId>libsvm</artifactId>
-			<version>3.17</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sourceforge.jexcelapi</groupId>
-			<artifactId>jxl</artifactId>
-			<version>2.6.12</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>23.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-snowball</artifactId>
-			<version>3.0.3</version>
-		</dependency>
-		<!-- <dependency> <groupId>org.apache.lucene</groupId> <artifactId>lucene-analyzers-common</artifactId> 
-			<version>7.3.1</version> </dependency> -->
-		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-core -->
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-core</artifactId>
-			<version>8.1.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-queryparser</artifactId>
-			<version>8.1.0</version>
+			<groupId>org.eclipse.persistence</groupId>
+			<artifactId>javax.persistence</artifactId>
+			<version>${persistence.version}</version>
 		</dependency>
 
 
 
+		<!-- Databases -->
+		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derby</artifactId>
+			<version>${derby.version}</version>
+		</dependency>
 
-		<dependency>
-			<groupId>org.apache.mahout</groupId>
-			<artifactId>mahout-core</artifactId>
-			<version>0.9</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.opennlp</groupId>
-			<artifactId>opennlp-tools</artifactId>
-			<version>1.8.4</version>
-		</dependency>
 		<dependency>
 			<groupId>org.xerial</groupId>
 			<artifactId>sqlite-jdbc</artifactId>
-			<version>3.21.0.1</version>
+			<version>${sqlite.version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>nz.ac.waikato.cms.weka</groupId>
-			<artifactId>weka-stable</artifactId>
-			<version>3.8.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-math3</artifactId>
-			<version>3.6.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.mahout</groupId>
-			<artifactId>mahout-math</artifactId>
-			<version>0.13.0</version>
-		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
-		<dependency>
-			<groupId>org.jsoup</groupId>
-			<artifactId>jsoup</artifactId>
-			<version>1.8.3</version>
-		</dependency>
 
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/log4j/log4j -->
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.17</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.5</version>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
+		<!-- Parsing -->
 		<dependency>
 			<groupId>com.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
-			<version>4.0</version>
+			<version>${opencsv.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>apache-jena-libs</artifactId>
 			<type>pom</type>
-			<version>3.10.0</version>
+			<version>${jena.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>${jsoup.version}</version>
+		</dependency>
+
+		<dependency>
+			<!-- Deprecated (Excel Parsing) -->
+			<groupId>net.sourceforge.jexcelapi</groupId>
+			<artifactId>jxl</artifactId>
+			<version>${jxl.version}</version>
 		</dependency>
 
 
+
+		<!-- Logging -->
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${log4j.version}</version>
+		</dependency>
+
+		<!-- <dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency> -->
+
+
+
+		<!-- NLP -->
+		<dependency>
+			<groupId>org.apache.opennlp</groupId>
+			<artifactId>opennlp-tools</artifactId>
+			<version>${opennlp.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>de.danielnaber</groupId>
+			<artifactId>jwordsplitter</artifactId>
+			<version>${jwsplitter.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.googlecode.mate-tools</groupId>
+			<artifactId>anna</artifactId>
+			<version>${anna.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.googlecode.mate-tools</groupId>
+			<artifactId>srl</artifactId>
+			<version>${srl.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.mahout</groupId>
+			<artifactId>mahout-core</artifactId>
+			<version>${mahout.version}</version>
+		</dependency>
+
+
+
+		<!-- Classification -->
+		<dependency>
+			<groupId>tw.edu.ntu.csie</groupId>
+			<artifactId>libsvm</artifactId>
+			<version>${libsvm.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>nz.ac.waikato.cms.weka</groupId>
+			<artifactId>weka-stable</artifactId>
+			<version>${weka.version}</version>
+		</dependency>
+
+
+
+		<!-- Testing -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+
+
+		<!-- Lombok -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.8</version>
+			<version>${lombok.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -174,6 +201,25 @@
 
 
 
+
+		<!-- <dependency> <groupId>com.google.guava</groupId> <artifactId>guava</artifactId> 
+			<version>${guava.version}</version> </dependency> -->
+
+
+		<!-- <dependency> <groupId>org.apache.lucene</groupId> <artifactId>lucene-snowball</artifactId> 
+			<version>${snowball.version}</version> </dependency> -->
+
+		<!-- <dependency> <groupId>org.apache.mahout</groupId> <artifactId>mahout-math</artifactId> 
+			<version>${mahout-math.version}</version> </dependency> -->
+
+		<!-- <dependency> <groupId>com.fasterxml.jackson.core</groupId> <artifactId>jackson-databind</artifactId> 
+			<version>${jackson.version}</version> </dependency> -->
+
+		<!-- <dependency> <groupId>org.apache.commons</groupId> <artifactId>commons-math3</artifactId> 
+			<version>${commons-math3.version}</version> </dependency> -->
+
+		<!-- <dependency> <groupId>org.apache.commons</groupId> <artifactId>commons-lang3</artifactId> 
+			<version>${commons-lang3.version}</version> </dependency> -->
 
 	</dependencies>
 </project>

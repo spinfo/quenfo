@@ -3,6 +3,9 @@ package quenfo.de.uni_koeln.spinfo.classification.core.data;
 import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -14,28 +17,35 @@ import lombok.ToString;
  * represents a basic classification-object
  *
  */
-
+@MappedSuperclass
 @Data
 @EqualsAndHashCode(of = {"id"})
+@ToString(of = {"id"})
 public class ClassifyUnit {
 	
-	@ToString.Exclude
+	@Column(length=3000)
 	protected String content;
 	
-	//@EqualsAndHashCode.Include
 	protected UUID id;
+
 	
 	/**
 	 * list of features
 	 */
-	@ToString.Exclude
 	private List<String> featureUnits;
 	
 	/**
 	 * weighted document vector
 	 */
-	@ToString.Exclude
 	private double[] featureVector;
+	
+	/**
+	 * default constructor for eclipseLink
+	 */
+	public ClassifyUnit() {
+		this("", UUID.randomUUID());
+	}
+	
 	
 	
 	

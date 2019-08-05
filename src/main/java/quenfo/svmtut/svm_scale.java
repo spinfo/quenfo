@@ -1,8 +1,6 @@
-package quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.svm;
-import libsvm.*;
+package quenfo.svmtut;
 import java.io.*;
 import java.util.*;
-import java.text.DecimalFormat;
 
 
 /*
@@ -344,6 +342,8 @@ class svm_scale
 			}
 			fp_save.write(formatter.toString());
 			fp_save.close();
+			
+			formatter.close();
 		}
 
 		/* pass 3: scale */

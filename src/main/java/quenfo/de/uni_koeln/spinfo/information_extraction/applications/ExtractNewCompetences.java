@@ -28,7 +28,7 @@ public class ExtractNewCompetences {
 
 	// Pfad zur Input-DB mit den klassifizierten Paragraphen
 	//static String inputDB = "C:/sqlite/classification/CorrectableParagraphs_" + jahrgang + ".db";
-	static String inputDB = "C:/sqlite/classification/CorrectableParagraphs_textkernel_3007.db";
+	static String inputDB = "C:/sqlite/classification/CorrectableParagraphs_textkernel.db";
 
 	// Output-Ordner
 	static String outputFolder = "C:/sqlite/information_extraction/competences/";
@@ -52,7 +52,7 @@ public class ExtractNewCompetences {
 	// falls nicht alle Paragraphen aus der Input-DB verwendet werden sollen:
 	// hier Anzahl der zu lesenden Paragraphen festlegen
 	// -1 = alle
-	static int maxCount = -1;
+	static int maxCount = 10;
 
 	// falls nur eine bestimmte Anzahl gelesen werden soll, hier die startID
 	// angeben

@@ -3,13 +3,11 @@ package quenfo.de.uni_koeln.spinfo.information_extraction.applicationsjb;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
 import java.util.Set;
 
 import org.apache.log4j.Logger;

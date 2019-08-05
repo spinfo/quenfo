@@ -168,7 +168,7 @@ public class Cat_Jobs {
 	public static Map<Double, List<Entity>> getSimilarityPairs(List<Entity> entities, SimilarityCalculator simCalculator,
 			double minSim, Connection connection, IEType type) throws SQLException {
 		Map<Entity, Double> scoresByEntity = new HashMap<Entity,Double>();
-		int numberOfPairs = 0;
+//		int numberOfPairs = 0;
 		Map<Pair, Double> pairs = new HashMap<Pair, Double>();
 		for (int i = 0; i < entities.size(); i++) {
 			Entity e1 = entities.get(i);
@@ -199,7 +199,7 @@ public class Cat_Jobs {
 				if (pairs.size() >= pairsPerRound) {
 					System.out.println("write "+ pairs.size()+" pairs");
 					Cat_DBConnector.writePairs(connection, pairs.keySet(), type, "Pairs");
-					numberOfPairs += pairs.size();
+//					numberOfPairs += pairs.size();
 					pairs.clear();
 				}
 			}

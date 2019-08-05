@@ -17,6 +17,7 @@ import jxl.read.biff.BiffException;
  * @author jhermes
  *
  */
+@Deprecated
 public class JASCReader {
 
 	/** Extracts the job ads from the specified Excel File.
