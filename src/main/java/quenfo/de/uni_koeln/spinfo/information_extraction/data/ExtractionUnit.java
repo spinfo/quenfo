@@ -1,8 +1,17 @@
 package quenfo.de.uni_koeln.spinfo.information_extraction.data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 
 import is2.data.SentenceData09;
 import lombok.AccessLevel;
@@ -20,23 +29,44 @@ import lombok.ToString;
  *
  */
 
+@NamedQuery(
+		name = "getClassXExtractionUnits", 
+		query = "SELECT e FROM ExtractionUnit e JOIN JASCClassifyUnit  c ON e.classifyUnitjpaID = c.jpaID WHERE c.actualClassID = :class"		
+		)
+
+@Entity
+//@Table(name = "EXTRACTIONUNIT")
 @Data
 @EqualsAndHashCode(of = { "jobAdID", "secondJobAdID", "classifyUnitID", "sentence" })
 @ToString(of = { "sentence" })
-public class ExtractionUnit {
+public class ExtractionUnit implements Serializable {
+	
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long jpaID;
 
 	private UUID sentenceID;
 
+	@Lob
 	private String sentence;
 
 	// wird von den Mate-Tools produziert (enthält Lemmata, posTags und Tokens)
-	private SentenceData09 sentenceData = new SentenceData09();
+//	private SentenceData09 sentenceData = new SentenceData09();
 
 	// ID der beinhaltenden ClassifyUnit
 	private UUID classifyUnitID;
 
 	// Table-ID der beinhaltenden ClassifyUnit
 	private int classifyUnitTableID;
+	
+	// Derby ID der beinhaltenden ClassifyUnit
+	private long classifyUnitjpaID;
 
 	@Getter(AccessLevel.NONE)
 	private String[] tokens;
@@ -77,8 +107,8 @@ public class ExtractionUnit {
 	public String[] getTokens() {
 		if (this.tokens != null)
 			return tokens;
-		if (this.sentenceData != null)
-			return sentenceData.forms;
+//		if (this.sentenceData != null)
+//			return sentenceData.forms;
 		return null;
 	}
 
@@ -88,8 +118,8 @@ public class ExtractionUnit {
 	public String[] getLemmata() {
 		if (this.lemmata != null)
 			return this.lemmata;
-		if (this.sentenceData != null)
-			return sentenceData.plemmas;
+//		if (this.sentenceData != null)
+//			return sentenceData.plemmas;
 		return null;
 	}
 
@@ -99,17 +129,18 @@ public class ExtractionUnit {
 	public String[] getPosTags() {
 		if (this.posTags != null)
 			return this.posTags;
-		if (this.sentenceData != null)
-			return sentenceData.ppos;
+//		if (this.sentenceData != null)
+//			return sentenceData.ppos;
 		return null;
 	}
 
-	/**
-	 * @return morphTags produced by the MateTool
-	 */
-	public String[] getMorphTags() {
-		return sentenceData.pfeats;
-	}
+//	/**
+//	 * @return morphTags produced by the MateTool
+//	 */
+//	@Deprecated
+//	public String[] getMorphTags() {
+//		return sentenceData.pfeats;
+//	}
 
 	/**
 	 * creates the List of Token-objects for this ExtractionUnit Sets a Root-Token
@@ -118,16 +149,21 @@ public class ExtractionUnit {
 	 * @param sentenceData
 	 */
 	public void setSentenceData(SentenceData09 sentenceData) {
-		this.sentenceData = sentenceData;
+//		this.sentenceData = sentenceData;
 		TextToken token = null;
-		String[] tokens = getTokens();
-		String[] lemmas = getLemmata();
-		String[] posTags = getPosTags();
+//		String[] tokens = getTokens();
+//		String[] lemmas = getLemmata();
+//		String[] posTags = getPosTags();
+		
+		this.tokens = sentenceData.forms;
+		this.lemmata = sentenceData.plemmas;
+		this.posTags = sentenceData.ppos;
+		
 		for (int i = 0; i < tokens.length; i++) {
 			if (posTags == null) {
-				token = new TextToken(tokens[i], lemmas[i], null);
+				token = new TextToken(tokens[i], lemmata[i], null);
 			} else {
-				token = new TextToken(tokens[i], lemmas[i], posTags[i]);
+				token = new TextToken(tokens[i], lemmata[i], posTags[i]);
 			}
 			this.tokenObjects.add(token);
 		}
@@ -136,142 +172,9 @@ public class ExtractionUnit {
 	}
 
 	public void deleteData() {
-		this.sentenceData = null;
+//		this.sentenceData = null;
 		this.tokenObjects = null;
 	}
 
-//	public boolean isLexicalDataIsStoredInDB() {
-//		return lexicalDataIsStoredInDB;
-//	}
-//
-//	public void setLexicalDataIsStoredInDB(boolean lexicalDataIsStoredInDB) {
-//		this.lexicalDataIsStoredInDB = lexicalDataIsStoredInDB;
-//	}
-//
-//	public int getClassifyUnitTableID() {
-//		return classifyUnitTableID;
-//	}
-//
-//	public void setClassifyUnitTableID(int classifyUnitTableID) {
-//		this.classifyUnitTableID = classifyUnitTableID;
-//	}
-//
-//
-//	
-//
-//	public UUID getSentenceID() {
-//		return sentenceID;
-//	}
-//
-//	/**
-//	 * @return tokens
-//	 */
-//	public List<TextToken> getTokenObjects() {
-//		return tokenObjects;
-//	}
-//
-//	/**
-//	 * @return secondJobAdID (Zeilennummer)
-//	 */
-//	public int getSecondJobAdID() {
-//		return secondJobAdID;
-//	}
-//
-//	/**
-//	 * @param secondJobAdID
-//	 *            (Zeilennummer)
-//	 */
-//	public void setSecondJobAdID(int secondJobAdID) {
-//		this.secondJobAdID = secondJobAdID;
-//	}
-//
-//	/**
-//	 * @return classifyUnitID
-//	 */
-//	public UUID getClassifyUnitID() {
-//		return classifyUnitID;
-//	}
-//
-//	/**
-//	 * @param classifyUnitID
-//	 */
-//	public void setClassifyUnitID(UUID classifyUnitID) {
-//		this.classifyUnitID = classifyUnitID;
-//	}
-//
-//	/**
-//	 * @return jobAdID
-//	 */
-//	public int getJobAdID() {
-//		return jobAdID;
-//	}
-//
-//	/**
-//	 * @param jobAdID
-//	 */
-//	public void setJobAdID(int jobAdID) {
-//		this.jobAdID = jobAdID;
-//	}
-
-//	public void setLemmata(String[] lemmata){
-//		this.lemmata = lemmata;
-//	}
-//	
-//	public void setPosTags(String[] posTags){
-//		this.posTags = posTags;
-//	}
-//	
-//	public void setTokens(String[] tokens){
-//		this.tokens = tokens;
-//	}
-
-//	/**
-//	 * @param sentence
-//	 */
-//	public void setSentence(String sentence) {
-//		this.sentence = sentence;
-//	}
-//
-//	/**
-//	 * @return sentence
-//	 */
-//	public String getSentence() {
-//		return sentence;
-//	}
-
-//	/*
-//	 * (non-Javadoc)
-//	 * 
-//	 * @see java.lang.Object#toString()
-//	 */
-//	@Override
-//	public String toString() {
-//		StringBuffer sb = new StringBuffer();
-//		sb.append(sentence + "\n");
-//		return sb.toString();
-//	}
-
-//	/*
-//	 * (non-Javadoc)
-//	 * 
-//	 * @see java.lang.Object#equals(java.lang.Object)
-//	 */
-//	@Override
-//	public boolean equals(Object o) {
-//		ExtractionUnit cu = (ExtractionUnit) o;
-//		return (this.getJobAdID() + this.getSecondJobAdID() + this.getClassifyUnitID().toString() + this.getSentence())
-//				.equals(cu.getJobAdID() + cu.getSecondJobAdID() + cu.getClassifyUnitID().toString() + cu.getSentence());
-//	}
-//
-//	/*
-//	 * (non-Javadoc)
-//	 * 
-//	 * @see java.lang.Object#hashCode()
-//	 */
-//	@Override
-//	public int hashCode() {
-//		return new HashCodeBuilder(3, 17).append(getJobAdID()).append(getSecondJobAdID()).append(getClassifyUnitID())
-//				.append(getSentence()).toHashCode();
-//	}
 
 }

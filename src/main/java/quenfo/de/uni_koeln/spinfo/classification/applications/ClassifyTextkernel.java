@@ -18,7 +18,7 @@ import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.ZoneKN
 public class ClassifyTextkernel {
 	
 	// Pfad zur Input-DB
-		static String inputDB = /* "D:/Daten/sqlite/SteA.db3"; */"classification/db/text_kernel_replaced.db";
+		static String inputDB = /* "D:/Daten/sqlite/SteA.db3"; */"classification/db/text_kernel_replaced_dev.db";
 
 		// Jahrgang 
 		static String jahrgang = "2011";
@@ -31,11 +31,11 @@ public class ClassifyTextkernel {
 
 		// Name der korrigierbaren Output-DB (Input für alle späteren
 		// IE-Applications )
-		static String corrOutputDB = "CorrectableParagraphs_textkernel_0508.db";
+		static String corrOutputDB = "CorrectableParagraphs_textkernel_0908.db";
 
 		// Name der (nicht korrigierbaren) Output-DB (dient nur zur Dokumentation
 		// der originalen Klassifikationsergebnisse)
-		static String origOutputDB = "OriginalParagraphs_textkernel_0508.db";
+		static String origOutputDB = "OriginalParagraphs_textkernel_0908.db";
 		
 		// Pfad zur Datei mit den Trainingsdaten
 		static String trainingdataFile = "classification/data/trainingSets/trainingdata_anonymized.tsv";

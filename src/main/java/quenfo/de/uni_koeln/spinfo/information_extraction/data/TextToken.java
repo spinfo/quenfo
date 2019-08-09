@@ -1,5 +1,7 @@
 package quenfo.de.uni_koeln.spinfo.information_extraction.data;
 
+import java.io.Serializable;
+
 import de.uni_koeln.spinfo.data.Token;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,7 +16,13 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper=true)
-public class TextToken extends Token {
+public class TextToken extends Token implements Serializable {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	
 	//Falls das Token das erste Token einer Information-Entity ist: Anzahl der noch fehlenden Tokens im Satz
 	private int tokensToCompleteInformationEntity = 0;
@@ -32,6 +40,11 @@ public class TextToken extends Token {
 	 */
 	public TextToken(String string, String lemma, String posTag) {
 		super(string, lemma, posTag);
+	}
+	
+	public TextToken() {
+		//default JPA constructor
+		super();
 	}
 	
 	

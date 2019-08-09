@@ -46,6 +46,7 @@ public class PatternToken extends Token {
 //		this.token = string;
 //	}
 	
+	@Override
 	public String getLemma(){
 		if(isModifier()) return "IMPORTANCE";
 		return this.lemma;

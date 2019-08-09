@@ -116,7 +116,8 @@ public class ConfigurableDatabaseClassifier {
 //		int jobAdCount = 0;
 //		int paraCount = 0;
 		query = "SELECT ZEILENNR, Jahrgang, STELLENBESCHREIBUNG FROM " + tableName + " WHERE LANG='de' LIMIT ? OFFSET ?;";
-
+		//TODO JB: LANG bezieht sich nur auf text kernel
+		
 		PreparedStatement prepStmt = inputDb.prepareStatement(query);
 		prepStmt.setInt(1, queryLimit);
 		prepStmt.setInt(2, currentId);
@@ -178,7 +179,10 @@ public class ConfigurableDatabaseClassifier {
 
 			// 1. Split into paragraphs and create a ClassifyUnit per paragraph
 			Set<String> paragraphs = ClassifyUnitSplitter.splitIntoParagraphs(jobAd);		
-
+			if (paragraphs.size() == 1)
+				System.out.println(zeilenNr + "");
+			
+			
 			// if treat enc
 			if (config.getFeatureConfiguration().isTreatEncoding()) {
 				paragraphs = EncodingProblemTreatment.normalizeEncoding(paragraphs);
@@ -250,12 +254,12 @@ public class ConfigurableDatabaseClassifier {
 						if (answer.toLowerCase().trim().equals("c")) {
 							goOn = true;
 							answered = true;
-							log.info("\n...classifying...\n");
+							log.info("...classifying...");
 						} else if (answer.toLowerCase().trim().equals("d")) {
 							goOn = true;
 							askAgain = false;
 							answered = true;
-							log.info("\n...classifying...\n");
+							log.info("...classifying...");
 						} else if (answer.toLowerCase().trim().equals("s")) {
 							goOn = false;
 							answered = true;

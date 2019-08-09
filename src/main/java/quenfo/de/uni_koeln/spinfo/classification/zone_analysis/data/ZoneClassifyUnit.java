@@ -4,6 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.MappedSuperclass;
+
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,6 +18,9 @@ import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.helpers.SingleToMultiClassConverter;
 
 //TODO JB lombok?
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@MappedSuperclass
 @Data
 @ToString(of = {}, callSuper=true)
 @EqualsAndHashCode(of = {}, callSuper=true)

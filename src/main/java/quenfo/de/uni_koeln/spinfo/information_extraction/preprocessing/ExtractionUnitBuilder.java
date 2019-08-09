@@ -74,6 +74,7 @@ public class ExtractionUnitBuilder {
 					extractionUnit.setSecondJobAdID(((JASCClassifyUnit) cu).getSecondParentID());
 					extractionUnit.setClassifyUnitID(cu.getId());
 					extractionUnit.setClassifyUnitTableID(((JASCClassifyUnit) cu).getTableID());
+					extractionUnit.setClassifyUnitjpaID(((JASCClassifyUnit) cu).getJpaID());
 					extractionUnit.setJobAdID(((JASCClassifyUnit) cu).getParentID());
 
 					if (lemmata != null) {

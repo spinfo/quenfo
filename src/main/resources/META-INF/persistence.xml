@@ -3,9 +3,9 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
 	version="2.0" xmlns="http://java.sun.com/xml/ns/persistence">
-	<persistence-unit name="classifyunits"
-		transaction-type="RESOURCE_LOCAL">
-		<class>quenfo.de.uni_koeln.spinfo.jpatut.JobAd</class>
+	<persistence-unit name="textkernel" transaction-type="RESOURCE_LOCAL">
+		<class>quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit</class>
+		<class>quenfo.de.uni_koeln.spinfo.information_extraction.data.ExtractionUnit</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver"
 				value="org.apache.derby.jdbc.EmbeddedDriver" />
@@ -21,6 +21,5 @@
 			<property name="eclipselink.ddl-generation.output-mode"
 				value="database" /> 
 		</properties>
-
 	</persistence-unit>
 </persistence>
