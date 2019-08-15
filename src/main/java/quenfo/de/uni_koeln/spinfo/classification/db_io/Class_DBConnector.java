@@ -25,6 +25,40 @@ public class Class_DBConnector {
 		connection = DriverManager.getConnection("jdbc:sqlite:" + dbFilePath);
 		return connection;
 	}
+	
+	public static void writeUnsplittedJobAds(Connection connection, Map<Integer, String> unsplitted) throws SQLException {
+		Statement stmt = connection.createStatement();
+		stmt.executeUpdate("DROP TABLE IF EXISTS Unsplitted");
+		
+		String create = "CREATE TABLE Unsplitted" +
+							"(ID INTEGER PRIMARY KEY AUTOINCREMENT, "
+							+ " ZEILENNR INT NOT NULL, "
+							+ " Jahrgang INT, "
+							+ "LANG TEXT, "
+							+ "STELLENBESCHREIBUNG Text NOT NULL)";
+		
+		stmt.executeUpdate(create);
+		
+		stmt.close();
+		
+		PreparedStatement prepStmt = connection.prepareStatement(
+				"INSERT INTO Unsplitted (ZEILENNR, Jahrgang, LANG, STELLENBESCHREIBUNG) VALUES(?,?,?,?)");
+		
+		for (Map.Entry<Integer, String> e : unsplitted.entrySet()) {
+			prepStmt.setInt(1, e.getKey());
+			prepStmt.setInt(2, 2017);
+			prepStmt.setString(3, "de");
+			prepStmt.setString(4, e.getValue());
+			
+			prepStmt.addBatch();
+		}
+		
+		prepStmt.executeBatch();
+		prepStmt.close();
+		
+		
+		connection.commit();
+	}
 
 
 	public static void createClassificationOutputTables(Connection connection, boolean correctable)
@@ -184,6 +218,7 @@ public class Class_DBConnector {
 	}
 
 
+	@Deprecated
 	public static void writeInputDB(SortedMap<Integer, String> jobAds,Connection connection) throws SQLException {
 		connection.setAutoCommit(false);
 		String sql = "INSERT INTO DL_ALL_Spinfo (ZEILENNR, Jahrgang, STELLENBESCHREIBUNG) VALUES(?,2011,?)";

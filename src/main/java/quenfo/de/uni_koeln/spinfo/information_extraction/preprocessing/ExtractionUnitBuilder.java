@@ -64,7 +64,6 @@ public class ExtractionUnitBuilder {
 			}
 			for (int i = 0; i < sentences.size(); i++) {
 				String sentence = sentences.get(i);
-
 				sentence = correctSentence(sentence);
 				if (sentence.length() > 1) {
 					extractionUnit = new ExtractionUnit();
@@ -74,9 +73,11 @@ public class ExtractionUnitBuilder {
 					extractionUnit.setSecondJobAdID(((JASCClassifyUnit) cu).getSecondParentID());
 					extractionUnit.setClassifyUnitID(cu.getId());
 					extractionUnit.setClassifyUnitTableID(((JASCClassifyUnit) cu).getTableID());
-					extractionUnit.setClassifyUnitjpaID(((JASCClassifyUnit) cu).getJpaID());
+					Long jpaID = ((JASCClassifyUnit) cu).getJpaID();
+					if (jpaID != null)
+						extractionUnit.setClassifyUnitjpaID(jpaID);
 					extractionUnit.setJobAdID(((JASCClassifyUnit) cu).getParentID());
-
+				
 					if (lemmata != null) {
 						extractionUnit.setLemmata(lemmata.get(i).split(" \\| "));
 					}
@@ -87,7 +88,6 @@ public class ExtractionUnitBuilder {
 					if (tokens != null) {
 						extractionUnit.setTokens(tokens.get(i).split(" \\| "));
 					}
-//					System.out.println(extractionUnit);
 					extractionUnits.add(extractionUnit);
 				}
 			}

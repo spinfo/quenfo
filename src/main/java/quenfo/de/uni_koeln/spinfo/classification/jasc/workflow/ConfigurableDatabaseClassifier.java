@@ -144,6 +144,8 @@ public class ConfigurableDatabaseClassifier {
 		boolean askAgain = true;
 //		long start = System.currentTimeMillis();	
 		
+		Map<Integer, String> unsplitted = new HashMap<>();
+		
 
 		while (queryResult.next() && goOn) {			
 			
@@ -180,7 +182,7 @@ public class ConfigurableDatabaseClassifier {
 			// 1. Split into paragraphs and create a ClassifyUnit per paragraph
 			Set<String> paragraphs = ClassifyUnitSplitter.splitIntoParagraphs(jobAd);		
 			if (paragraphs.size() == 1)
-				System.out.println(zeilenNr + "");
+				unsplitted.put(zeilenNr, jobAd);
 			
 			
 			// if treat enc
@@ -273,5 +275,12 @@ public class ConfigurableDatabaseClassifier {
 			}
 		
 		}
+		
+		System.out.println(unsplitted.size());
+//		for (Map.Entry<Integer, String> e : unsplitted.entrySet()) {
+//			System.out.println("ZEILENNR: " + e.getKey());
+//		}
+		Class_DBConnector.writeUnsplittedJobAds(corrConnection, unsplitted);
+		
 	}
 }

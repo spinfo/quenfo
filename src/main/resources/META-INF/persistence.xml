@@ -6,6 +6,7 @@
 	<persistence-unit name="textkernel" transaction-type="RESOURCE_LOCAL">
 		<class>quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit</class>
 		<class>quenfo.de.uni_koeln.spinfo.information_extraction.data.ExtractionUnit</class>
+		<class>quenfo.de.uni_koeln.spinfo.core.data.JobAd</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver"
 				value="org.apache.derby.jdbc.EmbeddedDriver" />

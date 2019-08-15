@@ -9,6 +9,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.IEType;
 import quenfo.de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
 import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
@@ -16,11 +20,13 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
 /**
  * @author geduldia
  * 
- *         workflow to match the already validated competences (from competences.txt) against the as class 3 classified paragraphs
- *         
+ *         workflow to match the already validated competences (from
+ *         competences.txt) against the as class 3 classified paragraphs
+ * 
  *         input: as class 3 (= applicants profile) classified paragraphs
- *         output: all matching competences together with their containing sentence
-
+ *         output: all matching competences together with their containing
+ *         sentence
+ * 
  */
 public class MatchCompetences {
 
@@ -34,22 +40,26 @@ public class MatchCompetences {
 	static String compMOutputDB = null;
 
 	// txt-File mit den validierten Kompetenzen
-	//static File competences = new File("information_extraction/data/competences/competences.txt");
-	static File notCatComps = null;//new File("information_extraction/data/competences/notCategorized.txt"); //TODO refactoring
-	
+	// static File competences = new
+	// File("information_extraction/data/competences/competences.txt");
+	static File notCatComps = null;// new File("information_extraction/data/competences/notCategorized.txt");
+									// //TODO refactoring
+
 	// tei-File mit kategorisierten Kompetenzen
-	static File catComps = null;//new File("information_extraction/data/competences/tei_index/compdict.tei");
-	
-	// Ebene, auf der die Kompetenz zugeordnet werden soll(div1, div2, div3, form, orth)
-	static String category = null;//"div3";
+	static File catComps = null;// new File("information_extraction/data/competences/tei_index/compdict.tei");
+
+	// Ebene, auf der die Kompetenz zugeordnet werden soll(div1, div2, div3, form,
+	// orth)
+	static String category = null;// "div3";
 
 	// txt-File mit allen 'Modifier'-Ausdrücken
-	static File modifier = null;//new File("information_extraction/data/competences/modifier.txt");
-	
-	//static File tokensToRemove = new File("information_extraction/data/competences/fuellwoerter.txt");
+	static File modifier = null;// new File("information_extraction/data/competences/modifier.txt");
+
+	// static File tokensToRemove = new
+	// File("information_extraction/data/competences/fuellwoerter.txt");
 
 	// txt-File zur Speicherung der Match-Statistiken
-	static File statisticsFile = null;//new File("information_extraction/data/competences/matchingStats.txt");
+	static File statisticsFile = null;// new File("information_extraction/data/competences/matchingStats.txt");
 
 	// Anzahl der Paragraphen aus der Input-DB, gegen die gematcht werden soll
 	// (-1 = alle)
@@ -58,14 +68,17 @@ public class MatchCompetences {
 	// Falls nicht alle Paragraphen gematcht werden sollen, hier die
 	// Startposition angeben
 	static int startPos = 0;
-	
-	// true, falls Koordinationen  in Informationseinheit aufgelöst werden sollen
+
+	// true, falls Koordinationen in Informationseinheit aufgelöst werden sollen
 	static boolean expandCoordinates = false;
 
+	private static final String PERSISTENCE_UNIT_NAME = "textkernel";
+	private static EntityManager em;
+
 	public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException {
-		
+
 		loadProperties();
-		
+
 		// Verbindung mit Input-DB
 		Connection inputConnection = null;
 		if (!new File(paraInputDB).exists()) {
@@ -82,7 +95,7 @@ public class MatchCompetences {
 		}
 		Connection outputConnection = IE_DBConnector.connect(compMOutputFolder + compMOutputDB);
 		IE_DBConnector.createExtractionOutputTable(outputConnection, IEType.COMPETENCE, false);
-		
+
 		// Prüfe ob maxCount und startPos gültige Werte haben
 		String query = "SELECT COUNT(*) FROM ClassifiedParagraphs;";
 		Statement stmt = inputConnection.createStatement();
@@ -100,10 +113,17 @@ public class MatchCompetences {
 
 		// starte Matching
 		long before = System.currentTimeMillis();
-		//erzeugt einen Index auf die Spalte 'ClassTHREE' (falls noch nicht vorhanden)
+		// erzeugt einen Index auf die Spalte 'ClassTHREE' (falls noch nicht vorhanden)
 		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTHREE");
-		Extractor extractor = new Extractor(notCatComps, modifier, catComps, category, IEType.COMPETENCE, expandCoordinates);
-		extractor.stringMatch(statisticsFile, inputConnection, outputConnection, maxCount, startPos);
+		Extractor extractor = new Extractor(notCatComps, modifier, catComps, category, IEType.COMPETENCE,
+				expandCoordinates);
+
+		// DerbyDB Connection
+		EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+		em = factory.createEntityManager();
+
+		extractor.stringMatch(statisticsFile, outputConnection, em, startPos, maxCount);
+		//extractor.stringMatch(statisticsFile, inputConnection, outputConnection, maxCount, startPos);
 		long after = System.currentTimeMillis();
 		double time = (((double) after - before) / 1000) / 60;
 		if (time > 60.0) {
@@ -114,7 +134,7 @@ public class MatchCompetences {
 	}
 
 	private static void loadProperties() throws IOException {
-		Properties props = new Properties();		
+		Properties props = new Properties();
 		InputStream is = MatchCompetences.class.getClassLoader().getResourceAsStream("config.properties");
 		props.load(is);
 		String jahrgang = props.getProperty("jahrgang");

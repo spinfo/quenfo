@@ -1,6 +1,7 @@
 package quenfo.de.uni_koeln.spinfo.information_extraction.preprocessing;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import is2.data.SentenceData09;
@@ -39,9 +40,12 @@ public class MateTagger {
 				sd.init(extractionUnit.getTokens());
 			}
 			if (lemmatizer != null) {
+				
 				if (extractionUnit.getLemmata() == null) {
 					lexicalDataIsStoredInDB = false;
 					lemmatizer.apply(sd);
+				} else {
+					sd.setLemmas(extractionUnit.getLemmata());
 				}
 			}
 			if (morphTagger != null) {
@@ -57,7 +61,7 @@ public class MateTagger {
 				}
 
 			}
-
+			
 			extractionUnit.setSentenceData(sd);
 			extractionUnit.setLexicalDataIsStoredInDB(lexicalDataIsStoredInDB);
 

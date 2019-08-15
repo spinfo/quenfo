@@ -168,6 +168,7 @@ public class ExtractionUnit implements Serializable {
 			this.tokenObjects.add(token);
 		}
 		token = new TextToken(null, "<end-LEMMA>", "<end-POS>");
+		
 		this.tokenObjects.add(token);
 	}
 

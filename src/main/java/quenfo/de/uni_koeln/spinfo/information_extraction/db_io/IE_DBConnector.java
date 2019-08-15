@@ -194,10 +194,10 @@ public class IE_DBConnector {
 			((ZoneClassifyUnit) classifyUnit).setActualClassID(classID);
 			try {
 				String sentences = result.getString("ExtractionUnits");
+				//System.out.println(sentences);
 				if (sentences != null && !(sentences.equals(""))) {
 					((JASCClassifyUnit) classifyUnit)
 							.setSentences((sentences.replace(" | ", " ").replace("<root> ", "")));
-					System.out.println(((JASCClassifyUnit) classifyUnit).getSentences());
 					((JASCClassifyUnit) classifyUnit).setTokens(sentences);
 				}
 			} catch (SQLException e) {

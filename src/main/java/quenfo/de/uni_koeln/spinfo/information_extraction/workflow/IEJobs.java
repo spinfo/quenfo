@@ -319,6 +319,7 @@ public class IEJobs {
 	 */
 	public void annotateTokens(List<ExtractionUnit> extractionUnits) throws IOException {
 		for (ExtractionUnit currentExtractionUnit : extractionUnits) {
+
 			List<TextToken> tokens = currentExtractionUnit.getTokenObjects();
 			if (!entities.isEmpty()) {
 				annotateEntities(tokens);
@@ -335,6 +336,7 @@ public class IEJobs {
 	// prüft die Tokens auf bereits bekannte Kompetenzen/Tools und zeichnet sie
 	// als solche aus
 	private void annotateEntities(List<TextToken> tokens) {
+		
 		for (int t = 0; t < tokens.size(); t++) {
 			Token currentToken = tokens.get(t);
 			String lemma = Util.normalizeLemma(currentToken.getLemma());
@@ -362,7 +364,6 @@ public class IEJobs {
 						currentToken.setIEToken(true);
 						((TextToken) currentToken).setTokensToCompleteInformationEntity(ie.getLemmata().size() - 1);
 					}
-//					log.info(currentToken.toString());
 				}
 			}
 		}

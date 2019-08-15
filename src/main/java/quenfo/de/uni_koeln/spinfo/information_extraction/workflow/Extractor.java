@@ -16,6 +16,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
 import org.apache.log4j.Logger;
 
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
@@ -28,11 +31,9 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.data.InformationEntity;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.Pattern;
 import quenfo.de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
 import quenfo.de.uni_koeln.spinfo.information_extraction.preprocessing.ExtractionUnitBuilder;
-import quenfo.de.uni_koeln.spinfo.jpatut.DatabaseTransformer;
 import is2.lemmatizer.Lemmatizer;
 import is2.tag.Tagger;
 import is2.tools.Tool;
-
 
 /**
  * TODO JB: Refactoring
@@ -47,7 +48,7 @@ import is2.tools.Tool;
  *
  */
 public class Extractor {
-	
+
 	Logger log = Logger.getLogger(getClass());
 
 	private IEJobs jobs;
@@ -58,12 +59,12 @@ public class Extractor {
 	private File possCompoundsFile;
 	private boolean resolveCoordinations;
 	private File entitiesFile;
-	//private File amsComps;
+	// private File amsComps;
 	private File noEntitiesFile;
 	private File contexts;
 	private File modifier;
 
-	//TODO Konstruktoren refactoring
+	// TODO Konstruktoren refactoring
 	// Konstruktor für die Matching-Workflows
 	/**
 	 * @param entities  file of already known/extracted entities
@@ -78,23 +79,24 @@ public class Extractor {
 		this.possCompoundsFile = new File("src/test/resources/coordinations/possibleCompounds.txt");
 		this.jobs = new IEJobs(entities, null, modifiers, null, type, resolveCoordinations, possCompoundsFile);
 		initialize();
-		
+
 	}
-	
+
 	public Extractor(File entities, File modifiers, File amsComps, String category, IEType type,
-			boolean resolveCoordinations) throws IOException {		
+			boolean resolveCoordinations) throws IOException {
 		this.resolveCoordinations = resolveCoordinations;
 		this.entitiesFile = entities;
 		this.type = type;
 		this.possCompoundsFile = new File("src/test/resources/coordinations/possibleCompounds.txt");
-		this.jobs = new IEJobs(entities, null, amsComps, category, modifiers, null, type, resolveCoordinations, possCompoundsFile);
+		this.jobs = new IEJobs(entities, null, amsComps, category, modifiers, null, type, resolveCoordinations,
+				possCompoundsFile);
 		initialize();
-		
-	}
 
+	}
 
 	/**
 	 * Constructor to extract new Competences/Tools
+	 * 
 	 * @param outputConnection
 	 * @param entitiesFile     file with the already known/extracted entities
 	 *                         (competences/tools)
@@ -112,9 +114,10 @@ public class Extractor {
 		this.contexts = contexts;
 		this.type = type;
 		this.possCompoundsFile = new File("src/test/resources/coordinations/possibleCompounds.txt");
-		this.jobs = new IEJobs(entitiesFile, noEntitiesFile, modifier, contexts, type, resolveCoordinations, possCompoundsFile);// new
-																										// contexts,
-																												// type);
+		this.jobs = new IEJobs(entitiesFile, noEntitiesFile, modifier, contexts, type, resolveCoordinations,
+				possCompoundsFile);// new
+		// contexts,
+		// type);
 		if (outputConnection != null) {
 			// liest aus der Output-DB, die - falls vorhanen - manuell
 			// validierten Entitäten aus dem vorherigen Extraktionsdurchgang ein
@@ -134,8 +137,6 @@ public class Extractor {
 		}
 		initialize();
 	}
-
-	
 
 	private void initialize() {
 		Map<Integer, List<Integer>> translations = new HashMap<Integer, List<Integer>>();
@@ -180,7 +181,8 @@ public class Extractor {
 		// Lemmatizer und Tagger (nur für den Fall, dass noch lexikalische Infos
 		// generiert werden müssen)
 		Tool lemmatizer = new Lemmatizer(
-				"information_extraction/data/sentencedata_models/ger-tagger+lemmatizer+morphology+graph-based-3.6/lemma-ger-3.6.model", false);
+				"information_extraction/data/sentencedata_models/ger-tagger+lemmatizer+morphology+graph-based-3.6/lemma-ger-3.6.model",
+				false);
 		Tool tagger = new Tagger(
 				"information_extraction/data/sentencedata_models/ger-tagger+lemmatizer+morphology+graph-based-3.6/tag-ger-3.6.model");
 
@@ -217,8 +219,7 @@ public class Extractor {
 			if (classifyUnits.isEmpty()) {
 				finished = true;
 			}
-	
-			
+
 			readParagraphs += classifyUnits.size();
 			if (readParagraphs >= maxCount) {
 				finished = true;
@@ -256,7 +257,8 @@ public class Extractor {
 			classifyUnits = null;
 			extractions = null;
 			extractionUnits = null;
-			this.jobs = new IEJobs(entitiesFile, noEntitiesFile, modifier, contexts, type, resolveCoordinations, possCompoundsFile);
+			this.jobs = new IEJobs(entitiesFile, noEntitiesFile, modifier, contexts, type, resolveCoordinations,
+					possCompoundsFile);
 			jobs.addKnownEntities(knownEntities);
 			jobs.addNoEntities(noEntities);
 		}
@@ -264,7 +266,7 @@ public class Extractor {
 		tagger = null;
 
 		jobs.mergeInformationEntities(allExtractions);
-		
+
 		if (allExtractions.isEmpty()) {
 			log.info("no new " + jobs.type.name() + "s found\n");
 		} else {
@@ -292,9 +294,89 @@ public class Extractor {
 		return allExtractions;
 	}
 
-	
-	public void stringMatch(File statisticsFile, Connection inputConnection, Connection outputConnection/*, String outputDBPath*/, int maxCount,
-			int startPos) throws SQLException, IOException {
+	private Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> matchBatch(List<ExtractionUnit> extractionUnits,
+			Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> stringMatches, Tool lemmatizer,
+			Connection outputConnection) throws SQLException, IOException {
+
+		stringMatches = jobs.extractByStringMatch(extractionUnits, lemmatizer);
+		stringMatches = jobs.mergeInformationEntities(stringMatches);
+
+		// set Modifiers
+		if (jobs.type == IEType.COMPETENCE) {
+			jobs.setModifiers(stringMatches);
+		}
+
+		// write results in DB
+		if (stringMatches.isEmpty()) {
+			log.info("no " + jobs.type.name() + " matches found\n");
+		} else {
+			String outputPath = outputConnection.getMetaData().getURL().replace("jdbc:sqlite:", "");
+			log.info("write results in output-DB: " + outputPath);
+			if (jobs.type == IEType.COMPETENCE) {
+				IE_DBConnector.writeCompetenceExtractions(stringMatches, outputConnection, false, false);
+			}
+			if (jobs.type == IEType.TOOL) {
+				IE_DBConnector.writeToolExtractions(stringMatches, outputConnection, false, false);
+			}
+		}
+		return stringMatches;
+	}
+
+	public void stringMatch(File statisticsFile, Connection outputConnection, EntityManager em, int startPos, int maxCount)
+			throws SQLException, IOException {
+
+		Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> stringMatches = null;
+		// Lemmatizer (nur für den Fall, dass noch Lemmata generiert werden
+		// müssen)
+		Tool lemmatizer = new Lemmatizer(
+				"information_extraction/data/sentencedata_models/ger-tagger+lemmatizer+morphology+graph-based-3.6/lemma-ger-3.6.model",
+				false);
+		Map<String, Integer> matchCounts = new HashMap<String, Integer>();
+		Query query = em.createNamedQuery("getClassXExtractionUnits");
+		log.info("build query");
+		query.setParameter("class", 3);
+		
+		//int startPos = 0;
+		if (maxCount < 0)
+			maxCount = 2000; //TODO maxCount default = 50000
+		
+		int batch = 2000;//TODO break wenn limit maxCount erreicht ist
+		
+//		List<ExtractionUnit> extractionUnits = new ArrayList<>();
+		List<ExtractionUnit> currentEUs;
+		
+		while (true) {
+			query.setFirstResult(startPos);
+			query.setMaxResults(maxCount);
+			
+			currentEUs = query.getResultList();
+			
+			if (currentEUs.isEmpty())
+				break;
+			
+			stringMatches = matchBatch(currentEUs, stringMatches, null, outputConnection);
+			updateMatchCount(stringMatches, matchCounts);
+
+//			extractionUnits = extractionUnits.subList(0, 10);
+			log.info(currentEUs.size() + " Extraction Units (startPos=" + startPos + ")");
+			
+			
+			startPos += currentEUs.size();
+
+		}
+
+		// write statisticsFile
+		log.info("write Statistics-File to: " + statisticsFile.getAbsolutePath());
+		writeStatistics(matchCounts, statisticsFile);
+		if (possCompoundSplits.size() > 0) {
+			log.info("write new compounds to evaluate in: " + possCompoundsFile.getAbsolutePath());
+			writeNewCoordinations();
+		}
+	}
+
+	public void stringMatch(File statisticsFile, Connection inputConnection,
+			Connection outputConnection/* , String outputDBPath */, int maxCount, int startPos)
+			throws SQLException, IOException {
 
 		// Falls die lexikalischen Infos (sentences, lemmata) noch nicht in der
 		// Input-DB hinterlegt sind, dann werden Sie in diesem Workflow
@@ -307,11 +389,12 @@ public class Extractor {
 		// Lemmatizer (nur für den Fall, dass noch Lemmata generiert werden
 		// müssen)
 		Tool lemmatizer = new Lemmatizer(
-				"information_extraction/data/sentencedata_models/ger-tagger+lemmatizer+morphology+graph-based-3.6/lemma-ger-3.6.model", false);
+				"information_extraction/data/sentencedata_models/ger-tagger+lemmatizer+morphology+graph-based-3.6/lemma-ger-3.6.model",
+				false);
 
-		List<ClassifyUnit> classifyUnits;
-		List<ExtractionUnit> extractionUnits;
-		Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> stringMatches;
+		List<ClassifyUnit> classifyUnits = null;
+		List<ExtractionUnit> extractionUnits = null;
+		Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> stringMatches = null;
 
 		// Aus Speichergründen werden jeweils nur 50000 Paragraphen eingelesen
 		// und verarbeitet
@@ -325,6 +408,7 @@ public class Extractor {
 
 		Map<String, Integer> matchCounts = new HashMap<String, Integer>();
 		while (true) {
+
 			// Einlesen der Paragraphen
 			if (maxCount > -1 && readParagraphs + paragraphsPerRound > maxCount) {
 				paragraphsPerRound = maxCount - readParagraphs;
@@ -345,28 +429,8 @@ public class Extractor {
 			// Matching
 			log.info("match");
 			jobs.annotateTokens(extractionUnits);
-			stringMatches = jobs.extractByStringMatch(extractionUnits, lemmatizer);
-			stringMatches = jobs.mergeInformationEntities(stringMatches);
 
-			// set Modifiers
-			if (jobs.type == IEType.COMPETENCE) {
-				jobs.setModifiers(stringMatches);
-			}
-
-			// write results in DB
-			if (stringMatches.isEmpty()) {
-				log.info("no " + jobs.type.name() + " matches found\n");
-			} else {
-				String outputPath = outputConnection.getMetaData().getURL().replace("jdbc:sqlite:", "");
-				log.info("write results in output-DB: " + outputPath);
-				if (jobs.type == IEType.COMPETENCE) {
-					IE_DBConnector.writeCompetenceExtractions(stringMatches, outputConnection, false, false);
-				}
-				if (jobs.type == IEType.TOOL) {
-					IE_DBConnector.writeToolExtractions(stringMatches, outputConnection, false, false);
-				}
-			}
-			
+			stringMatches = matchBatch(extractionUnits, stringMatches, lemmatizer, outputConnection);
 
 			updateMatchCount(stringMatches, matchCounts);
 			if (maxCount > -1 && readParagraphs >= maxCount)
@@ -379,7 +443,7 @@ public class Extractor {
 			log.info("write new compounds to evaluate in: " + possCompoundsFile.getAbsolutePath());
 			writeNewCoordinations();
 		}
-		
+
 		lemmatizer = null;
 	}
 
@@ -402,7 +466,6 @@ public class Extractor {
 		}
 		return toReturn;
 	}
-
 
 	@Deprecated
 	private void reWriteFiles() throws IOException {
@@ -441,7 +504,6 @@ public class Extractor {
 		out.close();
 	}
 
-
 	private void writeNewCoordinations() {
 		StringBuffer sb = new StringBuffer();
 		for (Map.Entry<String, String> e : possCompoundSplits.entrySet()) {
@@ -449,7 +511,7 @@ public class Extractor {
 		}
 
 		try {
-			
+
 			if (!possCompoundsFile.exists()) {
 				possCompoundsFile.getParentFile().mkdirs();
 				possCompoundsFile.createNewFile();

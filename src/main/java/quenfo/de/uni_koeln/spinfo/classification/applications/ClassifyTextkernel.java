@@ -31,11 +31,11 @@ public class ClassifyTextkernel {
 
 		// Name der korrigierbaren Output-DB (Input für alle späteren
 		// IE-Applications )
-		static String corrOutputDB = "CorrectableParagraphs_textkernel_0908.db";
+		static String corrOutputDB = "CorrectableParagraphs_textkernel_1208.db";
 
 		// Name der (nicht korrigierbaren) Output-DB (dient nur zur Dokumentation
 		// der originalen Klassifikationsergebnisse)
-		static String origOutputDB = "OriginalParagraphs_textkernel_0908.db";
+		static String origOutputDB = "OriginalParagraphs_textkernel_1208.db";
 		
 		// Pfad zur Datei mit den Trainingsdaten
 		static String trainingdataFile = "classification/data/trainingSets/trainingdata_anonymized.tsv";
