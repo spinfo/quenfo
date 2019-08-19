@@ -322,15 +322,21 @@ public class Extractor {
 		return stringMatches;
 	}
 
+	/**
+	 * Match Information Entities in ClassifyUnits from DerbyDB
+	 * @param statisticsFile
+	 * @param outputConnection
+	 * @param em
+	 * @param startPos
+	 * @param maxCount
+	 * @throws SQLException
+	 * @throws IOException
+	 */
 	public void stringMatch(File statisticsFile, Connection outputConnection, EntityManager em, int startPos, int maxCount)
 			throws SQLException, IOException {
 
 		Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> stringMatches = null;
-		// Lemmatizer (nur für den Fall, dass noch Lemmata generiert werden
-		// müssen)
-		Tool lemmatizer = new Lemmatizer(
-				"information_extraction/data/sentencedata_models/ger-tagger+lemmatizer+morphology+graph-based-3.6/lemma-ger-3.6.model",
-				false);
+
 		Map<String, Integer> matchCounts = new HashMap<String, Integer>();
 		Query query = em.createNamedQuery("getClassXExtractionUnits");
 		log.info("build query");
@@ -338,16 +344,18 @@ public class Extractor {
 		
 		//int startPos = 0;
 		if (maxCount < 0)
-			maxCount = 2000; //TODO maxCount default = 50000
+			maxCount = Integer.MAX_VALUE; //TODO maxCount default = 50000
 		
 		int batch = 2000;//TODO break wenn limit maxCount erreicht ist
 		
 //		List<ExtractionUnit> extractionUnits = new ArrayList<>();
 		List<ExtractionUnit> currentEUs;
 		
-		while (true) {
+//		int currentCount = 0;
+		
+		while (startPos < maxCount) {
 			query.setFirstResult(startPos);
-			query.setMaxResults(maxCount);
+			query.setMaxResults(batch);
 			
 			currentEUs = query.getResultList();
 			
@@ -374,6 +382,16 @@ public class Extractor {
 		}
 	}
 
+	/**
+	 * Match InformationEntities in ClassifyUnits from SQLite DB
+	 * @param statisticsFile
+	 * @param inputConnection
+	 * @param outputConnection
+	 * @param maxCount
+	 * @param startPos
+	 * @throws SQLException
+	 * @throws IOException
+	 */
 	public void stringMatch(File statisticsFile, Connection inputConnection,
 			Connection outputConnection/* , String outputDBPath */, int maxCount, int startPos)
 			throws SQLException, IOException {

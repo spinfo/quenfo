@@ -1,4 +1,4 @@
-package quenfo.de.uni_koeln.spinfo.classification.applications;
+package quenfo.de.uni_koeln.spinfo.classification.applicationsjb;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +42,7 @@ public class ClassifyTextkernel {
 
 		// Anzahl der Stellenanzeigen, die klassifiziert werden sollen (-1 = gesamte
 		// Tabelle)
-		static int queryLimit = -1;
+		static int queryLimit = 10;
 
 		// falls nur eine begrenzte Anzahl von SteAs klassifiziert werden soll
 		// (s.o.): hier die Startosition angeben
@@ -120,7 +120,7 @@ public class ClassifyTextkernel {
 
 			// start classifying				
 			long before = System.currentTimeMillis();
-			ConfigurableDatabaseClassifier dbClassfy = new ConfigurableDatabaseClassifier(inputConnection, corrConnection,
+			ConfigurableDatabaseClassifier dbClassify = new ConfigurableDatabaseClassifier(inputConnection, corrConnection,
 					origConnection, queryLimit, fetchSize,
 
 					startId, trainingdataFile);
@@ -131,7 +131,7 @@ public class ClassifyTextkernel {
 				ExperimentConfiguration config = new ExperimentConfiguration(fuc, fq, classifier, new File(trainingdataFile), outputFolder);
 				
 				
-				dbClassfy.classifyWithConfig(config, inputTable);
+				dbClassify.classifyWithConfig(config, inputTable);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

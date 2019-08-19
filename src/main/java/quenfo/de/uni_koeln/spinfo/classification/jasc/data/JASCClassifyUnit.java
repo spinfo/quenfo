@@ -28,17 +28,12 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.data.ExtractionUnit;
  * @author geduldia
  *
  */
-@Entity
-//@Table(name = "CLASSIFYUNIT")
-@Inheritance(strategy = InheritanceType.JOINED)
+
 @Data
 @ToString(of = {}, callSuper = true)
 @EqualsAndHashCode(of = {}, callSuper=true)
 public class JASCClassifyUnit extends ZoneClassifyUnit {
 	
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long jpaID;
 
 	private int parentID;

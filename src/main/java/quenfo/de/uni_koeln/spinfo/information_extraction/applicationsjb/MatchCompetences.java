@@ -7,12 +7,15 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Properties;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
 
+import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.IEType;
 import quenfo.de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
 import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
@@ -121,6 +124,16 @@ public class MatchCompetences {
 		// DerbyDB Connection
 		EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
 		em = factory.createEntityManager();
+		
+		Query countQuery = em.createQuery("SELECT COUNT(t) from ExtractionUnit t");
+		long extractionUnitSize = (long) countQuery.getSingleResult();
+		if (extractionUnitSize == 0) {
+			System.err.println("ExtractionUnits müssen zunächst persistiert werden.");
+			Query cuQuery = em.createQuery("SELECT t from ZoneClassifyUnit t where t.actualClassID = '4'");
+			
+			List<ClassifyUnit> cu = cuQuery.getResultList();
+			System.out.println(cu.size());
+		}
 
 		extractor.stringMatch(statisticsFile, outputConnection, em, startPos, maxCount);
 		//extractor.stringMatch(statisticsFile, inputConnection, outputConnection, maxCount, startPos);

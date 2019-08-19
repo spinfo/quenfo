@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.EntityManager;
+
 import org.apache.log4j.Logger;
 
 import quenfo.de.uni_koeln.spinfo.classification.core.classifier.model.Model;
@@ -79,6 +81,12 @@ public class ConfigurableDatabaseClassifier {
 			System.out.println(sb.toString());
 		}
 		classify(expConfig, tableName);
+	}
+	
+	
+	public void classifyWithConfig(ExperimentConfiguration config, EntityManager em) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void classify(ExperimentConfiguration config, String tableName)
@@ -198,7 +206,7 @@ public class ConfigurableDatabaseClassifier {
 			classifyUnits = jobs.initializeClassifyUnits(classifyUnits);
 			classifyUnits = jobs.setFeatures(classifyUnits, config.getFeatureConfiguration(), false);
 			classifyUnits = jobs.setFeatureVectors(classifyUnits, config.getFeatureQuantifier(), model.getFUOrder());
-
+			
 			// 2. Classify
 			RegexClassifier regexClassifier = new RegexClassifier("classification/data/regex.txt");
 			Map<ClassifyUnit, boolean[]> preClassified = new HashMap<ClassifyUnit, boolean[]>();
@@ -275,12 +283,12 @@ public class ConfigurableDatabaseClassifier {
 			}
 		
 		}
-		
-		System.out.println(unsplitted.size());
 //		for (Map.Entry<Integer, String> e : unsplitted.entrySet()) {
 //			System.out.println("ZEILENNR: " + e.getKey());
 //		}
 		Class_DBConnector.writeUnsplittedJobAds(corrConnection, unsplitted);
 		
 	}
+
+
 }

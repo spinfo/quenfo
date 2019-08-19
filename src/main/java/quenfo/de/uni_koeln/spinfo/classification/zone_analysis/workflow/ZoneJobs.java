@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,6 +85,7 @@ public class ZoneJobs {
 			throws IOException {
 		TrainingDataGenerator tdg = new TrainingDataGenerator(trainingDataFile, stmc.getNumberOfCategories(),
 				stmc.getNumberOfClasses(), stmc.getTranslations());
+		
 		List<ClassifyUnit> paragraphs = tdg.getTrainingData();
 
 		if (treatEncoding) {

@@ -5,6 +5,9 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.MappedSuperclass;
@@ -26,6 +29,10 @@ import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.helpers.SingleToM
 @EqualsAndHashCode(of = {}, callSuper=true)
 public class ZoneClassifyUnit extends ClassifyUnit{
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long jpaID;
+	
 	protected int actualClassID;
 
 	@Setter(AccessLevel.NONE)
@@ -34,7 +41,10 @@ public class ZoneClassifyUnit extends ClassifyUnit{
 	private static int NUMBEROFMULTICLASSES;
 	private static SingleToMultiClassConverter CONVERTER;	
 	
-
+	public ZoneClassifyUnit() {
+		super();
+		this.actualClassID = -1;
+	}
 	
 	public ZoneClassifyUnit(String content, UUID id){
 		super(content,id);
@@ -74,6 +84,10 @@ public class ZoneClassifyUnit extends ClassifyUnit{
 		if(actualClassID == -1){
 			if(CONVERTER != null){
 				actualClassID = CONVERTER.getSingleClass(classIDs);
+				for (int i = 0; i < classIDs.length; i++) {
+					System.out.print(classIDs[i]);
+				}
+				System.out.println(" --> " + actualClassID);
 			}
 			else{
 				for (int i = 0; i < classIDs.length; i++) {
