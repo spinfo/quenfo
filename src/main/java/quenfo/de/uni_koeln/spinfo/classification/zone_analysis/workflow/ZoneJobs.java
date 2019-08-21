@@ -16,6 +16,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.IntStream;
+
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 
 import quenfo.de.uni_koeln.spinfo.classification.core.classifier.model.Model;
@@ -43,6 +46,7 @@ public class ZoneJobs {
 
 	private static Logger log = Logger.getLogger(ZoneJobs.class);
 
+	@Deprecated
 	public ZoneJobs() throws IOException {
 		System.out.println("ZoneJobs: Achtung - keine Translations gesetzt");
 		sw_filter = new StopwordFilter(new File("classification/data/stopwords.txt"));
@@ -62,6 +66,8 @@ public class ZoneJobs {
 		stemmer = new Stemmer();
 		tokenizer = new FeatureUnitTokenizer();
 		suffixTreeBuilder = new SuffixTreeFeatureGenerator();
+		JASCClassifyUnit.setNumberOfCategories(stmc.getNumberOfCategories(),
+				stmc.getNumberOfClasses(), stmc.getTranslations());
 
 	}
 
@@ -72,7 +78,6 @@ public class ZoneJobs {
 	protected FeatureUnitTokenizer tokenizer;
 	private SingleToMultiClassConverter stmc;
 	MutualInformationFilter mi_filter = new MutualInformationFilter();
-
 
 	/**
 	 * A method to get pre-categorized paragraphs from the specified file
@@ -85,7 +90,7 @@ public class ZoneJobs {
 			throws IOException {
 		TrainingDataGenerator tdg = new TrainingDataGenerator(trainingDataFile, stmc.getNumberOfCategories(),
 				stmc.getNumberOfClasses(), stmc.getTranslations());
-		
+
 		List<ClassifyUnit> paragraphs = tdg.getTrainingData();
 
 		if (treatEncoding) {
@@ -146,12 +151,14 @@ public class ZoneJobs {
 	public List<ClassifyUnit> initializeClassifyUnits(List<ClassifyUnit> paragraphs) {
 		List<ClassifyUnit> toProcess = new ArrayList<ClassifyUnit>();
 		for (ClassifyUnit paragraph : paragraphs) {
-			ZoneClassifyUnit newParagraph = new ZoneClassifyUnit(paragraph.getContent(), paragraph.getId());
 			
-			
-			
+			ZoneClassifyUnit newParagraph = new ZoneClassifyUnit(paragraph.getContent(),
+					paragraph.getId());
+
+			newParagraph.setJobAdJpaID(paragraph.getJobAdJpaID());
 			newParagraph.setClassIDs(((ZoneClassifyUnit) paragraph).getClassIDs());
 			newParagraph.setActualClassID(((ZoneClassifyUnit) paragraph).getActualClassID());
+
 			List<String> tokens = tokenizer.tokenize(newParagraph.getContent());
 			if (tokens == null) {
 				continue;
@@ -300,6 +307,7 @@ public class ZoneJobs {
 				expConfig.getFeatureQuantifier(), expConfig.getDataFile());
 		// store model
 		// exportModel(expConfig.getModelFile(), model);
+		model.setConfigHash(expConfig.hashCode());
 		return model;
 
 	}
@@ -420,23 +428,31 @@ public class ZoneJobs {
 	 */
 	public Map<ClassifyUnit, boolean[]> translateClasses(Map<ClassifyUnit, boolean[]> untranslated) {
 		Map<ClassifyUnit, boolean[]> translated = new HashMap<ClassifyUnit, boolean[]>();
-		Set<ClassifyUnit> keySet = untranslated.keySet();
-		
-		//log.info(keySet.toString());
-		
-		for (ClassifyUnit classifyUnit : keySet) {
+		Set<ClassifyUnit> untransCUs = untranslated.keySet();
+
+		// log.info(keySet.toString());
+
+		for (ClassifyUnit classifyUnit : untransCUs) {
 			ZoneClassifyUnit zcu = (ZoneClassifyUnit) classifyUnit;
 
-			//log.info(zcu.toString());
+			// log.info(zcu.toString());
 			boolean[] classIDs = zcu.getClassIDs();
+
 			int singleClassID = -1;
 			for (int i = 0; i < classIDs.length; i++) {
+//				System.out.print(classIDs[i] + " ");
 				if (classIDs[i])
 					singleClassID = i + 1;
 			}
+			// System.out.print(" -> " + singleClassID + " -> ");
 			boolean[] multiClasses = stmc.getMultiClasses(singleClassID);
+
+//			for (int i = 0; i < multiClasses.length; i++) {
+//				System.out.print(multiClasses[i] + " ");
+//			}
+
 			zcu.setClassIDs(multiClasses);
-			
+
 			boolean[] newClassIDs = untranslated.get(zcu);
 //			log.info(untranslated.containsKey(zcu));
 //			log.info(Arrays.asList(newClassIDs).toString());
@@ -446,8 +462,11 @@ public class ZoneJobs {
 					singleClassID = i + 1;
 				}
 			}
+			// System.out.println(" --> " + singleClassID + " " + zcu.getActualClassID());
 			boolean[] newMultiClasses = stmc.getMultiClasses(singleClassID);
 			translated.put(classifyUnit, newMultiClasses);
+
+			// System.out.println("---------------------------------");
 		}
 		return translated;
 	}

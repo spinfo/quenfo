@@ -15,22 +15,15 @@
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
 
-
 		<!-- Versions -->
-		<!-- <jackson.version>2.9.7</jackson.version> -->
 		<jwsplitter.version>4.4</jwsplitter.version>
 		<junit.version>4.11</junit.version>
 		<anna.version>3.5</anna.version>
 		<srl.version>4.31</srl.version>
-		<!-- <commons-lang3.version>3.0</commons-lang3.version> -->
-		<!-- <commons-math3.version>3.6.1</commons-math3.version> -->
 		<libsvm.version>3.17</libsvm.version>
 		<jxl.version>2.6.12</jxl.version>
-		<!-- <guava.version>23.0</guava.version> -->
-		<!-- <snowball.version>3.0.3</snowball.version> -->
 		<lucene.version>8.1.0</lucene.version>
 		<mahout.version>0.9</mahout.version>
-		<!-- <mahout-math.version>0.13.0</mahout-math.version> -->
 		<opennlp.version>1.8.4</opennlp.version>
 		<sqlite.version>3.21.0.1</sqlite.version>
 		<weka.version>3.8.2</weka.version>
@@ -116,20 +109,6 @@
 			<version>${log4j.version}</version>
 		</dependency>
 
-		<!-- <dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency> -->
-
-
-
 		<!-- NLP -->
 		<dependency>
 			<groupId>org.apache.opennlp</groupId>
@@ -196,30 +175,6 @@
 			<scope>provided</scope>
 		</dependency>
 
-
-
-
-
-
-
-		<!-- <dependency> <groupId>com.google.guava</groupId> <artifactId>guava</artifactId> 
-			<version>${guava.version}</version> </dependency> -->
-
-
-		<!-- <dependency> <groupId>org.apache.lucene</groupId> <artifactId>lucene-snowball</artifactId> 
-			<version>${snowball.version}</version> </dependency> -->
-
-		<!-- <dependency> <groupId>org.apache.mahout</groupId> <artifactId>mahout-math</artifactId> 
-			<version>${mahout-math.version}</version> </dependency> -->
-
-		<!-- <dependency> <groupId>com.fasterxml.jackson.core</groupId> <artifactId>jackson-databind</artifactId> 
-			<version>${jackson.version}</version> </dependency> -->
-
-		<!-- <dependency> <groupId>org.apache.commons</groupId> <artifactId>commons-math3</artifactId> 
-			<version>${commons-math3.version}</version> </dependency> -->
-
-		<!-- <dependency> <groupId>org.apache.commons</groupId> <artifactId>commons-lang3</artifactId> 
-			<version>${commons-lang3.version}</version> </dependency> -->
 
 	</dependencies>
 </project>

@@ -3,6 +3,13 @@ package quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.model
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
+
+import org.eclipse.persistence.annotations.PrimaryKey;
+
 import quenfo.de.uni_koeln.spinfo.classification.core.classifier.AbstractClassifier;
 import quenfo.de.uni_koeln.spinfo.classification.core.classifier.model.Model;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.ZoneKNNClassifier;
@@ -13,7 +20,10 @@ import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.ZoneKN
  * a model-object based on the KNNClassifier
  *
  */
+@Entity
 public class ZoneKNNModel extends Model {
+	
+	
 
 
 	private static final long serialVersionUID = 1L;

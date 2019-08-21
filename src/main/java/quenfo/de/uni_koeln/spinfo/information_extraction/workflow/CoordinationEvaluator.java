@@ -43,7 +43,8 @@ public class CoordinationEvaluator {
 		List<Pattern> pattern = null;
 
 //		CoordinationResolver cr = new CoordinationResolver();
-		CoordinateExpander ce = new CoordinateExpander(new File("src/test/resources/coordinations/possibleCompounds.txt"));
+		CoordinateExpander ce = new CoordinateExpander(new File("src/test/resources/coordinations/possibleCompounds.txt"),
+				new File("src/test/resources/coordinations/splittedCompounds.txt"));
 
 		for (Map.Entry<ExtractionUnit, Map<InformationEntity, List<Pattern>>> e : ies.entrySet()) {
 			eu = e.getKey();
@@ -144,9 +145,9 @@ public class CoordinationEvaluator {
 		// Ausgabe in Output-DB
 		IE_DBConnector.createExtractionOutputTable(outputConnection, type, false);
 		if (type.equals(IEType.COMPETENCE))
-			IE_DBConnector.writeCompetenceExtractions(resolved, outputConnection, false, false);
+			IE_DBConnector.writeCompetenceExtractions(resolved, outputConnection, false);
 		else
-			IE_DBConnector.writeToolExtractions(resolved, outputConnection, false, false);
+			IE_DBConnector.writeToolExtractions(resolved, outputConnection, false);
 
 	}
 

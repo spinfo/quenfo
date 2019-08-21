@@ -25,100 +25,117 @@ import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.helpers.SingleToM
 @Inheritance(strategy = InheritanceType.JOINED)
 @MappedSuperclass
 @Data
-@ToString(of = {}, callSuper=true)
-@EqualsAndHashCode(of = {}, callSuper=true)
-public class ZoneClassifyUnit extends ClassifyUnit{
-	
+@ToString(of = {}, callSuper = true)
+@EqualsAndHashCode(of = {}, callSuper = true)
+public class ZoneClassifyUnit extends ClassifyUnit {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long jpaID;
-	
+
 	protected int actualClassID;
+
+	
+	//TODO JB: parentId & SecondParentID aus JASCClassifyUnit
+	protected int parentID;
+
+	protected int secondParentID = -1;
 
 	@Setter(AccessLevel.NONE)
 	boolean[] classIDs;
 	private static int NUMBEROFSINGLECLASSES;
 	private static int NUMBEROFMULTICLASSES;
-	private static SingleToMultiClassConverter CONVERTER;	
-	
+	private static SingleToMultiClassConverter CONVERTER;
+
 	public ZoneClassifyUnit() {
 		super();
 		this.actualClassID = -1;
 	}
-	
-	public ZoneClassifyUnit(String content, UUID id){
-		super(content,id);
-		//this.classIDs = new boolean[8];
+
+	public ZoneClassifyUnit(String content, UUID id) {
+		super(content, id);
+		// this.classIDs = new boolean[8];
 		this.actualClassID = -1;
+//		super.setJobAdJpaID(jobAdJPA);
 	}
-	
-	public ZoneClassifyUnit(String content){
+
+	public ZoneClassifyUnit(String content) {
 		super(content, UUID.randomUUID());
-		//this.classIDs = new boolean[8];
+		// this.classIDs = new boolean[8];
 		this.actualClassID = -1;
 	}
-	
 
-	
-	
-	public static void setNumberOfCategories(int categoriesNo){
-		setNumberOfCategories(categoriesNo, categoriesNo, null);
+//	public static void setNumberOfCategories(int categoriesNo) {
+//		setNumberOfCategories(categoriesNo, categoriesNo, null);
+//	}
+
+	public ZoneClassifyUnit(String string, int jahrgang, int zeilenNr, long jobAdJpaID) {
+		this(string);
+		this.parentID = jahrgang;
+		this.secondParentID = zeilenNr;
+		this.setJobAdJpaID(jobAdJpaID);
 	}
-	
 
-	public static void setNumberOfCategories(int categoriesNo, int classesNo, Map<Integer, List<Integer>> translations){
+	public static void setNumberOfCategories(int categoriesNo, int classesNo,
+			Map<Integer, List<Integer>> translations) {
 		NUMBEROFMULTICLASSES = categoriesNo;
 		NUMBEROFSINGLECLASSES = classesNo;
 		CONVERTER = new SingleToMultiClassConverter(NUMBEROFSINGLECLASSES, NUMBEROFMULTICLASSES, translations);
 	}
-	
-	
-	
-//	public boolean[] getClassIDs() {
-//		return classIDs;
-//	}	
 
 	public void setClassIDs(boolean[] classIDs) {
-		if(classIDs == null) return;
+
+		if (classIDs == null)
+			return;
+
 		this.classIDs = classIDs;
-		if(actualClassID == -1){
-			if(CONVERTER != null){
+		if (actualClassID == -1) {
+			if (CONVERTER != null) {
 				actualClassID = CONVERTER.getSingleClass(classIDs);
+			} else {
 				for (int i = 0; i < classIDs.length; i++) {
-					System.out.print(classIDs[i]);
-				}
-				System.out.println(" --> " + actualClassID);
-			}
-			else{
-				for (int i = 0; i < classIDs.length; i++) {
-					if(classIDs[i]){
-						actualClassID = i+1;
+					if (classIDs[i]) {
+						actualClassID = i + 1;
 						return;
 					}
 				}
 			}
 		}
 	}
-	
-//	public int getActualClassID() {
-//		return actualClassID;
-//	}
 
-	public void setActualClassID(int classID){
+	public void setActualClassID(int classID) {
 		this.actualClassID = classID;
-		if(classIDs == null){
-			if(CONVERTER != null){
+		if (classIDs == null) {
+			if (CONVERTER != null) {
 				classIDs = CONVERTER.getMultiClasses(classID);
-			}
-			else {
+			} else {
 				classIDs = new boolean[NUMBEROFSINGLECLASSES];
-				if(classID > 0){
-					classIDs[classID-1] = true;
+				if (classID > 0) {
+					classIDs[classID - 1] = true;
 				}
 			}
 		}
-		
+
 	}
-	
+
+	public void setClassIDsAndActualClassID(boolean[] classIDs) {
+		// TODO JB: synchronisierung zwischen Array und Int ClassID kaputt
+		if (classIDs == null)
+			return;
+
+		this.classIDs = classIDs;
+
+		if (CONVERTER != null) {
+			actualClassID = CONVERTER.getSingleClass(classIDs);
+		} else {
+			for (int i = 0; i < classIDs.length; i++) {
+				if (classIDs[i]) {
+					actualClassID = i + 1;
+					return;
+				}
+			}
+		}
+
+	}
 
 }

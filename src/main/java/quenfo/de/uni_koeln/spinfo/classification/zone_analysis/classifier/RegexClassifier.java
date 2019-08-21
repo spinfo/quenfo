@@ -97,6 +97,7 @@ public class RegexClassifier extends ZoneAbstractClassifier {
 		boolean[] toReturn = new boolean[numberOfClasses];
 		String content = cu.getContent();
 		for (String regex : regexes.keySet()) {
+			
 			Pattern pattern = Pattern.compile(regex);
 			Matcher matcher =  pattern.matcher(content.toLowerCase());
 			if(matcher.find()){
@@ -118,18 +119,10 @@ public class RegexClassifier extends ZoneAbstractClassifier {
 		regexes.put(regex, classID);
 	}
 
-
-
-
-
-
-
-
 	@Override
 	public Model buildModel(List<ClassifyUnit> cus,
 			FeatureUnitConfiguration fuc, AbstractFeatureQuantifier fq,
 			File dataFile) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

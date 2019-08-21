@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import is2.tools.Tool;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit;
+import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data.ZoneClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.ExtractionUnit;
 
 /**
@@ -20,6 +21,37 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.data.ExtractionUnit;
  *
  */
 public class ExtractionUnitBuilder {
+	
+	
+	
+	public static List<ExtractionUnit> initializeFromDerby(List<ClassifyUnit> classifyUnits, Tool lemmatizer,
+			Tool morphTagger, Tool tagger) throws IOException {
+		
+		List<ExtractionUnit> extractionUnits = new ArrayList<ExtractionUnit>();
+		IETokenizer tokenizer = new IETokenizer();
+		List<String> sentences;
+		
+		
+		for (ClassifyUnit cu : classifyUnits) {
+			sentences = tokenizer.splitIntoSentences(cu.getContent());
+			long classifyUnitJpaID = ((ZoneClassifyUnit) cu).getJpaID();
+			long jobAdJpaID = ((ZoneClassifyUnit) cu).getJobAdJpaID();
+			
+			for (String sentence : sentences) {
+				ExtractionUnit eu = new ExtractionUnit(sentence);
+				eu.setClassifyUnitjpaID(classifyUnitJpaID);
+				eu.setJobAdjpaID(jobAdJpaID);
+				extractionUnits.add(eu);
+			}
+		}
+
+		MateTagger.setLexicalData(extractionUnits, lemmatizer, morphTagger, tagger);
+		classifyUnits = null;
+		return extractionUnits;
+	}
+	
+	
+	
 
 	/**
 	 * 
@@ -51,8 +83,9 @@ public class ExtractionUnitBuilder {
 				sentences = tokenizer.splitIntoSentences(cu.getContent());
 			} else {
 				sentences = Arrays.asList(((JASCClassifyUnit) cu).getSentences().split("  \\|\\|  "));
-
 			}
+			
+			
 			if (((JASCClassifyUnit) cu).getLemmata() != null) {
 				lemmata = Arrays.asList(((JASCClassifyUnit) cu).getLemmata().split("  \\|\\|  "));
 			}
@@ -62,6 +95,8 @@ public class ExtractionUnitBuilder {
 			if (((JASCClassifyUnit) cu).getTokens() != null) {
 				tokens = Arrays.asList(((JASCClassifyUnit) cu).getTokens().split("  \\|\\|  "));
 			}
+			
+			
 			for (int i = 0; i < sentences.size(); i++) {
 				String sentence = sentences.get(i);
 				sentence = correctSentence(sentence);
@@ -70,7 +105,7 @@ public class ExtractionUnitBuilder {
 
 					extractionUnit.setSentence(sentence);
 					extractionUnit.setJobAdID(((JASCClassifyUnit) cu).getParentID());
-					extractionUnit.setSecondJobAdID(((JASCClassifyUnit) cu).getSecondParentID());
+					extractionUnit.setSecondJobAdID(((JASCClassifyUnit) cu).getSecondParentID()); //TODO SecondJob = JobAdJPA???
 					extractionUnit.setClassifyUnitID(cu.getId());
 					extractionUnit.setClassifyUnitTableID(((JASCClassifyUnit) cu).getTableID());
 					Long jpaID = ((JASCClassifyUnit) cu).getJpaID();
@@ -146,5 +181,7 @@ public class ExtractionUnitBuilder {
 
 		return sentence;
 	}
+
+
 
 }

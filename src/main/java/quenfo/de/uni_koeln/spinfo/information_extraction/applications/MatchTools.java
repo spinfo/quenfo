@@ -26,13 +26,14 @@ public class MatchTools {
 	static String jahrgang = "2011";
 
 	// Pfad zur Input-DB mit den klassifizierten Paragraphen
-	static String inputDB = "C:/sqlite/classification/CorrectableParagraphs_"+jahrgang+".db";
+//	static String inputDB = "C:/sqlite/classification/CorrectableParagraphs_"+jahrgang+".db";
+	static String inputDB = "C:/sqlite/classification/CorrectableParagraphs_textkernel.db";
 
 	// Ordner in dem die neue Output-DB angelegt werden soll
 	static String outputFolder = /* "D:/Daten/sqlite/"; */ "C:/sqlite/matching/tools/"; //
 
 	// Name der Output-DB
-	static String outputDB = "ToolMatches_" + jahrgang + ".db";
+	static String outputDB = "ToolMatches_textkernel.db";
 
 	// txt-File mit allen bereits validierten Tools
 	static File tools = new File("information_extraction/data/tools/tools.txt");

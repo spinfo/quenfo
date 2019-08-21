@@ -56,7 +56,7 @@ public class Extractor {
 	private Set<String> knownEntities = new HashSet<String>();
 	private Set<String> noEntities = new HashSet<String>();
 	private Map<String, String> possCompoundSplits = new HashMap<String, String>();
-	private File possCompoundsFile;
+	private File possCompoundsFile, splittedCompoundsFile;
 	private boolean resolveCoordinations;
 	private File entitiesFile;
 	// private File amsComps;
@@ -76,8 +76,10 @@ public class Extractor {
 		this.resolveCoordinations = resolveCoordinations;
 		this.entitiesFile = entities;
 		this.type = type;
-		this.possCompoundsFile = new File("src/test/resources/coordinations/possibleCompounds.txt");
-		this.jobs = new IEJobs(entities, null, modifiers, null, type, resolveCoordinations, possCompoundsFile);
+		this.possCompoundsFile = new File("src/main/resources/compounds/possibleCompounds.txt");
+		this.splittedCompoundsFile = new File("src/main/resources/coordinations/splittedCompounds.txt");
+		this.jobs = new IEJobs(entities, null, modifiers, null, type, resolveCoordinations, 
+				possCompoundsFile, splittedCompoundsFile);
 		initialize();
 
 	}
@@ -87,9 +89,10 @@ public class Extractor {
 		this.resolveCoordinations = resolveCoordinations;
 		this.entitiesFile = entities;
 		this.type = type;
-		this.possCompoundsFile = new File("src/test/resources/coordinations/possibleCompounds.txt");
+		this.possCompoundsFile = new File("src/main/resources/compounds/possibleCompounds.txt");
+		this.splittedCompoundsFile = new File("src/main/resources/compounds/splittedCompounds.txt");
 		this.jobs = new IEJobs(entities, null, amsComps, category, modifiers, null, type, resolveCoordinations,
-				possCompoundsFile);
+				possCompoundsFile, splittedCompoundsFile);
 		initialize();
 
 	}
@@ -113,9 +116,10 @@ public class Extractor {
 		this.modifier = modifier;
 		this.contexts = contexts;
 		this.type = type;
-		this.possCompoundsFile = new File("src/test/resources/coordinations/possibleCompounds.txt");
+		this.possCompoundsFile = new File("src/main/resources/compounds/possibleCompounds.txt");
+		this.splittedCompoundsFile = new File("src/main/resources/compounds/splittedCompounds.txt");
 		this.jobs = new IEJobs(entitiesFile, noEntitiesFile, modifier, contexts, type, resolveCoordinations,
-				possCompoundsFile);// new
+				possCompoundsFile, splittedCompoundsFile);// new
 		// contexts,
 		// type);
 		if (outputConnection != null) {
@@ -168,7 +172,7 @@ public class Extractor {
 	 * @throws SQLException
 	 */
 	public Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> extract(int startPos, int maxCount, int tablesize,
-			Connection inputConnection, Connection outputConnection, boolean gold) throws IOException, SQLException {
+			Connection inputConnection, Connection outputConnection) throws IOException, SQLException {
 
 		// Falls die lexikalischen Infos (lemmata, POS-Tags etc.) noch nicht in
 		// der Input-DB hinterlegt sind, dann werden Sie in diesem Workflow
@@ -258,7 +262,7 @@ public class Extractor {
 			extractions = null;
 			extractionUnits = null;
 			this.jobs = new IEJobs(entitiesFile, noEntitiesFile, modifier, contexts, type, resolveCoordinations,
-					possCompoundsFile);
+					possCompoundsFile, splittedCompoundsFile);
 			jobs.addKnownEntities(knownEntities);
 			jobs.addNoEntities(noEntities);
 		}
@@ -273,15 +277,12 @@ public class Extractor {
 			// Speichern der Extraktionsergebnisse in der Output-DB
 			String outputPath = outputConnection.getMetaData().getURL().replace("jdbc:sqlite:", "");
 			log.info("write extracted " + type.name().toLowerCase() + "s in output-DB " + outputPath);
-			if (gold)
-				IE_DBConnector.createExtractionGoldOutputTable(outputConnection, type, true);
-			else
 				IE_DBConnector.createExtractionOutputTable(outputConnection, type, true);
 			if (type == IEType.COMPETENCE) {
-				IE_DBConnector.writeCompetenceExtractions(allExtractions, outputConnection, true, gold);
+				IE_DBConnector.writeCompetenceExtractions(allExtractions, outputConnection, true);
 			}
 			if (type == IEType.TOOL) {
-				IE_DBConnector.writeToolExtractions(allExtractions, outputConnection, true, gold);
+				IE_DBConnector.writeToolExtractions(allExtractions, outputConnection, true);
 			}
 		}
 		// schreibt die txt-Files (competences.txt & noCompetences.txt) neu, da
@@ -289,14 +290,15 @@ public class Extractor {
 		// (eigentlich nicht mehr notwendig, da im BIBB nicht mehr manuell
 		// annotiert wird)
 		reWriteFiles();
-		log.info("write new compounds to evaluate");
-		writeNewCoordinations();
+		if (possCompoundSplits.size() > 0) {
+			log.info("write new compounds to evaluate in: " + possCompoundsFile.getAbsolutePath());
+			writeNewCoordinations();
+		}
 		return allExtractions;
 	}
 
 	private Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> matchBatch(List<ExtractionUnit> extractionUnits,
-			Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> stringMatches, Tool lemmatizer,
-			Connection outputConnection) throws SQLException, IOException {
+			Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> stringMatches, Tool lemmatizer) throws SQLException, IOException {
 
 		stringMatches = jobs.extractByStringMatch(extractionUnits, lemmatizer);
 		stringMatches = jobs.mergeInformationEntities(stringMatches);
@@ -306,19 +308,7 @@ public class Extractor {
 			jobs.setModifiers(stringMatches);
 		}
 
-		// write results in DB
-		if (stringMatches.isEmpty()) {
-			log.info("no " + jobs.type.name() + " matches found\n");
-		} else {
-			String outputPath = outputConnection.getMetaData().getURL().replace("jdbc:sqlite:", "");
-			log.info("write results in output-DB: " + outputPath);
-			if (jobs.type == IEType.COMPETENCE) {
-				IE_DBConnector.writeCompetenceExtractions(stringMatches, outputConnection, false, false);
-			}
-			if (jobs.type == IEType.TOOL) {
-				IE_DBConnector.writeToolExtractions(stringMatches, outputConnection, false, false);
-			}
-		}
+		
 		return stringMatches;
 	}
 
@@ -328,11 +318,11 @@ public class Extractor {
 	 * @param outputConnection
 	 * @param em
 	 * @param startPos
-	 * @param maxCount
+	 * @param queryLimit
 	 * @throws SQLException
 	 * @throws IOException
 	 */
-	public void stringMatch(File statisticsFile, Connection outputConnection, EntityManager em, int startPos, int maxCount)
+	public void stringMatch(File statisticsFile, Connection outputConnection, EntityManager em, int startPos, int queryLimit)
 			throws SQLException, IOException {
 
 		Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> stringMatches = null;
@@ -341,19 +331,20 @@ public class Extractor {
 		Query query = em.createNamedQuery("getClassXExtractionUnits");
 		log.info("build query");
 		query.setParameter("class", 3);
+		//TODO JB: Tools: Class 2?
 		
 		//int startPos = 0;
-		if (maxCount < 0)
-			maxCount = Integer.MAX_VALUE; //TODO maxCount default = 50000
+		if (queryLimit < 0)
+			queryLimit = Integer.MAX_VALUE; //TODO maxCount default = 50000
 		
-		int batch = 2000;//TODO break wenn limit maxCount erreicht ist
+		int batch = 200;//TODO break wenn limit maxCount erreicht ist		
 		
-//		List<ExtractionUnit> extractionUnits = new ArrayList<>();
+		if (queryLimit < batch) 
+			batch = queryLimit;
+
 		List<ExtractionUnit> currentEUs;
-		
-//		int currentCount = 0;
-		
-		while (startPos < maxCount) {
+
+		while (startPos < queryLimit) {
 			query.setFirstResult(startPos);
 			query.setMaxResults(batch);
 			
@@ -362,12 +353,25 @@ public class Extractor {
 			if (currentEUs.isEmpty())
 				break;
 			
-			stringMatches = matchBatch(currentEUs, stringMatches, null, outputConnection);
-			updateMatchCount(stringMatches, matchCounts);
-
-//			extractionUnits = extractionUnits.subList(0, 10);
-			log.info(currentEUs.size() + " Extraction Units (startPos=" + startPos + ")");
+			jobs.annotateTokens(currentEUs);
 			
+			stringMatches = matchBatch(currentEUs, stringMatches, null);
+			
+			// write results in DB
+			if (stringMatches.isEmpty()) {
+				log.info("no " + jobs.type.name() + " matches found\n");
+			} else {
+				String outputPath = outputConnection.getMetaData().getURL().replace("jdbc:sqlite:", "");
+				log.info("write results in output-DB: " + outputPath);
+				if (jobs.type == IEType.COMPETENCE) {
+//					IE_DBConnector.writeCompetenceExtractions(stringMatches, outputConnection, false, false);
+					IE_DBConnector.writeCompetenceExtractions2(stringMatches, outputConnection, false, false);
+				}
+				if (jobs.type == IEType.TOOL) {
+					IE_DBConnector.writeToolExtractions(stringMatches, outputConnection, false);
+				}
+			}
+			updateMatchCount(stringMatches, matchCounts);		
 			
 			startPos += currentEUs.size();
 
@@ -448,7 +452,21 @@ public class Extractor {
 			log.info("match");
 			jobs.annotateTokens(extractionUnits);
 
-			stringMatches = matchBatch(extractionUnits, stringMatches, lemmatizer, outputConnection);
+			stringMatches = matchBatch(extractionUnits, stringMatches, lemmatizer);
+			
+			// write results in DB
+			if (stringMatches.isEmpty()) {
+				log.info("no " + jobs.type.name() + " matches found\n");
+			} else {
+				String outputPath = outputConnection.getMetaData().getURL().replace("jdbc:sqlite:", "");
+				log.info("write results in output-DB: " + outputPath);
+				if (jobs.type == IEType.COMPETENCE) {
+					IE_DBConnector.writeCompetenceExtractions(stringMatches, outputConnection, false);
+				}
+				if (jobs.type == IEType.TOOL) {
+					IE_DBConnector.writeToolExtractions(stringMatches, outputConnection, false);
+				}
+			}
 
 			updateMatchCount(stringMatches, matchCounts);
 			if (maxCount > -1 && readParagraphs >= maxCount)
@@ -461,7 +479,6 @@ public class Extractor {
 			log.info("write new compounds to evaluate in: " + possCompoundsFile.getAbsolutePath());
 			writeNewCoordinations();
 		}
-
 		lemmatizer = null;
 	}
 

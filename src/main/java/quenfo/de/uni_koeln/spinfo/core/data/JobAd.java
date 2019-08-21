@@ -36,6 +36,8 @@ public class JobAd {
 	
 	private double[] featureVector;
 	
+	//private Vector sparseVector;
+	
 	
 	public JobAd() {
 		

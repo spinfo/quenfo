@@ -199,7 +199,7 @@ public class TestMapping {
 	
 	private Set<Entity> readComps() throws IOException {
 
-		IEJobs jobs = new IEJobs(compFile, null, null, null, null, false, null);
+		IEJobs jobs = new IEJobs(compFile, null, null, null, null, false, null, null);
 		Set<Entity> jobsComp = new HashSet<Entity>();
 		Map<String, Set<InformationEntity>> entities = jobs.entities;
 		for (Entry<String, Set<InformationEntity>> e : entities.entrySet()) {

@@ -5,6 +5,18 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Table;
+
 import quenfo.de.uni_koeln.spinfo.classification.core.classifier.AbstractClassifier;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.FeatureUnitConfiguration;
 import quenfo.de.uni_koeln.spinfo.classification.core.feature_engineering.feature_weighting.AbsoluteFrequencyFeatureQuantifier;
@@ -20,7 +32,14 @@ import quenfo.de.uni_koeln.spinfo.classification.core.feature_engineering.featur
  *  contains basic functionality of an model object
 **/
  
+@Entity
+@Inheritance(strategy=InheritanceType.JOINED)
+@MappedSuperclass
 public  class Model implements Serializable{
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private long jpaID;
 	
 	
 	private static final long serialVersionUID = 1L;
@@ -49,6 +68,9 @@ public  class Model implements Serializable{
 	 * name of the used FeatureQuantifier
 	 */
 	private String fQName;
+	
+	
+	private int configHash;
 	
 	
 	
@@ -158,5 +180,14 @@ public  class Model implements Serializable{
 	
 	public  AbstractClassifier getClassifier(){
 		return null;
+	}
+
+
+	public int getConfigHash() {
+		return configHash;
+	}
+
+	public void setConfigHash(int configHash) {
+		this.configHash = configHash;
 	}
 }

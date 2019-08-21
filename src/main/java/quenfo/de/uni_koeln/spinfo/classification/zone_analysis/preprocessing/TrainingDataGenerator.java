@@ -55,7 +55,7 @@ public class TrainingDataGenerator {
 		this.tdFile = trainingDataFile;
 		classifiedData = new ArrayList<ClassifyUnit>();
 		this.numberOfSingleClasses = classes;
-		JASCClassifyUnit.setNumberOfCategories(categories, classes, translations);
+//		JASCClassifyUnit.setNumberOfCategories(categories, classes, translations);
 	}
 
 	/**

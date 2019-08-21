@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.apache.commons.lang3.builder.HashCodeExclude;
+
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
 
 /**
@@ -81,6 +83,18 @@ public abstract class  AbstractFeatureQuantifier {
 	
 	public void resetFeatureUnitOrder(){
 		this.featureUnitOrder = null;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		AbstractFeatureQuantifier other = (AbstractFeatureQuantifier) obj;
+		return this.getClass().getName().equals(other.getClass().getName());
+	}
+	
+	@Override
+	public int hashCode() {
+		// TODO JB: HashCode & Equals FeatureQuantifier
+		return this.getClass().getName().hashCode();
 	}
 	
 }

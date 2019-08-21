@@ -113,7 +113,7 @@ public class IE_DBConnector {
 		connection.commit();
 	}
 
-	public static void createExtractionGoldOutputTable(Connection connection, IEType type, boolean correctable)
+	public static void createExtractionOutputTable2(Connection connection, IEType type, boolean correctable)
 			throws SQLException {
 		String sql = null;
 		connection.setAutoCommit(false);
@@ -127,17 +127,17 @@ public class IE_DBConnector {
 		stmt.executeUpdate(sql);
 		if (correctable) {
 			if (type == IEType.COMPETENCE) {
-				sql = "CREATE TABLE Competences (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, Sentence TEXT NOT NULL, Comp TEXT, FirstIndex INT NOT NULL, CompResolved TEXT, Contexts INT, ContextDescriptions TEXT NOT NULL, isCompetence INT NOT NULL, Notes TEXT)";
+				sql = "CREATE TABLE Competences (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, JobAdJPAID INT NOT NULL, CUJPAID TEXT NOT NULL, Sentence TEXT NOT NULL, Comp TEXT, Contexts INT, ContextDescriptions TEXT NOT NULL, isCompetence INT NOT NULL, Notes TEXT)";
 			}
 			if (type == IEType.TOOL) {
-				sql = "CREATE TABLE Tools (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, Sentence TEXT NOT NULL, Tool TEXT NOT NULL, FirstIndex INT NOT NULL, ToolResolved TEXT,Contexts TEXT NOT NULL, ContextDescriptions TEXT NOT NULL, isTool INT NOT NULL, Notes TEXT)";
+				sql = "CREATE TABLE Tools (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, JobAdJPAID INT NOT NULL, CUJPAID TEXT NOT NULL, Sentence TEXT NOT NULL, Tool TEXT NOT NULL, Contexts TEXT NOT NULL, ContextDescriptions TEXT NOT NULL, isTool INT NOT NULL, Notes TEXT)";
 			}
 		} else {
 			if (type == IEType.COMPETENCE) {
-				sql = "CREATE TABLE Competences (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, SentenceID TEXT NOT NULL, Lemmata TEXT NOT NULL, Sentence TEXT NOT NULL, Comp TEXT, Importance TEXT)";
+				sql = "CREATE TABLE Competences (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, JobAdJPAID INT NOT NULL, CUJPAID TEXT NOT NULL, EUJPAID TEXT NOT NULL, Lemmata TEXT NOT NULL, Sentence TEXT NOT NULL, Label TEXT, Comp TEXT, Importance TEXT)";
 			}
 			if (type == IEType.TOOL) {
-				sql = "CREATE TABLE Tools (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, SentenceID TEXT NOT NULL, Lemmata TEXT NOT NULL ,Sentence TEXT NOT NULL, Tool TEXT NOT NULL)";
+				sql = "CREATE TABLE Tools (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, JobAdJPAID INT NOT NULL, CUJPAID TEXT NOT NULL, EUJPAID TEXT NOT NULL, Lemmata TEXT NOT NULL ,Sentence TEXT NOT NULL, Tool TEXT NOT NULL)";
 
 			}
 		}
@@ -194,7 +194,7 @@ public class IE_DBConnector {
 			((ZoneClassifyUnit) classifyUnit).setActualClassID(classID);
 			try {
 				String sentences = result.getString("ExtractionUnits");
-				//System.out.println(sentences);
+				// System.out.println(sentences);
 				if (sentences != null && !(sentences.equals(""))) {
 					((JASCClassifyUnit) classifyUnit)
 							.setSentences((sentences.replace(" | ", " ").replace("<root> ", "")));
@@ -239,18 +239,15 @@ public class IE_DBConnector {
 	 */
 	public static void writeCompetenceExtractions(
 			Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> extractions, Connection connection,
-			boolean correctable, boolean gold) throws SQLException {
+			boolean correctable) throws SQLException {
 		Set<String> types = new HashSet<String>();
 		connection.setAutoCommit(false);
 		PreparedStatement prepStmt;
 		if (correctable) {
 			// für den Output der Extraktions-Workflows
-			if (gold)
-				prepStmt = connection.prepareStatement(
-						"INSERT INTO Competences (Jahrgang, Zeilennr, ParaID, Sentence, Comp, FirstIndex, Contexts, ContextDescriptions, isCompetence) VALUES(?,?,?,?,?,?,?,?,-1)");
-			else
-				prepStmt = connection.prepareStatement(
-						"INSERT INTO Competences (Jahrgang, Zeilennr, ParaID, Sentence, Comp, Contexts, ContextDescriptions, isCompetence) VALUES(?,?,?,?,?,?,?,-1)");
+
+			prepStmt = connection.prepareStatement(
+					"INSERT INTO Competences (Jahrgang, Zeilennr, ParaID, Sentence, Comp, Contexts, ContextDescriptions, isCompetence) VALUES(?,?,?,?,?,?,?,-1)");
 		} else {
 			// Für den Output der Matching-Workflows
 			prepStmt = connection.prepareStatement(
@@ -260,7 +257,12 @@ public class IE_DBConnector {
 			Map<InformationEntity, List<Pattern>> ies = extractions.get(extractionUnit);
 			int jahrgang = extractionUnit.getJobAdID();
 			int zeilennr = extractionUnit.getSecondJobAdID();
-			String paraID = extractionUnit.getClassifyUnitID().toString();
+			String paraID;
+			try {
+				paraID = extractionUnit.getClassifyUnitID().toString();
+			} catch (Exception e) {
+				paraID = extractionUnit.getClassifyUnitjpaID() + "";
+			}
 			String sentence = extractionUnit.getSentence();
 			StringBuffer lemmata = null;
 			if (!correctable) {
@@ -292,24 +294,18 @@ public class IE_DBConnector {
 				prepStmt.setString(3, paraID);
 
 				if (correctable) {
-
-					int indexAdder = 0;
-					if (gold)
-						indexAdder = 1;
-
 					prepStmt.setString(4, sentence);
 					prepStmt.setString(5, ie.toString());
-					if (gold)
-						prepStmt.setInt(6, ie.getFirstIndex());
-					prepStmt.setInt(6 + indexAdder, ies.get(ie).size()); // 6
+
+					prepStmt.setInt(6, ies.get(ie).size()); // 6
 					if (!ies.get(ie).isEmpty()) {
 						StringBuffer sb = new StringBuffer();
 						for (Pattern pattern : ies.get(ie)) {
 							sb.append("[" + pattern.getDescription() + "]  ");
 						}
-						prepStmt.setString(7 + indexAdder, sb.toString()); // 7
+						prepStmt.setString(7, sb.toString()); // 7
 					} else {
-						prepStmt.setString(7 + indexAdder, "StringMatch"); // 7
+						prepStmt.setString(7, "StringMatch"); // 7
 					}
 				} else {
 					StringBuilder sb = new StringBuilder();
@@ -341,21 +337,16 @@ public class IE_DBConnector {
 	 * @param extractions
 	 * @param connection
 	 * @param correctable
-	 * @param gold
 	 * @throws SQLException
 	 */
 	public static void writeToolExtractions(Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> extractions,
-			Connection connection, boolean correctable, boolean gold) throws SQLException {
+			Connection connection, boolean correctable) throws SQLException {
 
 		connection.setAutoCommit(false);
 		PreparedStatement prepStmt;
 		if (correctable) {
-			if (gold)
-				prepStmt = connection.prepareStatement(
-						"INSERT INTO Tools (Jahrgang, Zeilennr, ParaID, Sentence, Tool, FirstIndex, Contexts, ContextDescriptions, isTool) VALUES(?,?,?,?,?,?,?,?,-1)");
-			else
-				prepStmt = connection.prepareStatement(
-						"INSERT INTO Tools (Jahrgang, Zeilennr, ParaID, Sentence, Tool, Contexts, ContextDescriptions, isTool) VALUES(?,?,?,?,?,?,?,-1)");
+			prepStmt = connection.prepareStatement(
+					"INSERT INTO Tools (Jahrgang, Zeilennr, ParaID, Sentence, Tool, Contexts, ContextDescriptions, isTool) VALUES(?,?,?,?,?,?,?,-1)");
 		} else {
 			prepStmt = connection.prepareStatement(
 					"INSERT INTO Tools (Jahrgang, Zeilennr, ParaID, SentenceID, Lemmata, Sentence, Tool) VALUES(?,?,?,?,?,?,?)");
@@ -393,29 +384,22 @@ public class IE_DBConnector {
 					types.add(expression);
 				}
 
-				int indexAdder = 0;
-				if (gold)
-					indexAdder = 1;
-
 				prepStmt.setInt(1, jahrgang);
 				prepStmt.setInt(2, zeilennr);
 				prepStmt.setString(3, paraID);
 				if (correctable) {
 					prepStmt.setString(4, sentence);
 					prepStmt.setString(5, ie.toString());
-					if (gold)
-						prepStmt.setInt(6, ie.getFirstIndex());
-					prepStmt.setInt(6 + indexAdder, ies.get(ie).size()); // 6
+					prepStmt.setInt(6, ies.get(ie).size()); // 6
 					if (!ies.get(ie).isEmpty()) {
 						StringBuffer sb = new StringBuffer();
 						for (Pattern pattern : ies.get(ie)) {
 							sb.append("[" + pattern.getDescription() + "]  ");
 						}
-						prepStmt.setString(7 + indexAdder, sb.toString()); // 7
+						prepStmt.setString(7, sb.toString()); // 7
 					} else {
 						prepStmt.setString(3, "StringMatch");
 					}
-
 				} else {
 					prepStmt.setString(4, extractionUnit.getSentenceID().toString());
 					prepStmt.setString(5, lemmata.toString());
@@ -428,6 +412,110 @@ public class IE_DBConnector {
 		prepStmt.executeBatch();
 		prepStmt.close();
 		connection.commit();
+	}
+
+	public static void writeCompetenceExtractions2(
+			Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> extractions, Connection connection,
+			boolean correctable, boolean gold) throws SQLException {
+		Set<String> types = new HashSet<String>();
+		connection.setAutoCommit(false);
+		PreparedStatement prepStmt;
+		if (correctable) {
+			// für den Output der Extraktions-Workflows
+			if (gold)
+				prepStmt = connection.prepareStatement(
+						"INSERT INTO Competences (Jahrgang, JobAdJPAID, CUJPAID, Sentence, Comp, FirstIndex, Contexts, ContextDescriptions, isCompetence) VALUES(?,?,?,?,?,?,?,?,-1)");
+			else
+				prepStmt = connection.prepareStatement(
+						"INSERT INTO Competences (Jahrgang, JobAdJPAID, CUJPAID, Sentence, Comp, Contexts, ContextDescriptions, isCompetence) VALUES(?,?,?,?,?,?,?,-1)");
+		} else {
+			// Für den Output der Matching-Workflows
+			prepStmt = connection.prepareStatement(
+					"INSERT INTO Competences (Jahrgang, JobAdJPAID, CUJPAID, EUJPAID, Lemmata, Sentence, Label, Comp,  Importance) VALUES(?,?,?,?,?,?,?,?,?)");
+		}
+		for (ExtractionUnit extractionUnit : extractions.keySet()) {
+			Map<InformationEntity, List<Pattern>> ies = extractions.get(extractionUnit);
+			int jahrgang = extractionUnit.getJobAdID();
+			int jobAdJPAID = extractionUnit.getSecondJobAdID();
+			String cuJPAID = extractionUnit.getClassifyUnitjpaID() + "";
+//			try {
+//				paraID = extractionUnit.getClassifyUnitID().toString();
+//			} catch (Exception e) {
+//				paraID = extractionUnit.getClassifyUnitjpaID() + "";
+//			}
+			String sentence = extractionUnit.getSentence();
+			StringBuffer lemmata = null;
+			if (!correctable) {
+				lemmata = new StringBuffer();
+				for (int i = 1; i < extractionUnit.getLemmata().length; i++) {
+					String string = extractionUnit.getLemmata()[i];
+					lemmata.append(string + " ");
+				}
+			}
+
+			for (InformationEntity ie : ies.keySet()) {
+
+				if (correctable) {
+					// write only unique types
+					String expression = ie.toString();
+					if (types.contains(expression)) {
+						PreparedStatement update = connection.prepareStatement(
+								"UPDATE Competences SET Sentence = sentence || '  |  ' || ? WHERE Comp = ?");
+						update.setString(1, sentence);
+						update.setString(2, expression);
+						update.executeUpdate();
+						update.close();
+						continue;
+					}
+					types.add(expression);
+				}
+				prepStmt.setInt(1, jahrgang);
+				prepStmt.setInt(2, jobAdJPAID);
+				prepStmt.setString(3, cuJPAID);
+
+				if (correctable) {
+
+					int indexAdder = 0;
+					if (gold)
+						indexAdder = 1;
+
+					prepStmt.setString(4, sentence);
+					prepStmt.setString(5, ie.toString());
+					if (gold)
+						prepStmt.setInt(6, ie.getFirstIndex());
+					prepStmt.setInt(6 + indexAdder, ies.get(ie).size()); // 6
+					if (!ies.get(ie).isEmpty()) {
+						StringBuffer sb = new StringBuffer();
+						for (Pattern pattern : ies.get(ie)) {
+							sb.append("[" + pattern.getDescription() + "]  ");
+						}
+						prepStmt.setString(7 + indexAdder, sb.toString()); // 7
+					} else {
+						prepStmt.setString(7 + indexAdder, "StringMatch"); // 7
+					}
+				} else {
+					StringBuilder sb = new StringBuilder();
+					String labels = "";
+					if (ie.getLabels() != null) { // TODO warum getLabels == null ?
+						for (String l : ie.getLabels())
+							sb.append(l + "|");
+						labels = sb.toString();
+						labels = labels.substring(0, labels.length() - 1);
+					}
+					prepStmt.setString(4, extractionUnit.getJpaID() + "");
+					prepStmt.setString(5, lemmata.toString());
+					prepStmt.setString(6, sentence);
+					prepStmt.setString(7, labels);
+					prepStmt.setString(8, ie.toString());
+					prepStmt.setString(9, ie.getModifier());
+				}
+				prepStmt.addBatch();
+			}
+		}
+		prepStmt.executeBatch();
+		prepStmt.close();
+		connection.commit();
+
 	}
 
 	/**
@@ -670,4 +758,5 @@ public class IE_DBConnector {
 		stmt.close();
 		connection.commit();
 	}
+
 }

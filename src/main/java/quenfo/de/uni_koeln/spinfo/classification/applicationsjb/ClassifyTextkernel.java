@@ -31,18 +31,18 @@ public class ClassifyTextkernel {
 
 		// Name der korrigierbaren Output-DB (Input für alle späteren
 		// IE-Applications )
-		static String corrOutputDB = "CorrectableParagraphs_textkernel_1208.db";
+		static String corrOutputDB = "CorrectableParagraphs_textkernel.db";
 
 		// Name der (nicht korrigierbaren) Output-DB (dient nur zur Dokumentation
 		// der originalen Klassifikationsergebnisse)
-		static String origOutputDB = "OriginalParagraphs_textkernel_1208.db";
+		static String origOutputDB = "OriginalParagraphs_textkernel.db";
 		
 		// Pfad zur Datei mit den Trainingsdaten
 		static String trainingdataFile = "classification/data/trainingSets/trainingdata_anonymized.tsv";
 
 		// Anzahl der Stellenanzeigen, die klassifiziert werden sollen (-1 = gesamte
 		// Tabelle)
-		static int queryLimit = 10;
+		static int queryLimit = -1;
 
 		// falls nur eine begrenzte Anzahl von SteAs klassifiziert werden soll
 		// (s.o.): hier die Startosition angeben

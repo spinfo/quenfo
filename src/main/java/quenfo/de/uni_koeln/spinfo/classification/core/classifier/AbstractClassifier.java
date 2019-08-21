@@ -54,5 +54,17 @@ public abstract class AbstractClassifier {
 	public String getClassifierConfig(){
 		return classifierConfig;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		AbstractClassifier other = (AbstractClassifier) obj;
+		return this.getClassifierConfig().equals(other.getClassifierConfig());
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.getClassifierConfig().hashCode();
+	}
+	
 
 }

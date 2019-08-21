@@ -1,9 +1,13 @@
 package quenfo.de.uni_koeln.spinfo.classification.core.data;
 
 import java.io.Serializable;
+import java.util.Arrays;
+
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
- * stores all information about how the feature units where generated (feature-selection, feature-reduction)
+ * stores all information about how the feature units where generated
+ * (feature-selection, feature-reduction)
  * 
  * @author geduldia
  * 
@@ -12,10 +16,8 @@ import java.io.Serializable;
  */
 
 public class FeatureUnitConfiguration implements Serializable {
-	
-	
+
 	private static final long serialVersionUID = 1L;
-	
 
 	private boolean normalize;
 	private boolean stem;
@@ -25,41 +27,41 @@ public class FeatureUnitConfiguration implements Serializable {
 	private int miScore;
 	private boolean treatEncoding = false;
 	private boolean suffixTree;
-	
+
 	/**
 	 * @param configString
 	 */
-	public FeatureUnitConfiguration(String configString){
+	public FeatureUnitConfiguration(String configString) {
 		String[] splits = configString.split("_");
 		for (String string : splits) {
-			if(string.equals("norm")){
-				normalize=true;
+			if (string.equals("norm")) {
+				normalize = true;
 				continue;
 			}
-			if(string.equals("suffixTree")){
+			if (string.equals("suffixTree")) {
 				suffixTree = true;
 			}
-			if(string.equals("stem")){
-				stem=true;
+			if (string.equals("stem")) {
+				stem = true;
 				continue;
 			}
-			if(string.equals("_filterStopwords")){
+			if (string.equals("_filterStopwords")) {
 				filterStopwords = true;
 				continue;
 			}
-			if(string.startsWith("ngrams:")){
-				
+			if (string.startsWith("ngrams:")) {
+
 				String[] innersplits = string.split("-");
-				if(innersplits.length>1){
-					ngrams = new int[innersplits.length-1];
+				if (innersplits.length > 1) {
+					ngrams = new int[innersplits.length - 1];
 					for (int i = 0; i < ngrams.length; i++) {
-						ngrams[i] = Integer.parseInt(innersplits[i+1]);
+						ngrams[i] = Integer.parseInt(innersplits[i + 1]);
 					}
 				}
 				continue;
-			}		
-			if(string.startsWith("mi:")){
-				miScore = Integer.parseInt(string.substring(string.indexOf(":")+1));
+			}
+			if (string.startsWith("mi:")) {
+				miScore = Integer.parseInt(string.substring(string.indexOf(":") + 1));
 			}
 		}
 	}
@@ -72,9 +74,8 @@ public class FeatureUnitConfiguration implements Serializable {
 	 * @param continuusNGrams
 	 * @param miScore
 	 */
-	public FeatureUnitConfiguration(boolean normalize, boolean stem,
-			boolean filterStopwords, int[] ngrams, boolean continuusNGrams,
-			int miScore, boolean suffixTree) {
+	public FeatureUnitConfiguration(boolean normalize, boolean stem, boolean filterStopwords, int[] ngrams,
+			boolean continuusNGrams, int miScore, boolean suffixTree) {
 		super();
 		this.normalize = normalize;
 		this.stem = stem;
@@ -85,15 +86,14 @@ public class FeatureUnitConfiguration implements Serializable {
 		this.suffixTree = suffixTree;
 	}
 
-
 	/**
 	 * @return normalize
 	 */
 	public boolean isNormalize() {
 		return normalize;
 	}
-	
-	public boolean isSuffixTree(){
+
+	public boolean isSuffixTree() {
 		return suffixTree;
 	}
 
@@ -112,7 +112,7 @@ public class FeatureUnitConfiguration implements Serializable {
 	}
 
 	/**
-	 * @return  nGramms
+	 * @return nGramms
 	 */
 	public int[] getNgrams() {
 		return ngrams;
@@ -132,10 +132,6 @@ public class FeatureUnitConfiguration implements Serializable {
 		return miScore;
 	}
 
-
-	
-
-	
 	/**
 	 * @return treat encoding
 	 */
@@ -150,26 +146,25 @@ public class FeatureUnitConfiguration implements Serializable {
 	public void setTreatEncoding(boolean treatEncoding) {
 		this.treatEncoding = treatEncoding;
 	}
-	
-	
-	public String toString(){
+
+	public String toString() {
 		StringBuffer buff = new StringBuffer();
-		if(suffixTree){
+		if (suffixTree) {
 			buff.append("_suffixTrees");
 		}
-		if(normalize){
+		if (normalize) {
 			buff.append("_norm");
 		}
-		if(stem){
+		if (stem) {
 			buff.append("_stem");
 		}
-		if(filterStopwords){
+		if (filterStopwords) {
 			buff.append("_swFilter");
 		}
-		if(ngrams!=null){
+		if (ngrams != null) {
 			buff.append("_");
 			for (int n : ngrams) {
-				buff.append(n+"-");
+				buff.append(n + "-");
 			}
 			buff.append("gramms");
 		}
@@ -183,15 +178,54 @@ public class FeatureUnitConfiguration implements Serializable {
 //		else {
 //			buff.append("no");
 //		}
-		if(continuusNGrams){
+		if (continuusNGrams) {
 			buff.append("_contNGrams");
 		}
-		buff.append("_mi=" + miScore +"_");
-		if(treatEncoding){
+		buff.append("_mi=" + miScore + "_");
+		if (treatEncoding) {
 			buff.append("treatedEncoding_");
 		}
-		
+
 		return buff.toString();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		FeatureUnitConfiguration other = (FeatureUnitConfiguration) obj;
+
+		if (this.continuusNGrams != other.continuusNGrams)
+			return false;
+		if (this.filterStopwords != other.filterStopwords)
+			return false;
+		if (this.normalize != other.normalize)
+			return false;
+		if (this.stem != other.stem)
+			return false;
+		if (this.suffixTree != other.suffixTree)
+			return false;
+		if (this.treatEncoding != other.treatEncoding)
+			return false;
+		if (this.miScore != other.miScore)
+			return false;
+		if (!Arrays.equals(this.ngrams, other.ngrams))
+			return false;
+		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		
+		HashCodeBuilder builder = new HashCodeBuilder();
+		builder.append(continuusNGrams);
+		builder.append(filterStopwords);
+		builder.append(normalize);
+		builder.append(stem);
+		builder.append(suffixTree);
+		builder.append(treatEncoding);
+		builder.append(miScore);
+		builder.append(ngrams);
+		
+		return builder.hashCode();
 	}
 
 }

@@ -58,9 +58,6 @@ public class ExtractNewCompetences {
 	
 	// true, falls Koordinationen  in Informationseinheit aufgelöst werden sollen
 	static boolean expandCoordinates = false;
-	
-	// true, falls Goldstandard-Tabelle erzeugt werden soll
-	static boolean gold = false;
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
 
@@ -111,7 +108,7 @@ public class ExtractNewCompetences {
 		if (maxCount == -1) {
 			maxCount = tableSize;
 		}
-		extractor.extract(startPos, maxCount, tableSize, inputConnection, outputConnection, gold);
+		extractor.extract(startPos, maxCount, tableSize, inputConnection, outputConnection);
 		long after = System.currentTimeMillis();
 		Double time = (((double) after - before) / 1000) / 60;
 		if (time > 60.0) {
@@ -137,9 +134,5 @@ public class ExtractNewCompetences {
 		maxCount = Integer.parseInt(props.getProperty("maxCount"));
 		startPos = Integer.parseInt(props.getProperty("startPos"));
 		expandCoordinates = Boolean.parseBoolean(props.getProperty("expandCoordinates"));
-		gold = Boolean.parseBoolean(props.getProperty("gold"));
-		
-		
-		
 	}
 }

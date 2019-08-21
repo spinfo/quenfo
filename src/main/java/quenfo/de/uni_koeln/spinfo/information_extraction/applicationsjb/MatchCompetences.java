@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -15,9 +16,13 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
+import is2.lemmatizer.Lemmatizer;
+import is2.tools.Tool;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
+import quenfo.de.uni_koeln.spinfo.information_extraction.data.ExtractionUnit;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.IEType;
 import quenfo.de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
+import quenfo.de.uni_koeln.spinfo.information_extraction.preprocessing.ExtractionUnitBuilder;
 import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
 
 /**
@@ -34,7 +39,7 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
 public class MatchCompetences {
 
 	// Pfad zur Input-DB mit den klassifizierten Paragraphen
-	static String paraInputDB = /* "D:/Daten/sqlite/CorrectableParagraphs.db"; */null; //
+//	static String paraInputDB = /* "D:/Daten/sqlite/CorrectableParagraphs.db"; */null; //
 
 	// Ordner in dem die neue Output-DB angelegt werden soll
 	static String compMOutputFolder = /* "D:/Daten/sqlite/"; */null;
@@ -66,7 +71,7 @@ public class MatchCompetences {
 
 	// Anzahl der Paragraphen aus der Input-DB, gegen die gematcht werden soll
 	// (-1 = alle)
-	static int maxCount = -1;
+	static int queryLimit = -1;
 
 	// Falls nicht alle Paragraphen gematcht werden sollen, hier die
 	// Startposition angeben
@@ -80,63 +85,62 @@ public class MatchCompetences {
 
 	public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException {
 
-		loadProperties();
+		// DerbyDB Connection
+		EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+		em = factory.createEntityManager();
 
-		// Verbindung mit Input-DB
-		Connection inputConnection = null;
-		if (!new File(paraInputDB).exists()) {
-			System.out
-					.println("Database don't exists " + paraInputDB + "\nPlease change configuration and start again.");
-			System.exit(0);
-		} else {
-			inputConnection = IE_DBConnector.connect(paraInputDB);
-		}
+		loadProperties();
 
 		// Verbindung mit Output-DB
 		if (!new File(compMOutputFolder).exists()) {
 			new File(compMOutputFolder).mkdirs();
 		}
 		Connection outputConnection = IE_DBConnector.connect(compMOutputFolder + compMOutputDB);
-		IE_DBConnector.createExtractionOutputTable(outputConnection, IEType.COMPETENCE, false);
-
-		// Prüfe ob maxCount und startPos gültige Werte haben
-		String query = "SELECT COUNT(*) FROM ClassifiedParagraphs;";
-		Statement stmt = inputConnection.createStatement();
-		ResultSet countResult = stmt.executeQuery(query);
-		int tableSize = countResult.getInt(1);
-		stmt.close();
-		if (tableSize <= startPos) {
-			System.out.println("startPosition (" + startPos + ")is greater than tablesize (" + tableSize + ")");
-			System.out.println("please select a new startPosition and try again");
-			System.exit(0);
-		}
-		if (maxCount > tableSize - startPos) {
-			maxCount = tableSize - startPos;
-		}
+		IE_DBConnector.createExtractionOutputTable2(outputConnection, IEType.COMPETENCE, false);
 
 		// starte Matching
 		long before = System.currentTimeMillis();
-		// erzeugt einen Index auf die Spalte 'ClassTHREE' (falls noch nicht vorhanden)
-		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTHREE");
+
 		Extractor extractor = new Extractor(notCatComps, modifier, catComps, category, IEType.COMPETENCE,
 				expandCoordinates);
 
-		// DerbyDB Connection
-		EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-		em = factory.createEntityManager();
-		
+		List<ExtractionUnit> extractionUnits;
+
 		Query countQuery = em.createQuery("SELECT COUNT(t) from ExtractionUnit t");
+
 		long extractionUnitSize = (long) countQuery.getSingleResult();
 		if (extractionUnitSize == 0) {
-			System.err.println("ExtractionUnits müssen zunächst persistiert werden.");
-			Query cuQuery = em.createQuery("SELECT t from ZoneClassifyUnit t where t.actualClassID = '4'");
+			System.err.println("ExtractionUnits aus ClassifyUnits(class=3) werden zuerst persistiert.");
+			Query cuQuery = em.createQuery("SELECT t from ZoneClassifyUnit t where t.actualClassID = '3'"); // where
+																											// t.actualClassID
+																											// = '3'
+
+			List<ClassifyUnit> classifyUnits = cuQuery.getResultList();	
+			if (classifyUnits.size() == 0) {
+				System.err.print("Keine relevanten ClassifyUnits gefunden. Bitte zuerst klassifizieren.");
+				System.exit(0);
+			}
+			System.out.println(classifyUnits.size() + " ClassifyUnits gefunden");
 			
-			List<ClassifyUnit> cu = cuQuery.getResultList();
-			System.out.println(cu.size());
+			// Lemmatizer (nur für den Fall, dass noch Lemmata generiert werden
+			// müssen)
+			Tool lemmatizer = new Lemmatizer(
+					"information_extraction/data/sentencedata_models/ger-tagger+lemmatizer+morphology+graph-based-3.6/lemma-ger-3.6.model",
+					false);
+
+			extractionUnits = ExtractionUnitBuilder.initializeFromDerby(classifyUnits, lemmatizer, null, null);
+
+			em.getTransaction().begin();
+			for (ExtractionUnit eu : extractionUnits) {
+				em.persist(eu);
+			}
+			em.getTransaction().commit();
+			System.out.println((long) em.createQuery("SELECT COUNT(t) FROM ExtractionUnit t").getSingleResult()
+					+ "ExtractionUnits persistiert");
+
 		}
 
-		extractor.stringMatch(statisticsFile, outputConnection, em, startPos, maxCount);
-		//extractor.stringMatch(statisticsFile, inputConnection, outputConnection, maxCount, startPos);
+		extractor.stringMatch(statisticsFile, outputConnection, em, startPos, queryLimit);
 		long after = System.currentTimeMillis();
 		double time = (((double) after - before) / 1000) / 60;
 		if (time > 60.0) {
@@ -151,14 +155,14 @@ public class MatchCompetences {
 		InputStream is = MatchCompetences.class.getClassLoader().getResourceAsStream("config.properties");
 		props.load(is);
 		String jahrgang = props.getProperty("jahrgang");
-		paraInputDB = props.getProperty("paraInputDB") + jahrgang + ".db";
+//		paraInputDB = props.getProperty("paraInputDB") + jahrgang + ".db";
 		compMOutputFolder = props.getProperty("compMOutputFolder");
 		compMOutputDB = props.getProperty("compMOutputDB") + jahrgang + ".db";
 		catComps = new File(props.getProperty("catComps"));
 		notCatComps = new File(props.getProperty("notCatComps"));
 		category = props.getProperty("category");
 		modifier = new File(props.getProperty("modifier"));
-		maxCount = Integer.parseInt(props.getProperty("maxCount"));
+		queryLimit = Integer.parseInt(props.getProperty("maxCount"));
 		statisticsFile = new File(props.getProperty("statisticsFile"));
 		startPos = Integer.parseInt(props.getProperty("startPos"));
 		expandCoordinates = Boolean.parseBoolean(props.getProperty("expandCoordinates"));

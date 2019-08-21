@@ -33,16 +33,16 @@ public class MatchCompetences {
 	static String outputFolder = /* "D:/Daten/sqlite/"; */"C:/sqlite/matching/competences/";
 
 	// Name der Output-DB
-	static String outputDB = "CompetenceMatches_" + jahrgang + ".db";
+	static String outputDB = "CompetenceMatches_textkernel.db";
 
 	// txt-File mit den validierten Kompetenzen
-	//static File competences = new File("information_extraction/data/competences/competences.txt");
-	static File notCatComps = new File("information_extraction/data/competences/esco/esco_v1.0.3.ttl");//new File("information_extraction/data/competences/notCategorized.txt"); //TODO refactoring
+	static File notCatComps = new File("information_extraction/data/competences/competences.txt");
+//	static File notCatComps = new File("information_extraction/data/competences/esco/esco_v1.0.3.ttl");//new File("information_extraction/data/competences/notCategorized.txt"); //TODO refactoring
 //	static File notCatComps = new File("information_extraction/data/competences/esco/ict_skills_collection.ttl");
 	
 	// tei-File mit kategorisierten Kompetenzen
-//	static File catComps = new File("information_extraction/data/competences/tei_index/compdict.tei");
-	static File catComps = null;
+	static File catComps = new File("information_extraction/data/competences/tei_index/compdict.tei");
+//	static File catComps = null;
 	
 	// Ebene, auf der die Kompetenz zugeordnet werden soll(div1, div2, div3, entry, form, orth)
 	static String category = "div3";

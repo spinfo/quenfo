@@ -28,13 +28,14 @@ public class ExtractNewTools {
 	static String jahrgang = "2011";
 
 	// Pfad zur Input-DB mit den klassifizierten Paragraphen
-	static String inputDB = "C:/sqlite/classification/CorrectableParagraphs_" + jahrgang + ".db";
-
+//	static String inputDB = "C:/sqlite/classification/CorrectableParagraphs_" + jahrgang + ".db";
+	static String inputDB = "C:/sqlite/classification/CorrectableParagraphs_textkernel.db";
+	
 	// Output-Ordner
 	static String outputFolder = "C:/sqlite/information_extraction/tools/";
 
 	// Name der Output-DB
-	static String outputDB = "CorrectableTools_" + jahrgang + ".db";
+	static String outputDB = "CorrectableTools_textkernel.db";
 
 	// txt-File mit allen bereits bekannten (validierten) Tools (die
 	// bekannten Tools helfen beim Auffinden neuer Kompetenzen)
@@ -60,7 +61,7 @@ public class ExtractNewTools {
 	static boolean resolveCoordinations = true;
 	
 	// true, falls Goldstandard-Tabelle erzeugt werden soll
-		static boolean gold = false;
+//	static boolean gold = false;
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
 
@@ -108,7 +109,7 @@ public class ExtractNewTools {
 		if (maxCount == -1) {
 			maxCount = tableSize;
 		}
-		extractor.extract(startPos, maxCount, tableSize, inputConnection, outputConnection, gold);
+		extractor.extract(startPos, maxCount, tableSize, inputConnection, outputConnection);
 		long after = System.currentTimeMillis();
 		double time = (((double) after - before) / 1000) / 60;
 		if (time > 60.0) {

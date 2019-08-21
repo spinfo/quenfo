@@ -78,11 +78,11 @@ public class IEJobs {
 	 * @throws IOException
 	 */
 	public IEJobs(File competences, File noCompetences, File importanceTerms, File patterns, IEType type,
-			boolean resolveCoordinations, File possCompoundsFile) throws IOException {
+			boolean resolveCoordinations, File possCompoundsFile, File splittedCompoundsFile) throws IOException {
 		this.type = type;
 		// TODO passt der Konstruktor so?
 		initialize(competences, noCompetences, null, null, importanceTerms, patterns, resolveCoordinations,
-				possCompoundsFile);
+				possCompoundsFile, splittedCompoundsFile);
 	}
 
 	/**
@@ -102,14 +102,14 @@ public class IEJobs {
 			File patterns, IEType type, boolean resolveCoordinations) throws IOException {
 		this.type = type;
 		initialize(competences, noCompetences, amsComps, category, importanceTerms, patterns, resolveCoordinations,
-				null);
+				null, null);
 	}
 
 	public IEJobs(File competences, File noCompetences, File amsComps, String category, File importanceTerms,
-			File patterns, IEType type, boolean resolveCoordinations, File possCompoundsFile) throws IOException {
+			File patterns, IEType type, boolean resolveCoordinations, File possCompoundsFile, File splittedCompoundsFile) throws IOException {
 		this.type = type;
 		initialize(competences, noCompetences, amsComps, category, importanceTerms, patterns, resolveCoordinations,
-				possCompoundsFile);
+				possCompoundsFile, splittedCompoundsFile);
 	}
 
 	/**
@@ -119,20 +119,18 @@ public class IEJobs {
 	 * @throws IOException
 	 */
 	private void initialize(File tools, File noTools, File patterns, boolean resolveCoordinations) throws IOException {
-		initialize(tools, noTools, null, null, null, patterns, resolveCoordinations, null);
+		initialize(tools, noTools, null, null, null, patterns, resolveCoordinations, null, null);
 	}
 
 	// liest die verschiedenen Files ein und initialisiert die zugehörigen
 	// Felder
 	private void initialize(File knownEntities, File negativeEntities, File teiFile, String category,
-			File modifiersFile, File patternsFile, boolean resolveCoordinations, File possCoordinates)
+			File modifiersFile, File patternsFile, boolean resolveCoordinations, File possCoordinates, File splittedCompoundsFile)
 			throws IOException {
 		
 		
-		
-		
 		if (resolveCoordinations)
-			this.ce = new CoordinateExpander(possCoordinates);
+			this.ce = new CoordinateExpander(possCoordinates, splittedCompoundsFile); //
 
 		this.knownEntities = 0;
 		entities = new HashMap<String, Set<InformationEntity>>();

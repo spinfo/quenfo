@@ -52,7 +52,7 @@ public class ExtractNewCompetences {
 	// falls nicht alle Paragraphen aus der Input-DB verwendet werden sollen:
 	// hier Anzahl der zu lesenden Paragraphen festlegen
 	// -1 = alle
-	static int maxCount = 10;
+	static int maxCount = -1;
 
 	// falls nur eine bestimmte Anzahl gelesen werden soll, hier die startID
 	// angeben
@@ -60,9 +60,6 @@ public class ExtractNewCompetences {
 	
 	// true, falls Koordinationen  in Informationseinheit aufgelöst werden sollen
 	static boolean resolveCoordinations = true;
-	
-	// true, falls Goldstandard-Tabelle erzeugt werden soll
-	static boolean gold = false;
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
 
@@ -111,7 +108,7 @@ public class ExtractNewCompetences {
 		if (maxCount == -1) {
 			maxCount = tableSize;
 		}
-		extractor.extract(startPos, maxCount, tableSize, inputConnection, outputConnection, gold);
+		extractor.extract(startPos, maxCount, tableSize, inputConnection, outputConnection);
 		long after = System.currentTimeMillis();
 		Double time = (((double) after - before) / 1000) / 60;
 		if (time > 60.0) {

@@ -54,6 +54,9 @@ public class ClassifyDerbyDB {
 
 	private static final String PERSISTENCE_UNIT_NAME = "textkernel";
 	private static EntityManager em;
+	
+	//true, falls alte "ZoneClassifyUnit"-Tabelle gelöscht werden soll
+	private static boolean deletePrevious = true;
 
 	public static void main(String[] args) throws IOException {
 
@@ -62,17 +65,32 @@ public class ClassifyDerbyDB {
 		em = factory.createEntityManager();
 
 		DerbyDBClassifier dbClassify = new DerbyDBClassifier(queryLimit, fetchSize,
-				startId, trainingdataFile, em);
+				startId, trainingdataFile, em);	
+		
+		
+		FeatureUnitConfiguration fuc = new FeatureUnitConfiguration(normalize, stem, filterSW, ngrams,
+				continousNGrams, miScore, suffixTree);
+		AbstractFeatureQuantifier fq = new LogLikeliHoodFeatureQuantifier();
+		AbstractClassifier classifier = new ZoneKNNClassifier(false, 5, Distance.COSINUS);
+		ExperimentConfiguration config = new ExperimentConfiguration(fuc, fq, classifier,
+				new File(trainingdataFile), null);
+
 
 		try {
-			FeatureUnitConfiguration fuc = new FeatureUnitConfiguration(normalize, stem, filterSW, ngrams,
-					continousNGrams, miScore, suffixTree);
-			AbstractFeatureQuantifier fq = new LogLikeliHoodFeatureQuantifier();
-			AbstractClassifier classifier = new ZoneKNNClassifier(false, 5, Distance.COSINUS);
-			ExperimentConfiguration config = new ExperimentConfiguration(fuc, fq, classifier,
-					new File(trainingdataFile), null);
+			
+			if (deletePrevious) {
+				em.getTransaction().begin();
+				System.out.println("Delete ...");
+				Query deletion = em.createQuery("DELETE FROM ZoneClassifyUnit");
+				deletion.executeUpdate();
+				em.getTransaction().commit();
+				
+			}
 
 			dbClassify.classify(config);
+			
+			Query q = em.createQuery("SELECT COUNT(t) from ZoneClassifyUnit t");
+			System.out.println((long)q.getSingleResult() + " Abschnitte persistiert");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

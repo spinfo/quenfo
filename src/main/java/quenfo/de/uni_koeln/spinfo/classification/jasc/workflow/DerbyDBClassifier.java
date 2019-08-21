@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,15 +14,18 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 
 import quenfo.de.uni_koeln.spinfo.classification.core.classifier.model.Model;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ExperimentConfiguration;
+import quenfo.de.uni_koeln.spinfo.classification.core.data.FeatureUnitConfiguration;
 import quenfo.de.uni_koeln.spinfo.classification.core.helpers.EncodingProblemTreatment;
 import quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.jasc.preprocessing.ClassifyUnitSplitter;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.RegexClassifier;
+import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.model.ZoneKNNModel;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data.ZoneClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.helpers.SingleToMultiClassConverter;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.workflow.ZoneJobs;
@@ -66,40 +70,40 @@ public class DerbyDBClassifier {
 
 	@SuppressWarnings("unchecked")
 	public void classify(ExperimentConfiguration config) throws IOException {
-		// get trainingdata from file (and db)
-		File trainingDataFile = new File(trainingDataFileName);
-		List<ClassifyUnit> trainingData = new ArrayList<ClassifyUnit>();
-		//TODO JB: persist trainingData
-		trainingData.addAll(jobs.getCategorizedParagraphsFromFile(trainingDataFile,
-				config.getFeatureConfiguration().isTreatEncoding()));
 
-		if (trainingData.size() == 0) {
-			System.out.println(
-					"\nthere are no training paragraphs in the specified training-DB. \nPlease check configuration and try again");
-			System.exit(0);
-		}
-		log.info("training paragraphs: " + trainingData.size());
-		log.info("...classifying...");
-
-		trainingData = jobs.initializeClassifyUnits(trainingData);
-		trainingData = jobs.setFeatures(trainingData, config.getFeatureConfiguration(), true);
-		trainingData = jobs.setFeatureVectors(trainingData, config.getFeatureQuantifier(), null);
-
-		// build model
-		Model model = jobs.getNewModelForClassifier(trainingData, config);
-		if (config.getModelFileName().contains("/myModels/")) {
-			jobs.exportModel(config.getModelFile(), model);
+		Query count = em.createQuery("SELECT COUNT(m) FROM ZoneKNNModel m WHERE m.configHash = :configHash");
+		count.setParameter("configHash", config.hashCode());	
+		long existingConfig = (long) count.getSingleResult();
+		
+		Model model;
+		if (existingConfig == 0) {
+			log.info("Create Model ... ");			
+			model = createModel(config);
+			
+		} else {
+			log.info("Load Model ... ");
+			
+			Query q = em.createQuery("SELECT m FROM ZoneKNNModel m WHERE m.configHash = :configHash");
+			q.setParameter("configHash", config.hashCode());
+			List<Model> models = q.getResultList();
+			
+			model = models.get(0);
 		}
 
-		if (queryLimit < 0)
+		if (queryLimit < 0) // unbegrenztes QueryLimit
 			queryLimit = Integer.MAX_VALUE;
 
-		Query query = em.createQuery("SELECT j from JobAd j"); //TODO query JobAds
+		if (queryLimit < fetchSize) // QueryLimit kleiner als Fetch
+			fetchSize = queryLimit;
+
+		Query query = em.createQuery("SELECT j from JobAd j");
 
 		List<JobAd> jobAds;
 
 		boolean goOn = true;
 		boolean askAgain = true;
+
+		log.info("...classifying...");
 
 		while ((startPos < queryLimit) && goOn) {
 			query.setFirstResult(startPos);
@@ -110,11 +114,13 @@ public class DerbyDBClassifier {
 			if (jobAds.isEmpty())
 				break;
 
-			// TODO process batch
+			// log.info("Process " + jobAds.size() + " JobAds ...");
+
 			em.getTransaction().begin();
+			List<ZoneClassifyUnit> result;
 			for (JobAd job : jobAds) {
-				List<ClassifyUnit> result = processJobAd(job, config, model);
-				for (ClassifyUnit cu : result)
+				result = processJobAd(job, config, model);
+				for (ZoneClassifyUnit cu : result)
 					em.persist(cu);
 			}
 			em.getTransaction().commit();
@@ -153,7 +159,10 @@ public class DerbyDBClassifier {
 
 	}
 
-	private List<ClassifyUnit> processJobAd(JobAd job, ExperimentConfiguration config, Model model) throws IOException {
+
+
+	private List<ZoneClassifyUnit> processJobAd(JobAd job, ExperimentConfiguration config, Model model)
+			throws IOException {
 		// 1. Split into paragraphs and create a ClassifyUnit per paragraph
 		Set<String> paragraphs = ClassifyUnitSplitter.splitIntoParagraphs(job.getContent());
 		// TODO unsplitted?
@@ -164,9 +173,10 @@ public class DerbyDBClassifier {
 		}
 		List<ClassifyUnit> classifyUnits = new ArrayList<ClassifyUnit>();
 		for (String string : paragraphs) {
-//						paraCount++;
-			classifyUnits.add(new JASCClassifyUnit(string, job.getJahrgang(), job.getZeilenNr()));
+//			paraCount++;
+			classifyUnits.add(new ZoneClassifyUnit(string, job.getJahrgang(), job.getZeilenNr(), job.getJpaID()));
 		}
+
 		// prepare ClassifyUnits
 		classifyUnits = jobs.initializeClassifyUnits(classifyUnits);
 		classifyUnits = jobs.setFeatures(classifyUnits, config.getFeatureConfiguration(), false);
@@ -176,36 +186,69 @@ public class DerbyDBClassifier {
 		RegexClassifier regexClassifier = new RegexClassifier("classification/data/regex.txt");
 		Map<ClassifyUnit, boolean[]> preClassified = new HashMap<ClassifyUnit, boolean[]>();
 		for (ClassifyUnit cu : classifyUnits) {
+//			System.out.println(cu.getClass());
 			boolean[] classes = regexClassifier.classify(cu, model);
 			preClassified.put(cu, classes);
 		}
 		Map<ClassifyUnit, boolean[]> classified = jobs.classify(classifyUnits, config, model);
 		classified = jobs.mergeResults(classified, preClassified);
+		/*
+		 * Hier ist ActualID noch richtig (-1) & [false, false, false, true]
+		 */
 		classified = jobs.translateClasses(classified);
 
-		List<ClassifyUnit> results = new ArrayList<ClassifyUnit>();
-		for (ClassifyUnit cu : classified.keySet()) {
-			((ZoneClassifyUnit) cu).setClassIDs(classified.get(cu));
-//						 System.out.println();
-//						 System.out.println(cu.getContent());
-//						 System.out.print("-----> CLASS: ");
-			boolean[] ids = ((ZoneClassifyUnit) cu).getClassIDs();
-			boolean b = false;
-			for (int i = 0; i < ids.length; i++) {
-				if (ids[i]) {
-//					if (b) {
-////									 System.out.print("& " + (i + 1));
-//					} else {
-////									 System.out.println((i + 1));
-//					}
-					b = true;
-				}
-			}
+		/*
+		 * Hier ist ActualID falsch (4)
+		 */
 
-			results.add(cu);
+		List<ZoneClassifyUnit> results = new ArrayList<ZoneClassifyUnit>();
+		//JASCClassifyUnit jcu;
+		for (ClassifyUnit cu : classified.keySet()) {
+			ZoneClassifyUnit zcu = (ZoneClassifyUnit) cu;
+
+			boolean[] classes = classified.get(cu);
+			zcu.setClassIDsAndActualClassID(classes);
+
+			results.add(zcu);
 		}
-		
+
 		return results;
+	}
+	
+	
+	private Model createModel(ExperimentConfiguration config) throws IOException {
+		
+		
+		List<ClassifyUnit> trainingData = new ArrayList<ClassifyUnit>();
+
+		// get trainingdata from file (and db)
+		File trainingDataFile = new File(trainingDataFileName);
+
+		// TODO JB: persist trainingData
+		trainingData.addAll(jobs.getCategorizedParagraphsFromFile(trainingDataFile,
+				config.getFeatureConfiguration().isTreatEncoding()));
+
+		if (trainingData.size() == 0) {
+			System.out.println(
+					"\nthere are no training paragraphs in the specified training-DB. \nPlease check configuration and try again");
+			System.exit(0);
+		}
+		log.info("training paragraphs: " + trainingData.size());
+
+		trainingData = jobs.initializeClassifyUnits(trainingData);
+
+		trainingData = jobs.setFeatures(trainingData, config.getFeatureConfiguration(), true);
+		trainingData = jobs.setFeatureVectors(trainingData, config.getFeatureQuantifier(), null);
+
+		// build model
+		Model model = jobs.getNewModelForClassifier(trainingData, config);
+		if (config.getModelFileName().contains("/myModels/")) {
+			jobs.exportModel(config.getModelFile(), model);
+		}
+		em.getTransaction().begin();
+		em.persist(model);
+		em.getTransaction().commit();
+		return model;
 	}
 
 }

@@ -2,6 +2,8 @@ package quenfo.de.uni_koeln.spinfo.classification.core.data;
 
 import java.io.File;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import quenfo.de.uni_koeln.spinfo.classification.core.classifier.AbstractClassifier;
 import quenfo.de.uni_koeln.spinfo.classification.core.feature_engineering.feature_weighting.AbstractFeatureQuantifier;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.WekaClassifier;
@@ -122,6 +124,31 @@ public class ExperimentConfiguration {
 		File file = new File(getModelFileName());
 		return file;
 
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		ExperimentConfiguration other = (ExperimentConfiguration) obj;
+		
+		if (!this.fuc.equals(other.fuc))
+			return false;
+		if (!this.fq.getClass().equals(other.fq.getClass()))
+			return false;
+		if (!this.classifier.equals(other.classifier))
+			return false;
+		if (!this.dataFile.equals(other.dataFile))
+			return false;
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		HashCodeBuilder builder = new HashCodeBuilder();
+		builder.append(fuc.hashCode());
+		builder.append(fq.hashCode());
+		builder.append(classifier.hashCode());
+		builder.append(dataFile.hashCode());
+		return builder.hashCode();
 	}
 
 

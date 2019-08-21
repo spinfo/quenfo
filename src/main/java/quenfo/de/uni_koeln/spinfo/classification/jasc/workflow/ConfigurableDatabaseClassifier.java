@@ -82,12 +82,7 @@ public class ConfigurableDatabaseClassifier {
 		}
 		classify(expConfig, tableName);
 	}
-	
-	
-	public void classifyWithConfig(ExperimentConfiguration config, EntityManager em) {
-		// TODO Auto-generated method stub
-		
-	}
+
 
 	private void classify(ExperimentConfiguration config, String tableName)
 			throws IOException, SQLException, ClassNotFoundException {
@@ -190,7 +185,8 @@ public class ConfigurableDatabaseClassifier {
 			// 1. Split into paragraphs and create a ClassifyUnit per paragraph
 			Set<String> paragraphs = ClassifyUnitSplitter.splitIntoParagraphs(jobAd);		
 			if (paragraphs.size() == 1)
-				unsplitted.put(zeilenNr, jobAd);
+				if (jobAd.length() > 450)
+					unsplitted.put(zeilenNr, jobAd);
 			
 			
 			// if treat enc

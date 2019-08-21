@@ -57,6 +57,7 @@ public class SingleToMultiClassConverter {
 				classList.add(i+1);
 			}
 		}
+
 		if(classList.size()==1){
 			return classList.get(0);
 		}

@@ -42,12 +42,6 @@ public class TFIDFFeatureQuantifier extends AbstractFeatureQuantifier{
 		}
 	}
 
-
-	
-	
-	
-	
-
 	private Map<String, Integer> calcDocFrequencies(List<String> featureUnitOrder, List<ClassifyUnit> classifyUnits) {
 		Map<String, Integer> toReturn = new TreeMap<String, Integer>();	
 			for (String featureUnit : featureUnitOrder) {

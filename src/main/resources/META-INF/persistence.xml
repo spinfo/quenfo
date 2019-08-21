@@ -3,11 +3,13 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
 	version="2.0" xmlns="http://java.sun.com/xml/ns/persistence">
-	<persistence-unit name="textkernel" transaction-type="RESOURCE_LOCAL">
-		<!-- <class>quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit</class>  -->
+	<persistence-unit name="textkernel"
+		transaction-type="RESOURCE_LOCAL">
+		<class>quenfo.de.uni_koeln.spinfo.core.data.JobAd</class>
 		<class>quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data.ZoneClassifyUnit</class>
 		<class>quenfo.de.uni_koeln.spinfo.information_extraction.data.ExtractionUnit</class>
-		<class>quenfo.de.uni_koeln.spinfo.core.data.JobAd</class>
+		<class>quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.model.ZoneKNNModel</class>
+		<class>quenfo.de.uni_koeln.spinfo.classification.core.classifier.model.Model</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver"
 				value="org.apache.derby.jdbc.EmbeddedDriver" />
@@ -18,10 +20,10 @@
 				value="test" />
 
 			<!-- EclipseLink should create the database schema automatically -->
-			<property name="eclipselink.ddl-generation"
+			<!-- <property name="eclipselink.ddl-generation"
 				value="create-tables" />
 			<property name="eclipselink.ddl-generation.output-mode"
-				value="database" /> 
+				value="database" />  -->
 		</properties>
 	</persistence-unit>
 </persistence>

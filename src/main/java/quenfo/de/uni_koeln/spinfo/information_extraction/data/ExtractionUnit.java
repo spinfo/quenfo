@@ -11,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.NamedQuery;
-import javax.persistence.Table;
 
 import is2.data.SentenceData09;
 import lombok.AccessLevel;
@@ -35,7 +34,6 @@ import lombok.ToString;
 		)
 
 @Entity
-//@Table(name = "EXTRACTIONUNIT")
 @Data
 @EqualsAndHashCode(of = { "jobAdID", "secondJobAdID", "classifyUnitID", "sentence" })
 @ToString(of = { "sentence" })
@@ -67,6 +65,9 @@ public class ExtractionUnit implements Serializable {
 	
 	// Derby ID der beinhaltenden ClassifyUnit
 	private long classifyUnitjpaID;
+	
+	// Derby ID der beinhaltenden Stellenanzeige
+	private long jobAdjpaID;
 
 	@Getter(AccessLevel.NONE)
 	private String[] tokens;

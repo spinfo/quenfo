@@ -26,7 +26,8 @@ public class TestLinksellipse {
 		testSentences.add("SAP-Kenntnisse und -Erfahrungen");
 		
 //		CoordinationResolver cr = new CoordinationResolver();
-		CoordinateExpander ce = new CoordinateExpander(new File("src/test/resources/coordinations/resolvedCompounds.txt"));
+		CoordinateExpander ce = new CoordinateExpander(new File("src/test/resources/coordinations/resolvedCompounds.txt"),
+				new File("src/test/resources/coordinations/splittedCompounds.txt"));
 		Tool lemmatizer = new Lemmatizer(
 				"information_extraction/data/sentencedata_models/ger-tagger+lemmatizer+morphology+graph-based-3.6/lemma-ger-3.6.model",
 				false);
