@@ -18,7 +18,6 @@ import java.util.UUID;
 
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit;
-import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data.ZoneClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.ExtractionUnit;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.IEType;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.InformationEntity;
@@ -191,7 +190,7 @@ public class IE_DBConnector {
 			classifyUnit = new JASCClassifyUnit(result.getString("Text"), result.getInt("Jahrgang"),
 					result.getInt("ZEILENNR"));
 			((JASCClassifyUnit) classifyUnit).setTableID(result.getInt("ID"));
-			((ZoneClassifyUnit) classifyUnit).setActualClassID(classID);
+			((JASCClassifyUnit) classifyUnit).setActualClassID(classID);
 			try {
 				String sentences = result.getString("ExtractionUnits");
 				// System.out.println(sentences);

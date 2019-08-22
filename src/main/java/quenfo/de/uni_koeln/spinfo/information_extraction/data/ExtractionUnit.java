@@ -30,7 +30,7 @@ import lombok.ToString;
 
 @NamedQuery(
 		name = "getClassXExtractionUnits", 
-		query = "SELECT e FROM ExtractionUnit e JOIN ZoneClassifyUnit  c ON e.classifyUnitjpaID = c.jpaID WHERE c.actualClassID = :class"		
+		query = "SELECT e FROM ExtractionUnit e JOIN JASCClassifyUnit  c ON e.classifyUnitjpaID = c.jpaID WHERE c.actualClassID = :class"		
 		)
 
 @Entity

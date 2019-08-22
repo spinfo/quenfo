@@ -14,8 +14,8 @@ import quenfo.de.uni_koeln.spinfo.classification.core.data.FeatureUnitConfigurat
 import quenfo.de.uni_koeln.spinfo.classification.core.distance.Distance;
 import quenfo.de.uni_koeln.spinfo.classification.core.distance.DistanceCalculator;
 import quenfo.de.uni_koeln.spinfo.classification.core.feature_engineering.feature_weighting.AbstractFeatureQuantifier;
+import quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.model.ZoneKNNModel;
-import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data.ZoneClassifyUnit;
 
 /**
  * @author geduldig
@@ -72,7 +72,7 @@ public class ZoneKNNClassifier extends ZoneAbstractClassifier{
 		Model model = new ZoneKNNModel();
 		    Map<double[], boolean[]> trainingdata = new HashMap<double[], boolean[]>();
 			for (ClassifyUnit classifyUnit : cus) {
-				trainingdata.put(classifyUnit.getFeatureVector(), ((ZoneClassifyUnit) classifyUnit).getClassIDs());
+				trainingdata.put(classifyUnit.getFeatureVector(), ((JASCClassifyUnit) classifyUnit).getClassIDs());
 			}	
 			((ZoneKNNModel) model).setTrainingData(trainingdata);		
 			model.setClassifierName(this.getClass().getSimpleName());
@@ -96,7 +96,7 @@ public class ZoneKNNClassifier extends ZoneAbstractClassifier{
 	@Override
 	public boolean[] classify(ClassifyUnit cu, Model model){
 		//log.info(cu.toString());
-		int numberOfClasses = ( (ZoneClassifyUnit) cu).getClassIDs().length;
+		int numberOfClasses = ( (JASCClassifyUnit) cu).getClassIDs().length;
 		boolean[] toReturn = new boolean[numberOfClasses];
 		
 		//sort classIDs by distance to cu:

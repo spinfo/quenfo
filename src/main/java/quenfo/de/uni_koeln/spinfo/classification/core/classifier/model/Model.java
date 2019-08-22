@@ -33,7 +33,8 @@ import quenfo.de.uni_koeln.spinfo.classification.core.feature_engineering.featur
 **/
  
 @Entity
-@Inheritance(strategy=InheritanceType.JOINED)
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="type")
 @MappedSuperclass
 public  class Model implements Serializable{
 	

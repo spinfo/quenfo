@@ -77,7 +77,7 @@ public class Extractor {
 		this.entitiesFile = entities;
 		this.type = type;
 		this.possCompoundsFile = new File("src/main/resources/compounds/possibleCompounds.txt");
-		this.splittedCompoundsFile = new File("src/main/resources/coordinations/splittedCompounds.txt");
+		this.splittedCompoundsFile = new File("src/main/resources/compounds/splittedCompounds.txt");
 		this.jobs = new IEJobs(entities, null, modifiers, null, type, resolveCoordinations, 
 				possCompoundsFile, splittedCompoundsFile);
 		initialize();

@@ -11,9 +11,9 @@ import quenfo.de.uni_koeln.spinfo.classification.core.classifier.model.Model;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.FeatureUnitConfiguration;
 import quenfo.de.uni_koeln.spinfo.classification.core.feature_engineering.feature_weighting.AbstractFeatureQuantifier;
+import quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.model.NaiveBayesClassModel;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.model.ZoneNaiveBayesModel;
-import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data.ZoneClassifyUnit;
 
 
 /**
@@ -61,7 +61,7 @@ public class ZoneNaiveBayesClassifier extends ZoneAbstractClassifier {
 	@Override
 	public Model buildModel(List<ClassifyUnit> cus, FeatureUnitConfiguration fuc, AbstractFeatureQuantifier fq, File dataFile){
 		Model model = new ZoneNaiveBayesModel();
-		int numberOfClasses = ( (ZoneClassifyUnit) cus.get(0)).getClassIDs().length;
+		int numberOfClasses = ( (JASCClassifyUnit) cus.get(0)).getClassIDs().length;
 		/* create a model for each class */
 		for (int c = 0; c < numberOfClasses; c++) {
 			NaiveBayesClassModel classModel = new NaiveBayesClassModel();
@@ -75,7 +75,7 @@ public class ZoneNaiveBayesClassifier extends ZoneAbstractClassifier {
 			for (ClassifyUnit cu : cus) {
 				Set<String> uniqueFUs = new TreeSet<String>();
 				uniqueFUs.addAll(cu.getFeatureUnits());
-				boolean[] classes = ( (ZoneClassifyUnit) cu).getClassIDs();
+				boolean[] classes = ( (JASCClassifyUnit) cu).getClassIDs();
 				if (classes[c]) {
 					membersInClass++;
 					/* update DocFrequencies */
@@ -124,7 +124,7 @@ public class ZoneNaiveBayesClassifier extends ZoneAbstractClassifier {
 
 	
 	private double classify(ClassifyUnit cu, int classID, Model model) {
-		int numberOfClasses = ( (ZoneClassifyUnit) cu).getClassIDs().length;
+		int numberOfClasses = ( (JASCClassifyUnit) cu).getClassIDs().length;
 		NaiveBayesClassModel classModel = ((ZoneNaiveBayesModel) model)
 				.getClassModels().get(classID - 1);
 
@@ -189,7 +189,7 @@ public class ZoneNaiveBayesClassifier extends ZoneAbstractClassifier {
 	 */
 	@Override
 	public boolean[] classify(ClassifyUnit cu, Model model) {
-		int numberOfClasses = ( (ZoneClassifyUnit) cu).getClassIDs().length;
+		int numberOfClasses = ( (JASCClassifyUnit) cu).getClassIDs().length;
 		boolean[] toReturn = new boolean[numberOfClasses];
 		double bestProb = Double.MIN_VALUE;
 		int bestClass = -1;

@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 import is2.tools.Tool;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit;
-import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data.ZoneClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.ExtractionUnit;
 
 /**
@@ -34,8 +33,8 @@ public class ExtractionUnitBuilder {
 		
 		for (ClassifyUnit cu : classifyUnits) {
 			sentences = tokenizer.splitIntoSentences(cu.getContent());
-			long classifyUnitJpaID = ((ZoneClassifyUnit) cu).getJpaID();
-			long jobAdJpaID = ((ZoneClassifyUnit) cu).getJobAdJpaID();
+			long classifyUnitJpaID = ((JASCClassifyUnit) cu).getJpaID();
+			long jobAdJpaID = ((JASCClassifyUnit) cu).getJobAdJpaID();
 			
 			for (String sentence : sentences) {
 				ExtractionUnit eu = new ExtractionUnit(sentence);

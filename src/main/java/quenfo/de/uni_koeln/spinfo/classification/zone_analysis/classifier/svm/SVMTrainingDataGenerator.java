@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 import java.util.List;
 
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
-import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data.ZoneClassifyUnit;
+import quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit;
 
 public class SVMTrainingDataGenerator {
 
@@ -18,7 +18,7 @@ public class SVMTrainingDataGenerator {
 			
 			
 				for (ClassifyUnit cu : cus) {
-					int label = ((ZoneClassifyUnit) cu).getActualClassID();
+					int label = ((JASCClassifyUnit) cu).getActualClassID();
 					out.print(label+" ");
 					double[] vec = cu.getFeatureVector();
 					for(int d = 1; d <=vec.length; d++){

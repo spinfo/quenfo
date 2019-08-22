@@ -29,8 +29,8 @@ import quenfo.de.uni_koeln.spinfo.classification.core.classifier.model.Model;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.FeatureUnitConfiguration;
 import quenfo.de.uni_koeln.spinfo.classification.core.feature_engineering.feature_weighting.AbstractFeatureQuantifier;
+import quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.model.WekaModel;
-import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data.ZoneClassifyUnit;
 import weka.classifiers.Classifier;
 import weka.core.Attribute;
 import weka.core.Instance;
@@ -42,6 +42,7 @@ import weka.core.SparseInstance;
  * strategy.
  * @author jhermes
  */
+@Deprecated
 public class WekaClassifier extends ZoneAbstractClassifier {
 	
 	private Classifier wekaClassifier;
@@ -76,7 +77,7 @@ public class WekaClassifier extends ZoneAbstractClassifier {
 		
 		Instances trainingSet = initTrainingSet(cus);
 		for (ClassifyUnit classifyUnit : cus) {
-			trainingSet.add(instance(((ZoneClassifyUnit)classifyUnit), trainingSet));
+			trainingSet.add(instance(((JASCClassifyUnit)classifyUnit), trainingSet));
 		}
 		
 //		// wir merken uns, dass das Training noch nicht abgeschlossen ist ...
@@ -129,7 +130,7 @@ public class WekaClassifier extends ZoneAbstractClassifier {
 		int vectorSize = trainingData.get(0).getFeatureVector().length;
 		Set<Integer> classIDs = new TreeSet<Integer>();
 		for (ClassifyUnit classifyUnit : trainingData) {
-			ZoneClassifyUnit actual = (ZoneClassifyUnit)classifyUnit;
+			JASCClassifyUnit actual = (JASCClassifyUnit)classifyUnit;
 			classIDs.add(actual.getActualClassID());
 		}
 		/* Der Vektor enthält die numerischen Merkmale (bei uns: tf-idf-Werte) sowie ein Klassenattribut: */
@@ -166,7 +167,7 @@ public class WekaClassifier extends ZoneAbstractClassifier {
 	
 	private Instance instance(ClassifyUnit cu, Instances trainingSet) {
 		double[] values = cu.getFeatureVector();
-		String classID = ((ZoneClassifyUnit)cu).getActualClassID()+"";
+		String classID = ((JASCClassifyUnit)cu).getActualClassID()+"";
 		Instance instance = new SparseInstance(1, values);
 		/*
 		 * Weka muss 'erklärt' bekommen, was die Werte bedeuten - dies ist im Trainingsset beschrieben:

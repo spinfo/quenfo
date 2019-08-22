@@ -14,7 +14,6 @@ import java.util.SortedMap;
 
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit;
-import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data.ZoneClassifyUnit;
 
 public class Class_DBConnector {
 
@@ -127,7 +126,7 @@ public class Class_DBConnector {
 					"INSERT INTO ClassifiedParagraphs (Text, Jahrgang, ZEILENNR, ClassONE,ClassTWO,ClassTHREE,ClassFOUR) VALUES(?,?,?,?,?,?,?)");
 			for (ClassifyUnit cu : results) {
 				int booleanRpl; // replaces true/false for saving into sqliteDB
-				classIDs = ((ZoneClassifyUnit) cu).getClassIDs();
+				classIDs = ((JASCClassifyUnit) cu).getClassIDs();
 				prepStmt.setString(1, cu.getContent());
 				prepStmt.setInt(2, jahrgang);
 				prepStmt.setInt(3, zeilennummer);

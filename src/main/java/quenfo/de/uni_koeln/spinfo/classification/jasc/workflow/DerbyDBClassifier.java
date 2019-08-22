@@ -26,7 +26,6 @@ import quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.jasc.preprocessing.ClassifyUnitSplitter;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.RegexClassifier;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.model.ZoneKNNModel;
-import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data.ZoneClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.helpers.SingleToMultiClassConverter;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.workflow.ZoneJobs;
 import quenfo.de.uni_koeln.spinfo.core.data.JobAd;
@@ -71,7 +70,7 @@ public class DerbyDBClassifier {
 	@SuppressWarnings("unchecked")
 	public void classify(ExperimentConfiguration config) throws IOException {
 
-		Query count = em.createQuery("SELECT COUNT(m) FROM ZoneKNNModel m WHERE m.configHash = :configHash");
+		Query count = em.createQuery("SELECT COUNT(m) FROM Model m WHERE m.configHash = :configHash");
 		count.setParameter("configHash", config.hashCode());	
 		long existingConfig = (long) count.getSingleResult();
 		
@@ -83,7 +82,7 @@ public class DerbyDBClassifier {
 		} else {
 			log.info("Load Model ... ");
 			
-			Query q = em.createQuery("SELECT m FROM ZoneKNNModel m WHERE m.configHash = :configHash");
+			Query q = em.createQuery("SELECT m FROM Model m WHERE m.configHash = :configHash");
 			q.setParameter("configHash", config.hashCode());
 			List<Model> models = q.getResultList();
 			
@@ -117,10 +116,10 @@ public class DerbyDBClassifier {
 			// log.info("Process " + jobAds.size() + " JobAds ...");
 
 			em.getTransaction().begin();
-			List<ZoneClassifyUnit> result;
+			List<JASCClassifyUnit> result;
 			for (JobAd job : jobAds) {
 				result = processJobAd(job, config, model);
-				for (ZoneClassifyUnit cu : result)
+				for (JASCClassifyUnit cu : result)
 					em.persist(cu);
 			}
 			em.getTransaction().commit();
@@ -161,7 +160,7 @@ public class DerbyDBClassifier {
 
 
 
-	private List<ZoneClassifyUnit> processJobAd(JobAd job, ExperimentConfiguration config, Model model)
+	private List<JASCClassifyUnit> processJobAd(JobAd job, ExperimentConfiguration config, Model model)
 			throws IOException {
 		// 1. Split into paragraphs and create a ClassifyUnit per paragraph
 		Set<String> paragraphs = ClassifyUnitSplitter.splitIntoParagraphs(job.getContent());
@@ -174,7 +173,9 @@ public class DerbyDBClassifier {
 		List<ClassifyUnit> classifyUnits = new ArrayList<ClassifyUnit>();
 		for (String string : paragraphs) {
 //			paraCount++;
-			classifyUnits.add(new ZoneClassifyUnit(string, job.getJahrgang(), job.getZeilenNr(), job.getJpaID()));
+			//TODO JB: ZoneCU oder JASCCU??
+//			classifyUnits.add(new ZoneClassifyUnit(string, job.getJahrgang(), job.getZeilenNr(), job.getJpaID()));
+			classifyUnits.add(new JASCClassifyUnit(string, job.getJahrgang(), job.getZeilenNr(), job.getJpaID()));
 		}
 
 		// prepare ClassifyUnits
@@ -201,15 +202,15 @@ public class DerbyDBClassifier {
 		 * Hier ist ActualID falsch (4)
 		 */
 
-		List<ZoneClassifyUnit> results = new ArrayList<ZoneClassifyUnit>();
+		List<JASCClassifyUnit> results = new ArrayList<JASCClassifyUnit>();
 		//JASCClassifyUnit jcu;
 		for (ClassifyUnit cu : classified.keySet()) {
-			ZoneClassifyUnit zcu = (ZoneClassifyUnit) cu;
+			JASCClassifyUnit jcu = (JASCClassifyUnit) cu;
 
 			boolean[] classes = classified.get(cu);
-			zcu.setClassIDsAndActualClassID(classes);
+			jcu.setClassIDsAndActualClassID(classes);
 
-			results.add(zcu);
+			results.add(jcu);
 		}
 
 		return results;
@@ -236,7 +237,6 @@ public class DerbyDBClassifier {
 		log.info("training paragraphs: " + trainingData.size());
 
 		trainingData = jobs.initializeClassifyUnits(trainingData);
-
 		trainingData = jobs.setFeatures(trainingData, config.getFeatureConfiguration(), true);
 		trainingData = jobs.setFeatureVectors(trainingData, config.getFeatureQuantifier(), null);
 

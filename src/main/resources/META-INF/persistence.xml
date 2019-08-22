@@ -6,18 +6,16 @@
 	<persistence-unit name="textkernel"
 		transaction-type="RESOURCE_LOCAL">
 		<class>quenfo.de.uni_koeln.spinfo.core.data.JobAd</class>
-		<class>quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data.ZoneClassifyUnit</class>
+		<class>quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit</class>
 		<class>quenfo.de.uni_koeln.spinfo.information_extraction.data.ExtractionUnit</class>
-		<class>quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.model.ZoneKNNModel</class>
 		<class>quenfo.de.uni_koeln.spinfo.classification.core.classifier.model.Model</class>
+		<class>quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.model.ZoneKNNModel</class>
+		<class>quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.model.ZoneNaiveBayesModel</class>
 		<properties>
-			<property name="javax.persistence.jdbc.driver"
-				value="org.apache.derby.jdbc.EmbeddedDriver" />
-			<property name="javax.persistence.jdbc.url"
-				value="jdbc:derby:c:\\derbyDB\TextKernel;create=true" />
+			<property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver" />
+			<property name="javax.persistence.jdbc.url"	value="jdbc:derby:c:\\derbyDB\TextKernel;create=true" />
 			<property name="javax.persistence.jdbc.user" value="test" />
-			<property name="javax.persistence.jdbc.password"
-				value="test" />
+			<property name="javax.persistence.jdbc.password" value="test" />
 
 			<!-- EclipseLink should create the database schema automatically -->
 			<!-- <property name="eclipselink.ddl-generation"

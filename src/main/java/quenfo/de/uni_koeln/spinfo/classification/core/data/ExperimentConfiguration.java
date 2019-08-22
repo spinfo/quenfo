@@ -148,6 +148,7 @@ public class ExperimentConfiguration {
 		builder.append(fq.hashCode());
 		builder.append(classifier.hashCode());
 		builder.append(dataFile.hashCode());
+		builder.append(dataFile.lastModified());
 		return builder.hashCode();
 	}
 

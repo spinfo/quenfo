@@ -10,7 +10,7 @@ import java.util.TreeSet;
 
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.FeatureUnitConfiguration;
-import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data.ZoneClassifyUnit;
+import quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit;
 
 public class MutualInformationFilter {
 
@@ -37,7 +37,7 @@ public class MutualInformationFilter {
 	
 	public void initialize(FeatureUnitConfiguration fuc, List<ClassifyUnit> trainingdata){
 	
-		int numberOfClasses = ( (ZoneClassifyUnit) trainingdata.get(0)).getClassIDs().length;
+		int numberOfClasses = ( (JASCClassifyUnit) trainingdata.get(0)).getClassIDs().length;
 
 		relevantFeatureUnitsOverall = new TreeSet<String>();
 
@@ -58,7 +58,7 @@ public class MutualInformationFilter {
 				totalNumberOfFeatureUnits += unitToClassify.getFeatureUnits()
 						.size();
 				allFeatureUnits.addAll(unitToClassify.getFeatureUnits());
-				if (((ZoneClassifyUnit) unitToClassify).getClassIDs()[classID]) {
+				if (((JASCClassifyUnit) unitToClassify).getClassIDs()[classID]) {
 					classifyUnitsInCategory++;
 					allFeatureUnitsOfClass.addAll(unitToClassify
 							.getFeatureUnits());

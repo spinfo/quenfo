@@ -11,7 +11,6 @@ import quenfo.de.uni_koeln.spinfo.classification.core.distance.DistanceCalculato
 import quenfo.de.uni_koeln.spinfo.classification.core.feature_engineering.feature_weighting.AbstractFeatureQuantifier;
 import quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.model.ZoneRocchioModel;
-import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data.ZoneClassifyUnit;
 
 /**
  * @author geduldig
@@ -44,7 +43,7 @@ public class ZoneRocchioClassifier extends ZoneAbstractClassifier {
 	@Override
 	public Model buildModel(List<ClassifyUnit> cus, FeatureUnitConfiguration fuc, AbstractFeatureQuantifier fq, File dataFile){
 		Model model = new ZoneRocchioModel();
-		int numberOfClasses = ( (ZoneClassifyUnit) cus.get(0)).getClassIDs().length;
+		int numberOfClasses = ( (JASCClassifyUnit) cus.get(0)).getClassIDs().length;
 		int numberOfFeatures = cus.get(0).getFeatureVector().length;
 		double[][] centers = new double[numberOfClasses][numberOfFeatures];
 
@@ -53,7 +52,7 @@ public class ZoneRocchioClassifier extends ZoneAbstractClassifier {
 			int classMembers = 0;
 			for (ClassifyUnit cu : cus) {
 				/* check, if cu is member of current class */
-				if (( (ZoneClassifyUnit) cu).getClassIDs()[classID - 1]) {
+				if (( (JASCClassifyUnit) cu).getClassIDs()[classID - 1]) {
 					classMembers++;
 					double[] featureVector = cu.getFeatureVector();
 					boolean isEmpty = true;
@@ -100,7 +99,7 @@ public class ZoneRocchioClassifier extends ZoneAbstractClassifier {
 	 */
 	@Override
 	public boolean[] classify(ClassifyUnit cu, Model model) {
-		int numberOfClasses = ( (ZoneClassifyUnit) cu).getClassIDs().length;
+		int numberOfClasses = ( (JASCClassifyUnit) cu).getClassIDs().length;
 		boolean[] toReturn = new boolean[numberOfClasses];
 		if (multiClass) {
 			toReturn = classifyMultiClass(cu, model);
@@ -113,7 +112,7 @@ public class ZoneRocchioClassifier extends ZoneAbstractClassifier {
 	
 	private boolean[] classifySingleClass(ClassifyUnit cu, Model model) {
 		
-		boolean[] toReturn = new boolean[( (ZoneClassifyUnit) cu).getClassIDs().length];
+		boolean[] toReturn = new boolean[( (JASCClassifyUnit) cu).getClassIDs().length];
 		double smallestDist = Double.MAX_VALUE;
 		int bestClass = 0;
 		for (int classID = 1; classID <= toReturn.length; classID++) {

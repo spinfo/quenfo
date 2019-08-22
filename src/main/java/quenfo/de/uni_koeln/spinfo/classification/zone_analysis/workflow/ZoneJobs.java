@@ -38,7 +38,6 @@ import quenfo.de.uni_koeln.spinfo.classification.core.helpers.EncodingProblemTre
 import quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.ZoneAbstractClassifier;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.svm.SVMClassifier;
-import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data.ZoneClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.helpers.SingleToMultiClassConverter;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.preprocessing.TrainingDataGenerator;
 
@@ -120,7 +119,7 @@ public class ZoneJobs {
 			for (int i = 0; i < stmc.getNumberOfCategories(); i++) {
 				classIDs[i] = parseIntToBool(result.getInt(4 + i));
 			}
-			ZoneClassifyUnit.setNumberOfCategories(stmc.getNumberOfCategories(), stmc.getNumberOfClasses(),
+			JASCClassifyUnit.setNumberOfCategories(stmc.getNumberOfCategories(), stmc.getNumberOfClasses(),
 					stmc.getTranslations());
 			if (treatEncoding) {
 				cu = new JASCClassifyUnit(EncodingProblemTreatment.normalizeEncoding(content), parentID,
@@ -128,7 +127,7 @@ public class ZoneJobs {
 			} else {
 				cu = new JASCClassifyUnit(content, parentID, secondParentID);
 			}
-			((ZoneClassifyUnit) cu).setClassIDs(classIDs);
+			((JASCClassifyUnit) cu).setClassIDs(classIDs);
 			toReturn.add(cu);
 		}
 		return toReturn;
@@ -151,20 +150,22 @@ public class ZoneJobs {
 	public List<ClassifyUnit> initializeClassifyUnits(List<ClassifyUnit> paragraphs) {
 		List<ClassifyUnit> toProcess = new ArrayList<ClassifyUnit>();
 		for (ClassifyUnit paragraph : paragraphs) {
+			//TODO JB: kein neues Objekt erzeugen?
+//			ZoneClassifyUnit newParagraph = new ZoneClassifyUnit(paragraph.getContent(),
+//					paragraph.getId());
+//
+//			newParagraph.setJobAdJpaID(paragraph.getJobAdJpaID());
+//			newParagraph.setClassIDs(((ZoneClassifyUnit) paragraph).getClassIDs());
+//			newParagraph.setActualClassID(((ZoneClassifyUnit) paragraph).getActualClassID());
 			
-			ZoneClassifyUnit newParagraph = new ZoneClassifyUnit(paragraph.getContent(),
-					paragraph.getId());
 
-			newParagraph.setJobAdJpaID(paragraph.getJobAdJpaID());
-			newParagraph.setClassIDs(((ZoneClassifyUnit) paragraph).getClassIDs());
-			newParagraph.setActualClassID(((ZoneClassifyUnit) paragraph).getActualClassID());
 
-			List<String> tokens = tokenizer.tokenize(newParagraph.getContent());
+			List<String> tokens = tokenizer.tokenize(paragraph.getContent());
 			if (tokens == null) {
 				continue;
 			}
-			newParagraph.setFeatureUnits(tokens);
-			toProcess.add(newParagraph);
+			paragraph.setFeatureUnits(tokens);
+			toProcess.add(paragraph);
 		}
 		return toProcess;
 	}
@@ -352,7 +353,7 @@ public class ZoneJobs {
 		}
 		Map<ClassifyUnit, boolean[]> classified = new HashMap<ClassifyUnit, boolean[]>();
 		for (ClassifyUnit cu : paragraphs) {
-			boolean[] classes = ((ZoneAbstractClassifier) classifier).classify((ZoneClassifyUnit) cu, model);
+			boolean[] classes = ((ZoneAbstractClassifier) classifier).classify((JASCClassifyUnit) cu, model);
 			classified.put(cu, classes);
 		}
 		return classified;
@@ -433,10 +434,10 @@ public class ZoneJobs {
 		// log.info(keySet.toString());
 
 		for (ClassifyUnit classifyUnit : untransCUs) {
-			ZoneClassifyUnit zcu = (ZoneClassifyUnit) classifyUnit;
+			JASCClassifyUnit jcu = (JASCClassifyUnit) classifyUnit;
 
 			// log.info(zcu.toString());
-			boolean[] classIDs = zcu.getClassIDs();
+			boolean[] classIDs = jcu.getClassIDs();
 
 			int singleClassID = -1;
 			for (int i = 0; i < classIDs.length; i++) {
@@ -451,9 +452,9 @@ public class ZoneJobs {
 //				System.out.print(multiClasses[i] + " ");
 //			}
 
-			zcu.setClassIDs(multiClasses);
+			jcu.setClassIDs(multiClasses);
 
-			boolean[] newClassIDs = untranslated.get(zcu);
+			boolean[] newClassIDs = untranslated.get(jcu);
 //			log.info(untranslated.containsKey(zcu));
 //			log.info(Arrays.asList(newClassIDs).toString());
 			singleClassID = -1;

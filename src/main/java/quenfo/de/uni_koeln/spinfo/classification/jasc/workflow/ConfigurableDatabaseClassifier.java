@@ -29,7 +29,6 @@ import quenfo.de.uni_koeln.spinfo.classification.db_io.Class_DBConnector;
 import quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.jasc.preprocessing.ClassifyUnitSplitter;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.RegexClassifier;
-import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data.ZoneClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.helpers.SingleToMultiClassConverter;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.workflow.ExperimentSetupUI;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.workflow.ZoneJobs;
@@ -100,17 +99,20 @@ public class ConfigurableDatabaseClassifier {
 			System.exit(0);
 		}
 		log.info("training paragraphs: " + trainingData.size());
-		log.info("...classifying...");
+			
 
 		trainingData = jobs.initializeClassifyUnits(trainingData);
 		trainingData = jobs.setFeatures(trainingData, config.getFeatureConfiguration(), true);
 		trainingData = jobs.setFeatureVectors(trainingData, config.getFeatureQuantifier(), null);
+		
 
 		// build model
 		Model model = jobs.getNewModelForClassifier(trainingData, config);
 		if (config.getModelFileName().contains("/myModels/")) {
 			jobs.exportModel(config.getModelFile(), model);
 		}
+		
+		log.info("...classifying...");	
 		// get data from db
 		int done = 0;
 		String query = null;
@@ -203,6 +205,7 @@ public class ConfigurableDatabaseClassifier {
 			classifyUnits = jobs.setFeatures(classifyUnits, config.getFeatureConfiguration(), false);
 			classifyUnits = jobs.setFeatureVectors(classifyUnits, config.getFeatureQuantifier(), model.getFUOrder());
 			
+			
 			// 2. Classify
 			RegexClassifier regexClassifier = new RegexClassifier("classification/data/regex.txt");
 			Map<ClassifyUnit, boolean[]> preClassified = new HashMap<ClassifyUnit, boolean[]>();
@@ -210,17 +213,20 @@ public class ConfigurableDatabaseClassifier {
 				boolean[] classes = regexClassifier.classify(cu, model);
 				preClassified.put(cu, classes);
 			}
+			
+			
 			Map<ClassifyUnit, boolean[]> classified = jobs.classify(classifyUnits, config, model);
+			
 			classified = jobs.mergeResults(classified, preClassified);
 			classified = jobs.translateClasses(classified);
 
 			List<ClassifyUnit> results = new ArrayList<ClassifyUnit>();
 			for (ClassifyUnit cu : classified.keySet()) {
-				((ZoneClassifyUnit) cu).setClassIDs(classified.get(cu));
+				((JASCClassifyUnit) cu).setClassIDs(classified.get(cu));
 //				 System.out.println();
 //				 System.out.println(cu.getContent());
 //				 System.out.print("-----> CLASS: ");
-				boolean[] ids = ((ZoneClassifyUnit) cu).getClassIDs();
+				boolean[] ids = ((JASCClassifyUnit) cu).getClassIDs();
 				boolean b = false;
 				for (int i = 0; i < ids.length; i++) {
 					if (ids[i]) {

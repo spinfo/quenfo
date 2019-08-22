@@ -14,7 +14,6 @@ import java.util.UUID;
 
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit;
-import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data.ZoneClassifyUnit;
 
 /**
  * Class to annotate ClassifyUnits manually with (one or more) classIDs
@@ -84,15 +83,17 @@ public class TrainingDataGenerator {
 
 					if (/** classes.length **/
 					classID != 0) {
-						ZoneClassifyUnit utc = null;
+						JASCClassifyUnit utc = null;
 						if(splits.length == 3){
-							utc = new JASCClassifyUnit(content.toString(), parentID,secondParentID, paragraphID);
+							utc = new JASCClassifyUnit(content.toString(), parentID,secondParentID, paragraphID, classID);
 						}
-						else{
-							utc = new ZoneClassifyUnit(content.toString(),paragraphID);
-						}
-						utc.setActualClassID(classID);
+//						else{
+//							System.out.println("2Spalten: " + line);
+//							utc = new JASCClassifyUnit(content.toString(),parentID, secondParentID, paragraphID);
+//						}
+//						utc.setActualClassID(classID);
 						classifiedData.add(utc);
+
 					}
 					paragraphID = UUID.fromString(splits[0]);
 					if(splits.length == 3){
@@ -114,12 +115,14 @@ public class TrainingDataGenerator {
 				}
 				line = in.readLine();
 				
+				
+				
 			}
 			if (/** classes.length **/
 			classID != 0) {
 				JASCClassifyUnit utc = new JASCClassifyUnit(content.toString(),
-						parentID, secondParentID, paragraphID);
-				utc.setActualClassID(classID);
+						parentID, secondParentID, paragraphID, classID);
+//				utc.setActualClassID(classID);
 				
 				classifiedData.add(utc);
 			}
@@ -280,7 +283,7 @@ public class TrainingDataGenerator {
 					if(unitToClassify instanceof JASCClassifyUnit){
 						out.print(((JASCClassifyUnit) unitToClassify).getParentID() +"-"+((JASCClassifyUnit) unitToClassify).getSecondParentID()+"\t");
 					}
-					out.print(( (ZoneClassifyUnit) unitToClassify).getActualClassID()+"\n");
+					out.print(( (JASCClassifyUnit) unitToClassify).getActualClassID()+"\n");
 					out.println(unitToClassify.getContent().trim().replaceAll("\t", " "));
 					out.println();
 				}

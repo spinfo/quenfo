@@ -14,7 +14,7 @@ import quenfo.de.uni_koeln.spinfo.classification.core.classifier.model.Model;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.FeatureUnitConfiguration;
 import quenfo.de.uni_koeln.spinfo.classification.core.feature_engineering.feature_weighting.AbstractFeatureQuantifier;
-import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.data.ZoneClassifyUnit;
+import quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit;
 
 /**
  * @author geduldia
@@ -93,7 +93,7 @@ public class RegexClassifier extends ZoneAbstractClassifier {
 	 */
 	@Override
 	public boolean[] classify(ClassifyUnit cu, Model model) {
-		int numberOfClasses = ((ZoneClassifyUnit) cu).getClassIDs().length;
+		int numberOfClasses = ((JASCClassifyUnit) cu).getClassIDs().length;
 		boolean[] toReturn = new boolean[numberOfClasses];
 		String content = cu.getContent();
 		for (String regex : regexes.keySet()) {

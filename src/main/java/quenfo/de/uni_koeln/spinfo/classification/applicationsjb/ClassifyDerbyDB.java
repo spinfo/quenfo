@@ -24,7 +24,7 @@ public class ClassifyDerbyDB {
 
 	// Anzahl der Stellenanzeigen, die klassifiziert werden sollen (-1 = gesamte
 	// Tabelle)
-	static int queryLimit = 20;
+	static int queryLimit = 100;
 
 	// falls nur eine begrenzte Anzahl von SteAs klassifiziert werden soll
 	// (s.o.): hier die Startosition angeben
@@ -56,13 +56,14 @@ public class ClassifyDerbyDB {
 	private static EntityManager em;
 	
 	//true, falls alte "ZoneClassifyUnit"-Tabelle gelöscht werden soll
-	private static boolean deletePrevious = true;
+	private static boolean deletePrevious = false;
 
 	public static void main(String[] args) throws IOException {
 
 		// DerbyDB Connection
 		EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
 		em = factory.createEntityManager();
+
 
 		DerbyDBClassifier dbClassify = new DerbyDBClassifier(queryLimit, fetchSize,
 				startId, trainingdataFile, em);	
@@ -75,13 +76,12 @@ public class ClassifyDerbyDB {
 		ExperimentConfiguration config = new ExperimentConfiguration(fuc, fq, classifier,
 				new File(trainingdataFile), null);
 
-
 		try {
 			
 			if (deletePrevious) {
 				em.getTransaction().begin();
 				System.out.println("Delete ...");
-				Query deletion = em.createQuery("DELETE FROM ZoneClassifyUnit");
+				Query deletion = em.createQuery("DELETE FROM JASCClassifyUnit");
 				deletion.executeUpdate();
 				em.getTransaction().commit();
 				
@@ -89,7 +89,7 @@ public class ClassifyDerbyDB {
 
 			dbClassify.classify(config);
 			
-			Query q = em.createQuery("SELECT COUNT(t) from ZoneClassifyUnit t");
+			Query q = em.createQuery("SELECT COUNT(t) from JASCClassifyUnit t");
 			System.out.println((long)q.getSingleResult() + " Abschnitte persistiert");
 		} catch (Exception e) {
 			e.printStackTrace();
