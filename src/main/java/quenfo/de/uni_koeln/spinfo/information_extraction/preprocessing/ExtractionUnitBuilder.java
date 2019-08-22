@@ -35,11 +35,15 @@ public class ExtractionUnitBuilder {
 			sentences = tokenizer.splitIntoSentences(cu.getContent());
 			long classifyUnitJpaID = ((JASCClassifyUnit) cu).getJpaID();
 			long jobAdJpaID = ((JASCClassifyUnit) cu).getJobAdJpaID();
+			int jahrgang = ((JASCClassifyUnit) cu).getParentID();
+			
+//			System.out.println(classifyUnitJpaID + " " + jobAdJpaID);
 			
 			for (String sentence : sentences) {
 				ExtractionUnit eu = new ExtractionUnit(sentence);
 				eu.setClassifyUnitjpaID(classifyUnitJpaID);
 				eu.setJobAdjpaID(jobAdJpaID);
+				eu.setJobAdID(jahrgang);
 				extractionUnits.add(eu);
 			}
 		}

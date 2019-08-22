@@ -105,13 +105,22 @@ public class MatchCompetences {
 				expandCoordinates);
 
 		List<ExtractionUnit> extractionUnits;
+		
+		
+//		em.getTransaction().begin();
+//		em.createQuery("DELETE from ExtractionUnit").executeUpdate();
+//		em.getTransaction().commit();
+		
+		
+		
+		
 
 		Query countQuery = em.createQuery("SELECT COUNT(t) from ExtractionUnit t");
 
 		long extractionUnitSize = (long) countQuery.getSingleResult();
 		if (extractionUnitSize == 0) {
 			System.err.println("ExtractionUnits aus ClassifyUnits(class=3) werden zuerst persistiert.");
-			Query cuQuery = em.createQuery("SELECT t from ZoneClassifyUnit t where t.actualClassID = '3'"); // where
+			Query cuQuery = em.createQuery("SELECT t from JASCClassifyUnit t where t.actualClassID = '3'"); // where
 																											// t.actualClassID
 																											// = '3'
 

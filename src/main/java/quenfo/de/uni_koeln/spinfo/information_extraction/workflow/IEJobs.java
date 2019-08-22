@@ -460,6 +460,8 @@ public class IEJobs {
 		TextToken entityToken;
 
 		for (ExtractionUnit extractionUnit : extractionUnits) {
+			
+			
 
 			ieTokens = extractionUnit.getTokenObjects();
 
@@ -720,6 +722,8 @@ public class IEJobs {
 		Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> extractions = new HashMap<ExtractionUnit, Map<InformationEntity, List<Pattern>>>();
 		List<Pattern> List = new ArrayList<Pattern>();
 		for (ExtractionUnit extractionUnit : extractionUnits) {
+			
+			
 			List<TextToken> tokens = extractionUnit.getTokenObjects();
 			int skip = 0;
 			for (int t = 0; t < tokens.size(); t++) {
@@ -787,6 +791,8 @@ public class IEJobs {
 //					System.out.println("skip: " +skip);
 //				}
 			}
+			
+			
 		}
 		return extractions;
 	}

@@ -24,7 +24,7 @@ public class ClassifyDerbyDB {
 
 	// Anzahl der Stellenanzeigen, die klassifiziert werden sollen (-1 = gesamte
 	// Tabelle)
-	static int queryLimit = 100;
+	static int queryLimit = 500;
 
 	// falls nur eine begrenzte Anzahl von SteAs klassifiziert werden soll
 	// (s.o.): hier die Startosition angeben
@@ -56,7 +56,7 @@ public class ClassifyDerbyDB {
 	private static EntityManager em;
 	
 	//true, falls alte "ZoneClassifyUnit"-Tabelle gelöscht werden soll
-	private static boolean deletePrevious = false;
+	private static boolean deletePrevious = true;
 
 	public static void main(String[] args) throws IOException {
 

@@ -433,15 +433,11 @@ public class IE_DBConnector {
 					"INSERT INTO Competences (Jahrgang, JobAdJPAID, CUJPAID, EUJPAID, Lemmata, Sentence, Label, Comp,  Importance) VALUES(?,?,?,?,?,?,?,?,?)");
 		}
 		for (ExtractionUnit extractionUnit : extractions.keySet()) {
+
 			Map<InformationEntity, List<Pattern>> ies = extractions.get(extractionUnit);
+			long jobAdJPAID = extractionUnit.getJobAdjpaID();
 			int jahrgang = extractionUnit.getJobAdID();
-			int jobAdJPAID = extractionUnit.getSecondJobAdID();
 			String cuJPAID = extractionUnit.getClassifyUnitjpaID() + "";
-//			try {
-//				paraID = extractionUnit.getClassifyUnitID().toString();
-//			} catch (Exception e) {
-//				paraID = extractionUnit.getClassifyUnitjpaID() + "";
-//			}
 			String sentence = extractionUnit.getSentence();
 			StringBuffer lemmata = null;
 			if (!correctable) {
@@ -469,7 +465,7 @@ public class IE_DBConnector {
 					types.add(expression);
 				}
 				prepStmt.setInt(1, jahrgang);
-				prepStmt.setInt(2, jobAdJPAID);
+				prepStmt.setFloat(2, jobAdJPAID);
 				prepStmt.setString(3, cuJPAID);
 
 				if (correctable) {

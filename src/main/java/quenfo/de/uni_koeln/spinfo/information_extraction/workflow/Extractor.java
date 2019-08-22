@@ -319,9 +319,11 @@ public class Extractor {
 	 * @param em
 	 * @param startPos
 	 * @param queryLimit
+	 * @param competence 
 	 * @throws SQLException
 	 * @throws IOException
 	 */
+	@SuppressWarnings("unchecked")
 	public void stringMatch(File statisticsFile, Connection outputConnection, EntityManager em, int startPos, int queryLimit)
 			throws SQLException, IOException {
 
@@ -330,8 +332,17 @@ public class Extractor {
 		Map<String, Integer> matchCounts = new HashMap<String, Integer>();
 		Query query = em.createNamedQuery("getClassXExtractionUnits");
 		log.info("build query");
-		query.setParameter("class", 3);
-		//TODO JB: Tools: Class 2?
+		switch (jobs.type) {
+		case COMPETENCE:
+			query.setParameter("class", 3);
+			break;
+		case TOOL:
+			query.setParameter("class", 2);
+		default:
+			break;
+		}
+		
+		//TODO JB: Tools: Class 2 & 3?
 		
 		//int startPos = 0;
 		if (queryLimit < 0)

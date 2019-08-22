@@ -6,7 +6,6 @@ ergebnis|orientierte
 Schicht|arbeit
 Montage|bereitschaft
 Informations|technik
-Pforten|dienst
 MS-Office-|Kenntnisse
 Restaurant|fachausbildung
 SPS|Kenntnisse
@@ -28,6 +27,7 @@ Fernmelde|technik
 PC|Bedienung
 Weiter|bildung
 Raum|fahrttechnik
+Pforten|dienst
 Kranken|pflege
 Aufstiegs|möglichkeiten
 Restaurant|fach

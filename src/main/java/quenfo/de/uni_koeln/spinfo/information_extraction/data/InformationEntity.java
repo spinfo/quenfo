@@ -65,11 +65,9 @@ public class InformationEntity {
 	 * 			first token of this IE
 	 * @param isSingleWordEntity
 	 */
-	public InformationEntity(String startLemma, boolean isSingleWordEntity/*,
-			boolean fromMorphemCoordination*/) {
+	public InformationEntity(String startLemma, boolean isSingleWordEntity) {
 		this.startLemma = startLemma;
 		this.singleWordEntity = isSingleWordEntity;
-//		this.fromMorphemCoordination = fromMorphemCoordination;
 		if(isSingleWordEntity){
 			lemmata = new ArrayList<>();
 			lemmata.add(startLemma);
@@ -78,21 +76,21 @@ public class InformationEntity {
 	}
 	
 	public InformationEntity(String startLemma, boolean isSingleWordEntity, 
-			/*boolean fromMorphemCoordination,*/ int firstIndex) {
-		this(startLemma, isSingleWordEntity/*, fromMorphemCoordination*/);
+			int firstIndex) {
+		this(startLemma, isSingleWordEntity);
 		this.firstIndex = firstIndex;
 	}
 	
 	public InformationEntity(String startLemma, boolean isSingleWordEntity,
-			/*boolean fromMorphemCoordination, */String label) {
-		this(startLemma, isSingleWordEntity/*, fromMorphemCoordination*/);
+			String label) {
+		this(startLemma, isSingleWordEntity);
 		this.labels = new HashSet<>();
 		labels.add(label);
 	}
 	
 	public InformationEntity(String startLemma, boolean isSingleWordEntity,
-			/*boolean fromMorphemCoordination, */Set<String> labels) {
-		this(startLemma, isSingleWordEntity/*, fromMorphemCoordination*/);
+			Set<String> labels) {
+		this(startLemma, isSingleWordEntity);
 		this.labels = labels;
 	}
 	
@@ -134,125 +132,5 @@ public class InformationEntity {
 		return sb.toString().trim();
 	}
 
-//	public int getFirstIndex() {
-//		return firstIndex;
-//	}
-//	
-//	public void setFirstIndex(int firstIndex) {
-//		this.firstIndex = firstIndex;
-//	}
-	
-//	public List<String> getCoordinations()	 {
-//		return coordinations;
-//	}
-
-	
-//	/**
-//	 * @param modifier
-//	 */
-//	public void setImportance(String modifier){
-//		this.modifier = modifier;
-//	}
-//	
-//	/**
-//	 * @return modifier
-//	 */
-//	public String getModifier(){
-//		return modifier;
-//	}
-
-
-	
-
-
-//	/**
-//	 * @return firstToken
-//	 */
-//	public String getStartLemma() {
-//		return startLemma;
-//	}
-//
-//	/**
-//	 * @param token first token
-//	 */
-//	public void setStartLemma(String lemma) {
-//		this.startLemma = lemma;
-//	}
-
-//	/**
-//	 * @return singleWordEntity
-//	 */
-//	public boolean isSingleWordEntity() {
-//		return singleWordEntity;
-//	}
-//
-//	/**
-//	 * @param singleWordEntity
-//	 * 	
-//	 */
-//	public void setSingleWordEntity(boolean singleWordEntity) {
-//		this.singleWordEntity = singleWordEntity;
-//	}
-
-//	/**
-//	 * @return ordered list of all lemmata
-//	 */
-//	public List<String> getLemmata() {
-//		return lemmata;
-//	}
-
-
-
-//	/**
-//	 * @param lemmata
-//	 */
-//	public void setExpression(List<String> lemmata) {
-//		this.lemmata = lemmata;
-//	}
-
-//	/* (non-Javadoc)
-//	 * @see java.lang.Object#hashCode()
-//	 */
-//	@Override
-//	public int hashCode() {
-//		return new HashCodeBuilder(3, 17).append(startLemma).append(singleWordEntity).append(lemmata).toHashCode();
-//	}
-//
-//	/* (non-Javadoc)
-//	 * @see java.lang.Object#equals(java.lang.Object)
-//	 */
-//	@Override
-//	public boolean equals(Object o) {
-//		InformationEntity am = (InformationEntity) o;
-//		return new EqualsBuilder().append(startLemma, am.startLemma).append(singleWordEntity, am.singleWordEntity)
-//				.append(lemmata, am.lemmata).isEquals();
-//	}
-
-
-//	public boolean isFromMorphemCoordination() {
-//		return fromMorphemCoordination;
-//	}
-//
-//
-//	public void setFromMorphemCoordination(boolean fromMorphemCoordination) {
-//		this.fromMorphemCoordination = fromMorphemCoordination;
-//	}
-	
-//	public void setOriginalEntity(List<TextToken> originalEntity) {
-//		this.originalEntity = originalEntity;
-//	}
-//	
-//	public List<TextToken> getOriginialEntity()	{
-//		return originalEntity;
-//	}
-
-//	public Set<String> getLabels() {
-//		return labels;
-//	}
-	
-
-
-
-	
 
 }
