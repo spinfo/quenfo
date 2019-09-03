@@ -41,6 +41,12 @@
 
 
 	<dependencies>
+		
+		<dependency>
+			<groupId>de.uni_koeln.spinfo</groupId>
+			<artifactId>cooex</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
 
 
 		<!-- Java Persistence API -->

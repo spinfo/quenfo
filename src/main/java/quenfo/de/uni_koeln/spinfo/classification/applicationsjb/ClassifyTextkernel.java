@@ -42,7 +42,7 @@ public class ClassifyTextkernel {
 
 		// Anzahl der Stellenanzeigen, die klassifiziert werden sollen (-1 = gesamte
 		// Tabelle)
-		static int queryLimit = 20;
+		static int queryLimit = 50;
 
 		// falls nur eine begrenzte Anzahl von SteAs klassifiziert werden soll
 		// (s.o.): hier die Startosition angeben
