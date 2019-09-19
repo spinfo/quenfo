@@ -57,10 +57,11 @@ public class Class_DBConnector {
 		
 		
 		connection.commit();
+		
 	}
 
 
-	public static void createClassificationOutputTables(Connection connection, boolean correctable)
+	public static void createClassificationOutputTables(Connection connection/*, boolean correctable*/)
 			throws SQLException {
 		StringBuffer sql;
 		connection.setAutoCommit(false);
@@ -115,7 +116,7 @@ public class Class_DBConnector {
 
 
 	public static boolean insertClassifiedParagraphsinDB(Connection connection, List<ClassifyUnit> results,
-			int jahrgang, int zeilennummer, boolean correctable) throws SQLException {
+			int jahrgang, int zeilennummer/*, boolean correctable*/) throws SQLException {
 		boolean[] classIDs;
 		
 		try {

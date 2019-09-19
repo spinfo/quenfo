@@ -1,6 +1,7 @@
 package quenfo.de.uni_koeln.spinfo.information_extraction.applicationsjb;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -11,6 +12,7 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
+import quenfo.de.uni_koeln.spinfo.information_extraction.applicationsjpa.MatchCompetences;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.IEType;
 import quenfo.de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
 import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
@@ -57,11 +59,15 @@ public class MatchTools {
 	static int startPos;// = 0;
 
 	// true, falls Koordinationen in Informationseinheit aufgelöst werden sollen
-	static boolean resolveCoordinations;// = true;
+	static boolean expandCoordinates;// = true;
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
 		
-		loadProperties();
+		if (args.length > 0) {
+			String configPath = args[0];
+			loadProperties(configPath);
+		}
+		
 		// Verbindung mit Input-DB
 		Connection inputConnection = null;
 		if (!new File(paraInputDB).exists()) {
@@ -96,7 +102,7 @@ public class MatchTools {
 		// starte Matching
 		long before = System.currentTimeMillis();
 		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTWO, ClassTHREE");
-		Extractor extractor = new Extractor(tools, null, IEType.TOOL, resolveCoordinations);
+		Extractor extractor = new Extractor(tools, null, IEType.TOOL, expandCoordinates);
 		extractor.stringMatch(statisticsFile, inputConnection, outputConnection, maxCount,
 				startPos);
 		long after = System.currentTimeMillis();
@@ -109,20 +115,51 @@ public class MatchTools {
 
 	}
 
-	// TODO load props
-	private static void loadProperties() throws IOException {
-		Properties props = new Properties();
-		InputStream is = MatchCompetences.class.getClassLoader().getResourceAsStream("config.properties");
-		props.load(is);
+	private static void loadProperties(String folderPath) throws IOException {
+
+		File configFolder = new File(folderPath);
+
+		if (!configFolder.exists()) {
+			System.err.println("Config Folder " + folderPath + " does not exist."
+					+ "\nPlease change configuration and start again.");
+			System.exit(0);
+		}
+		String quenfoData = configFolder.getParent();
+
+		// load general properties (db path etc.)
+		Properties generalProps = loadPropertiesFile(configFolder.getAbsolutePath() + "/general.properties");
+
+		paraInputDB = quenfoData + "/sqlite/classification/" + generalProps.getProperty("classifiedParagraphs");// + jahrgang + ".db";
 		
-		String jahrgang = props.getProperty("jahrgang");
-		paraInputDB = props.getProperty("paraInputDB") + jahrgang + ".db";
-		toolMOutputFolder = props.getProperty("toolMOutputFolder");
-		toolMOutputDB = props.getProperty("toolMOutputDB") + jahrgang + ".db";
-		tools = new File(props.getProperty("tools"));
-		maxCount = Integer.parseInt(props.getProperty("maxCount"));
-		statisticsFile = new File(props.getProperty("statisticsFile"));
-		startPos = Integer.parseInt(props.getProperty("startPos"));
-		//expandCoordinates = Boolean.parseBoolean(props.getProperty("expandCoordinates"));
+		
+		// load matching properties (tools list etc.)
+		Properties matchProps = loadPropertiesFile(configFolder.getAbsolutePath() + "/matching.properties");
+		
+		maxCount = Integer.parseInt(matchProps.getProperty("maxCount"));
+		startPos = Integer.parseInt(matchProps.getProperty("startPos"));
+		expandCoordinates = Boolean.parseBoolean(matchProps.getProperty("expandCoordinates"));
+		
+		tools = new File(quenfoData + "/information_extraction/data/tools/" + matchProps.getProperty("tools"));
+		
+		statisticsFile = new File(quenfoData + "/information_extraction/data/tools/" + matchProps.getProperty("toolMatchingStats"));
+		
+		toolMOutputFolder = quenfoData + "/sqlite/matching/tools/";
+		toolMOutputDB = matchProps.getProperty("toolMOutputDB");
+		
+	}
+
+	private static Properties loadPropertiesFile(String path) throws IOException {
+
+		File propsFile = new File(path);
+		if (!propsFile.exists()) {
+			System.err.println(
+					"Config File " + path + " does not exist." + "\nPlease change configuration and start again.");
+			System.exit(0);
+		}
+
+		Properties properties = new Properties();
+		InputStream is = new FileInputStream(propsFile);
+		properties.load(is);
+		return properties;
 	}
 }

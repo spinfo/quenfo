@@ -40,6 +40,7 @@ import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.ZoneAb
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.svm.SVMClassifier;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.helpers.SingleToMultiClassConverter;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.preprocessing.TrainingDataGenerator;
+import quenfo.de.uni_koeln.spinfo.core.helpers.PropertiesHandler;
 
 public class ZoneJobs {
 
@@ -48,7 +49,7 @@ public class ZoneJobs {
 	@Deprecated
 	public ZoneJobs() throws IOException {
 		System.out.println("ZoneJobs: Achtung - keine Translations gesetzt");
-		sw_filter = new StopwordFilter(new File("classification/data/stopwords.txt"));
+		sw_filter = new StopwordFilter(new File(PropertiesHandler.getStopwords()));
 		normalizer = new Normalizer();
 		stemmer = new Stemmer();
 		tokenizer = new FeatureUnitTokenizer();
@@ -60,7 +61,7 @@ public class ZoneJobs {
 			System.out.println("ZoneJobs: Achtung - keine Translations gesetzt");
 		}
 		this.stmc = stmc;
-		sw_filter = new StopwordFilter(new File("classification/data/stopwords.txt"));
+		sw_filter = new StopwordFilter(new File(PropertiesHandler.getStopwords()));
 		normalizer = new Normalizer();
 		stemmer = new Stemmer();
 		tokenizer = new FeatureUnitTokenizer();

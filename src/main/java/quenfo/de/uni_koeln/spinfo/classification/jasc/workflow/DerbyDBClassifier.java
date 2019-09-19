@@ -184,7 +184,7 @@ public class DerbyDBClassifier {
 		classifyUnits = jobs.setFeatureVectors(classifyUnits, config.getFeatureQuantifier(), model.getFUOrder());
 
 		// 2. Classify
-		RegexClassifier regexClassifier = new RegexClassifier("classification/data/regex.txt");
+		RegexClassifier regexClassifier = new RegexClassifier("src/main/resources/classification/regex.txt");
 		Map<ClassifyUnit, boolean[]> preClassified = new HashMap<ClassifyUnit, boolean[]>();
 		for (ClassifyUnit cu : classifyUnits) {
 //			System.out.println(cu.getClass());

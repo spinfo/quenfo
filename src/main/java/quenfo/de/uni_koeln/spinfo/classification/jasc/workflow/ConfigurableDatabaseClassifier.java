@@ -32,22 +32,23 @@ import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.RegexC
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.helpers.SingleToMultiClassConverter;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.workflow.ExperimentSetupUI;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.workflow.ZoneJobs;
+import quenfo.de.uni_koeln.spinfo.core.helpers.PropertiesHandler;
 
 public class ConfigurableDatabaseClassifier {
 	
 	private static Logger log = Logger.getLogger(ConfigurableDatabaseClassifier.class);
 
-	private Connection inputDb, corrConnection, origConnection/*, trainingDb*/;
+	private Connection inputDb, /*corrConnection,*/ origConnection/*, trainingDb*/;
 	int queryLimit, fetchSize, currentId;
 
 	private String trainingDataFileName;
 	private ZoneJobs jobs;
 
-	public ConfigurableDatabaseClassifier(Connection inputDb, Connection corrConnection, Connection origConnection,
+	public ConfigurableDatabaseClassifier(Connection inputDb, /*Connection corrConnection,*/ Connection origConnection,
 			int queryLimit, int fetchSize, int currentId, String trainingDataFileName)
 					throws IOException {
 		this.inputDb = inputDb;
-		this.corrConnection = corrConnection;
+//		this.corrConnection = corrConnection;
 		this.origConnection = origConnection;
 		this.queryLimit = queryLimit;
 		this.fetchSize = fetchSize;
@@ -207,7 +208,7 @@ public class ConfigurableDatabaseClassifier {
 			
 			
 			// 2. Classify
-			RegexClassifier regexClassifier = new RegexClassifier("classification/data/regex.txt");
+			RegexClassifier regexClassifier = new RegexClassifier(PropertiesHandler.getRegex());
 			Map<ClassifyUnit, boolean[]> preClassified = new HashMap<ClassifyUnit, boolean[]>();
 			for (ClassifyUnit cu : classifyUnits) {
 				boolean[] classes = regexClassifier.classify(cu, model);
@@ -241,8 +242,8 @@ public class ConfigurableDatabaseClassifier {
 
 				results.add(cu);
 			}
-			Class_DBConnector.insertClassifiedParagraphsinDB(corrConnection, results, jahrgang, zeilenNr, true);
-			Class_DBConnector.insertClassifiedParagraphsinDB(origConnection, results, jahrgang, zeilenNr, false);
+//			Class_DBConnector.insertClassifiedParagraphsinDB(corrConnection, results, jahrgang, zeilenNr/*, true*/);
+			Class_DBConnector.insertClassifiedParagraphsinDB(origConnection, results, jahrgang, zeilenNr/*, false*/);
 			// progressbar
 			done++;
 			// ProgressBar.updateProgress((float) done/queryLimit);
@@ -288,7 +289,7 @@ public class ConfigurableDatabaseClassifier {
 //		for (Map.Entry<Integer, String> e : unsplitted.entrySet()) {
 //			System.out.println("ZEILENNR: " + e.getKey());
 //		}
-		Class_DBConnector.writeUnsplittedJobAds(corrConnection, unsplitted);
+		Class_DBConnector.writeUnsplittedJobAds(origConnection, unsplitted);
 		
 	}
 

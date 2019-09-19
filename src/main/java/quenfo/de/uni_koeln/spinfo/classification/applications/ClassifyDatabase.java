@@ -104,15 +104,15 @@ public class ClassifyDatabase {
 				String answer = in.readLine();
 				if (answer.toLowerCase().trim().equals("o")) {
 					corrConnection = Class_DBConnector.connect(outputFolder + corrOutputDB);
-					Class_DBConnector.createClassificationOutputTables(corrConnection, true);
+					Class_DBConnector.createClassificationOutputTables(corrConnection/*, true*/);
 					origConnection = Class_DBConnector.connect(outputFolder + origOutputDB);
-					Class_DBConnector.createClassificationOutputTables(origConnection, false);
+					Class_DBConnector.createClassificationOutputTables(origConnection/*, false*/);
 					answered = true;
 				} else if (answer.toLowerCase().trim().equals("u")) {
 					corrConnection = Class_DBConnector.connect(outputFolder + corrOutputDB);
 					origConnection = Class_DBConnector.connect(outputFolder + origOutputDB);
 					if (!origDBFile.exists()) {
-						Class_DBConnector.createClassificationOutputTables(origConnection, false);
+						Class_DBConnector.createClassificationOutputTables(origConnection/*, false*/);
 					}
 					answered = true;
 				} else if (answer.toLowerCase().trim().equals("c")) {
@@ -121,13 +121,13 @@ public class ClassifyDatabase {
 					BufferedReader ndIn = new BufferedReader(new InputStreamReader(System.in));
 					corrOutputDB = ndIn.readLine();
 					corrConnection = Class_DBConnector.connect(outputFolder + corrOutputDB);
-					Class_DBConnector.createClassificationOutputTables(corrConnection, true);
+					Class_DBConnector.createClassificationOutputTables(corrConnection/*, true*/);
 					System.out.println(
 							"Please enter the name of the new original Database. It will be stored in " + outputFolder);
 					ndIn = new BufferedReader(new InputStreamReader(System.in));
 					origOutputDB = ndIn.readLine();
 					origConnection = Class_DBConnector.connect(outputFolder + origOutputDB);
-					Class_DBConnector.createClassificationOutputTables(origConnection, false);
+					Class_DBConnector.createClassificationOutputTables(origConnection/*, false*/);
 					answered = true;
 				} else {
 					System.out.println("C: invalid answer! please try again...");
@@ -144,9 +144,9 @@ public class ClassifyDatabase {
 			}
 			// create output-database
 			corrConnection = Class_DBConnector.connect(outputFolder + corrOutputDB);
-			Class_DBConnector.createClassificationOutputTables(corrConnection, true);
+			Class_DBConnector.createClassificationOutputTables(corrConnection/*, true*/);
 			origConnection = Class_DBConnector.connect(outputFolder + origOutputDB);
-			Class_DBConnector.createClassificationOutputTables(origConnection, false);
+			Class_DBConnector.createClassificationOutputTables(origConnection/*, false*/);
 		}
 
 		// create output-directory if not exists
@@ -158,7 +158,7 @@ public class ClassifyDatabase {
 		
 		long before = System.currentTimeMillis();
 		
-		ConfigurableDatabaseClassifier dbClassfy = new ConfigurableDatabaseClassifier(inputConnection, corrConnection,
+		ConfigurableDatabaseClassifier dbClassfy = new ConfigurableDatabaseClassifier(inputConnection,/* corrConnection,*/
 				origConnection, queryLimit, fetchSize,
 
 				startId, trainingdataFile);

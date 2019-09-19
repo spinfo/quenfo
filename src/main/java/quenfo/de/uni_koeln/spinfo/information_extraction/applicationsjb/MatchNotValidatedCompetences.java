@@ -1,6 +1,7 @@
 package quenfo.de.uni_koeln.spinfo.information_extraction.applicationsjb;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +15,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import quenfo.de.uni_koeln.spinfo.information_extraction.applicationsjpa.MatchCompetences;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.IEType;
 import quenfo.de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
 import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
@@ -68,7 +70,10 @@ public class MatchNotValidatedCompetences {
 
 	public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException {
 		
-		loadProperties();
+		if (args.length > 0) {
+			String configPath = args[0];
+			loadProperties(configPath);
+		}
 		
 		// Verbindung mit Input-DB
 		Connection inputConnection = null;
@@ -133,26 +138,53 @@ public class MatchNotValidatedCompetences {
 
 	}
 	
-	private static void loadProperties() throws IOException {
-		Properties props = new Properties();		
-		InputStream is = MatchCompetences.class.getClassLoader().getResourceAsStream("config.properties");
-		props.load(is);
-		String jahrgang = props.getProperty("jahrgang");
-		paraInputDB = props.getProperty("paraInputDB") + jahrgang + ".db";
-		compMOutputFolder = props.getProperty("compMOutputFolder");
-		compMnotValOutputDB = props.getProperty("compMnotValOutputDB") + jahrgang + ".db";
-		extractedCompsDB = props.getProperty("compIEOutputFolder") 
-				+ props.getProperty("compIEOutputDB") + jahrgang + ".db";
-		//"C:/sqlite/information_extraction/competences/CorrectableCompetences_" + jahrgang
-		//+ ".db";
-//		catComps = new File(props.getProperty("catComps"));
-//		notCatComps = new File(props.getProperty("notCatComps"));
-//		category = props.getProperty("category");
-		modifier = new File(props.getProperty("modifier"));
-		maxCount = Integer.parseInt(props.getProperty("maxCount"));
-		statisticsFile = new File(props.getProperty("statisticsFile"));
-		startPos = Integer.parseInt(props.getProperty("startPos"));
-		expandCoordinates = Boolean.parseBoolean(props.getProperty("expandCoordinates"));
+	private static void loadProperties(String folderPath) throws IOException {
+
+		File configFolder = new File(folderPath);
+
+		if (!configFolder.exists()) {
+			System.err.println("Config Folder " + folderPath + " does not exist."
+					+ "\nPlease change configuration and start again.");
+			System.exit(0);
+		}
+		String quenfoData = configFolder.getParent();
+
+		// load general properties (db path etc.)
+		Properties generalProps = loadPropertiesFile(configFolder.getAbsolutePath() + "/general.properties");
+
+		paraInputDB = quenfoData + "/sqlite/classification/" + generalProps.getProperty("classifiedParagraphs");// + jahrgang + ".db";
+		
+		
+		// load matching properties (tools list etc.)
+		Properties matchProps = loadPropertiesFile(configFolder.getAbsolutePath() + "/matching.properties");
+		
+		maxCount = Integer.parseInt(matchProps.getProperty("maxCount"));
+		startPos = Integer.parseInt(matchProps.getProperty("startPos"));
+		expandCoordinates = Boolean.parseBoolean(matchProps.getProperty("expandCoordinates"));
+		
+//		notCatComps = new File(quenfoData + "/information_extraction/data/competences/" + matchProps.getProperty("competences"));
+		modifier = new File(quenfoData + "/information_extraction/data/competences/" + matchProps.getProperty("modifier"));
+		
+		statisticsFile = new File(quenfoData + "/information_extraction/data/competences/" + matchProps.getProperty("compMatchingStats"));
+		
+		compMOutputFolder = quenfoData + "/sqlite/matching/competences/";
+		compMnotValOutputDB = matchProps.getProperty("compMNotValOutputDB");
+		
+	}
+
+	private static Properties loadPropertiesFile(String path) throws IOException {
+
+		File propsFile = new File(path);
+		if (!propsFile.exists()) {
+			System.err.println(
+					"Config File " + path + " does not exist." + "\nPlease change configuration and start again.");
+			System.exit(0);
+		}
+
+		Properties properties = new Properties();
+		InputStream is = new FileInputStream(propsFile);
+		properties.load(is);
+		return properties;
 	}
 
 }

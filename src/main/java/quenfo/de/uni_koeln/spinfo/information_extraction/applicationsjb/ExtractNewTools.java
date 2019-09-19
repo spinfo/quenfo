@@ -1,6 +1,7 @@
 package quenfo.de.uni_koeln.spinfo.information_extraction.applicationsjb;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -54,18 +55,22 @@ public class ExtractNewTools {
 	// falls nur eine bestimmte Anzahl gelesen werden soll, hier die startID
 	// angeben
 	static int startPos = 0;
-	
-	// true, falls Koordinationen  in Informationseinheit aufgelöst werden sollen
+
+	// true, falls Koordinationen in Informationseinheit aufgelöst werden sollen
 	static boolean expandCoordinates = true;
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
-		
-		loadProperties();
+
+		if (args.length > 0) {
+			String configPath = args[0];
+			loadProperties(configPath);
+		}
 
 		// Verbindung zur Input-DB
 		Connection inputConnection = null;
 		if (!new File(paraInputDB).exists()) {
-			System.out.println("Database don't exists " + paraInputDB + "\nPlease change configuration and start again.");
+			System.out
+					.println("Database don't exists " + paraInputDB + "\nPlease change configuration and start again.");
 			System.exit(0);
 		} else {
 			inputConnection = IE_DBConnector.connect(paraInputDB);
@@ -115,20 +120,49 @@ public class ExtractNewTools {
 			System.out.println("\nFinished Tool-Extraction in " + time + " minutes");
 		}
 	}
-	
-	private static void loadProperties() throws IOException {
-		Properties props = new Properties();		
-		InputStream is = MatchCompetences.class.getClassLoader().getResourceAsStream("config.properties");
-		props.load(is);
-		String jahrgang = props.getProperty("jahrgang");
-		paraInputDB = props.getProperty("paraInputDB") + jahrgang + ".db";
-		toolsIEOutputFolder = props.getProperty("toolsIEOutputFolder");
-		toolsIEOutputDB = props.getProperty("toolsIEOutputDB") + jahrgang + ".db";
-		tools = new File(props.getProperty("tools"));
-		noTools = new File(props.getProperty("noTools"));
-		toolsPatterns = new File(props.getProperty("toolsPatterns"));
-		maxCount = Integer.parseInt(props.getProperty("maxCount"));
-		startPos = Integer.parseInt(props.getProperty("startPos"));
-		expandCoordinates = Boolean.parseBoolean(props.getProperty("expandCoordinates"));
+
+	private static void loadProperties(String folderPath) throws IOException {
+
+		File configFolder = new File(folderPath);
+
+		if (!configFolder.exists()) {
+			System.err.println("Config Folder " + folderPath + " does not exist."
+					+ "\nPlease change configuration and start again.");
+			System.exit(0);
+		}
+		String quenfoData = configFolder.getParent();
+
+		// load general properties (db path etc.)
+		Properties generalProps = loadPropertiesFile(configFolder.getAbsolutePath() + "/general.properties");
+
+		paraInputDB = quenfoData + "/sqlite/classification/" + generalProps.getProperty("classifiedParagraphs");
+
+		Properties ieProps = loadPropertiesFile(configFolder.getAbsolutePath() + "/informationextraction.properties");
+
+		maxCount = Integer.parseInt(ieProps.getProperty("maxCount"));
+		startPos = Integer.parseInt(ieProps.getProperty("startPos"));
+		expandCoordinates = Boolean.parseBoolean(ieProps.getProperty("expandCoordinates"));
+		
+		tools = new File(quenfoData + "/information_extraction/data/tools/" + ieProps.getProperty("tools"));
+		noTools = new File(quenfoData + "/information_extraction/data/tools/" + ieProps.getProperty("noTools"));
+		toolsPatterns = new File(quenfoData + "/information_extraction/data/tools/" + ieProps.getProperty("toolsPatterns"));
+
+		toolsIEOutputFolder = quenfoData + "/sqlite/information_extraction/tools/";
+		toolsIEOutputDB = ieProps.getProperty("toolsIEOutputDB");
+	}
+
+	private static Properties loadPropertiesFile(String path) throws IOException {
+
+		File propsFile = new File(path);
+		if (!propsFile.exists()) {
+			System.err.println(
+					"Config File " + path + " does not exist." + "\nPlease change configuration and start again.");
+			System.exit(0);
+		}
+
+		Properties properties = new Properties();
+		InputStream is = new FileInputStream(propsFile);
+		properties.load(is);
+		return properties;
 	}
 }

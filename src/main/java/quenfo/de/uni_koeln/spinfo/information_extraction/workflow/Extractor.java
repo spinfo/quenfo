@@ -25,6 +25,7 @@ import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.db_io.Class_DBConnector;
 import quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.helpers.SingleToMultiClassConverter;
+import quenfo.de.uni_koeln.spinfo.core.helpers.PropertiesHandler;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.ExtractionUnit;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.IEType;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.InformationEntity;
@@ -76,8 +77,8 @@ public class Extractor {
 		this.resolveCoordinations = resolveCoordinations;
 		this.entitiesFile = entities;
 		this.type = type;
-		this.possCompoundsFile = new File("src/main/resources/compounds/possibleCompounds.txt");
-		this.splittedCompoundsFile = new File("src/main/resources/compounds/splittedCompounds.txt");
+		this.possCompoundsFile = new File(PropertiesHandler.getPossibleCompounds());
+		this.splittedCompoundsFile = new File(PropertiesHandler.getSplittedCompounds());
 		this.jobs = new IEJobs(entities, null, modifiers, null, type, resolveCoordinations, 
 				possCompoundsFile, splittedCompoundsFile);
 		initialize();
@@ -89,8 +90,8 @@ public class Extractor {
 		this.resolveCoordinations = resolveCoordinations;
 		this.entitiesFile = entities;
 		this.type = type;
-		this.possCompoundsFile = new File("src/main/resources/compounds/possibleCompounds.txt");
-		this.splittedCompoundsFile = new File("src/main/resources/compounds/splittedCompounds.txt");
+		this.possCompoundsFile = new File(PropertiesHandler.getPossibleCompounds());
+		this.splittedCompoundsFile = new File(PropertiesHandler.getSplittedCompounds());
 		this.jobs = new IEJobs(entities, null, amsComps, category, modifiers, null, type, resolveCoordinations,
 				possCompoundsFile, splittedCompoundsFile);
 		initialize();
