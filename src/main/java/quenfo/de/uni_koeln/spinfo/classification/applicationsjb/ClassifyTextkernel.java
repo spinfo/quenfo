@@ -69,7 +69,7 @@ public class ClassifyTextkernel {
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
 
 		if (args.length > 0) {
-			String configFolder = args[0];
+			String configFolder = args[1];
 			loadProperties(configFolder);
 		}
 
