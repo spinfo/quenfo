@@ -27,8 +27,9 @@ public class IETokenizer {
 	private SentenceModel sentenceModel;
 
 	public IETokenizer() {
-		setTokenizeModel("information_extraction/data/openNLPmodels/de-token.bin");
-		setSentenceSplittingModel("information_extraction/data/openNLPmodels/de-sent.bin");
+		
+		setTokenizeModel(ClassLoader.getSystemResourceAsStream("nlp/openNLPmodels/de-token.bin"));
+		setSentenceSplittingModel(ClassLoader.getSystemResourceAsStream("nlp/openNLPmodels/de-sent.bin"));
 	}
 	
 	/**
@@ -64,10 +65,10 @@ public class IETokenizer {
 		return toReturn;
 	}
 
-	private void setSentenceSplittingModel(String model) {
-		InputStream modelIn = null;
+	private void setSentenceSplittingModel(InputStream modelIn) {
+//		InputStream modelIn = null;
 		try {
-			modelIn = new FileInputStream(model);
+//			modelIn = new FileInputStream(model);
 			sentenceModel = new SentenceModel(modelIn);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -81,10 +82,10 @@ public class IETokenizer {
 		}
 	}
 
-	private void setTokenizeModel(String model) {
-		InputStream modelIn = null;
+	private void setTokenizeModel(InputStream modelIn) {
+//		InputStream modelIn = null;
 		try {
-			modelIn = new FileInputStream(model);
+//			modelIn = new FileInputStream(model);
 			tokenizeModel = new TokenizerModel(modelIn);
 		} catch (IOException e) {
 			e.printStackTrace();

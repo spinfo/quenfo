@@ -105,14 +105,14 @@ public class ConfigurableDatabaseClassifier {
 		trainingData = jobs.initializeClassifyUnits(trainingData);
 		trainingData = jobs.setFeatures(trainingData, config.getFeatureConfiguration(), true);
 		trainingData = jobs.setFeatureVectors(trainingData, config.getFeatureQuantifier(), null);
-		
 
 		// build model
 		Model model = jobs.getNewModelForClassifier(trainingData, config);
-		if (config.getModelFileName().contains("/myModels/")) {
-			jobs.exportModel(config.getModelFile(), model);
-		}
-		
+
+//		if (config.getModelFileName().contains("/myModels/")) {
+//			jobs.exportModel(config.getModelFile(), model);
+//		}
+
 		log.info("...classifying...");	
 		// get data from db
 		int done = 0;

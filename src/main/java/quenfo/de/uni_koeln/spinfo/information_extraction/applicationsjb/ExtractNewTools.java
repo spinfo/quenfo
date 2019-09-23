@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+import quenfo.de.uni_koeln.spinfo.core.helpers.PropertiesHandler;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.IEType;
 import quenfo.de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
 import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
@@ -130,39 +131,25 @@ public class ExtractNewTools {
 					+ "\nPlease change configuration and start again.");
 			System.exit(0);
 		}
-		String quenfoData = configFolder.getParent();
-
-		// load general properties (db path etc.)
-		Properties generalProps = loadPropertiesFile(configFolder.getAbsolutePath() + "/general.properties");
-
-		paraInputDB = quenfoData + "/sqlite/classification/" + generalProps.getProperty("classifiedParagraphs");
-
-		Properties ieProps = loadPropertiesFile(configFolder.getAbsolutePath() + "/informationextraction.properties");
-
-		maxCount = Integer.parseInt(ieProps.getProperty("maxCount"));
-		startPos = Integer.parseInt(ieProps.getProperty("startPos"));
-		expandCoordinates = Boolean.parseBoolean(ieProps.getProperty("expandCoordinates"));
 		
-		tools = new File(quenfoData + "/information_extraction/data/tools/" + ieProps.getProperty("tools"));
-		noTools = new File(quenfoData + "/information_extraction/data/tools/" + ieProps.getProperty("noTools"));
-		toolsPatterns = new File(quenfoData + "/information_extraction/data/tools/" + ieProps.getProperty("toolsPatterns"));
+		//initialize and load all properties files
+		String quenfoData = configFolder.getParent();
+		PropertiesHandler.initialize(quenfoData);
+
+
+		paraInputDB = quenfoData + "/sqlite/classification/" + PropertiesHandler.getStringProperty("general", "classifiedParagraphs");// + jahrgang + ".db";
+		
+		maxCount = PropertiesHandler.getIntProperty("matching", "maxCount");
+		startPos = PropertiesHandler.getIntProperty("matching", "startPos");
+		expandCoordinates = PropertiesHandler.getBoolProperty("matching", "expandCoordinates");
+		
+		String toolsFolder = quenfoData + "/resources/information_extraction/tools/";
+		
+		tools = new File(toolsFolder + PropertiesHandler.getStringProperty("ie", "tools"));
+		noTools = new File(toolsFolder + PropertiesHandler.getStringProperty("ie", "noTools"));
+		toolsPatterns = new File(toolsFolder + PropertiesHandler.getStringProperty("ie", "toolsPatterns"));
 
 		toolsIEOutputFolder = quenfoData + "/sqlite/information_extraction/tools/";
-		toolsIEOutputDB = ieProps.getProperty("toolsIEOutputDB");
-	}
-
-	private static Properties loadPropertiesFile(String path) throws IOException {
-
-		File propsFile = new File(path);
-		if (!propsFile.exists()) {
-			System.err.println(
-					"Config File " + path + " does not exist." + "\nPlease change configuration and start again.");
-			System.exit(0);
-		}
-
-		Properties properties = new Properties();
-		InputStream is = new FileInputStream(propsFile);
-		properties.load(is);
-		return properties;
+		toolsIEOutputDB = PropertiesHandler.getStringProperty("ie", "toolsIEOutputDB");
 	}
 }

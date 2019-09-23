@@ -253,6 +253,7 @@ public class ZoneJobs {
 	 * @return a model for the specified experiment configuration
 	 * @throws IOException
 	 */
+	@Deprecated
 	public Model getModelForClassifier(List<ClassifyUnit> cus, ExperimentConfiguration expConfig) throws IOException {
 		File modelFile = expConfig.getModelFile();
 		// modelFile.createNewFile();
@@ -295,7 +296,8 @@ public class ZoneJobs {
 	 * @throws IOException
 	 */
 	public Model getNewModelForClassifier(List<ClassifyUnit> cus, ExperimentConfiguration expConfig)
-			throws IOException {
+			throws IOException {		
+		
 		Model model;
 		if (expConfig.getClassifier() instanceof SVMClassifier) {
 			SVMClassifier svmC = (SVMClassifier) expConfig.getClassifier();
@@ -310,6 +312,7 @@ public class ZoneJobs {
 		// store model
 		// exportModel(expConfig.getModelFile(), model);
 		model.setConfigHash(expConfig.hashCode());
+		
 		return model;
 
 	}

@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -117,8 +118,8 @@ public class Extractor {
 		this.modifier = modifier;
 		this.contexts = contexts;
 		this.type = type;
-		this.possCompoundsFile = new File("src/main/resources/compounds/possibleCompounds.txt");
-		this.splittedCompoundsFile = new File("src/main/resources/compounds/splittedCompounds.txt");
+		this.possCompoundsFile = new File(PropertiesHandler.getPossibleCompounds());
+		this.splittedCompoundsFile = new File(PropertiesHandler.getSplittedCompounds());
 		this.jobs = new IEJobs(entitiesFile, noEntitiesFile, modifier, contexts, type, resolveCoordinations,
 				possCompoundsFile, splittedCompoundsFile);// new
 		// contexts,
@@ -185,11 +186,9 @@ public class Extractor {
 		Class_DBConnector.addColumn(inputConnection, "POSTags", "ClassifiedParagraphs");
 		// Lemmatizer und Tagger (nur für den Fall, dass noch lexikalische Infos
 		// generiert werden müssen)
-		Tool lemmatizer = new Lemmatizer(
-				"information_extraction/data/sentencedata_models/ger-tagger+lemmatizer+morphology+graph-based-3.6/lemma-ger-3.6.model",
-				false);
-		Tool tagger = new Tagger(
-				"information_extraction/data/sentencedata_models/ger-tagger+lemmatizer+morphology+graph-based-3.6/tag-ger-3.6.model");
+
+		Tool lemmatizer = new Lemmatizer(PropertiesHandler.getLemmatizerModel(), false);
+		Tool tagger = new Tagger(PropertiesHandler.getTaggerModel());
 
 		List<ClassifyUnit> classifyUnits = null;
 		List<ExtractionUnit> extractionUnits = null;
@@ -422,9 +421,7 @@ public class Extractor {
 		Class_DBConnector.addColumn(inputConnection, "POSTags", "ClassifiedParagraphs");
 		// Lemmatizer (nur für den Fall, dass noch Lemmata generiert werden
 		// müssen)
-		Tool lemmatizer = new Lemmatizer(
-				"information_extraction/data/sentencedata_models/ger-tagger+lemmatizer+morphology+graph-based-3.6/lemma-ger-3.6.model",
-				false);
+		Tool lemmatizer = new Lemmatizer(PropertiesHandler.getLemmatizerModel(),false);
 
 		List<ClassifyUnit> classifyUnits = null;
 		List<ExtractionUnit> extractionUnits = null;

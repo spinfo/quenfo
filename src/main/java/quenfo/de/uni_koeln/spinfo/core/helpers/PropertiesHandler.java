@@ -22,6 +22,9 @@ public class PropertiesHandler {
 	private static String regex = null;
 	private static String stopwords = null;
 	
+	private static String lemmatizerModel = null;
+	private static String taggerModel  = null;
+	
 	
 	
 	
@@ -29,10 +32,13 @@ public class PropertiesHandler {
 		
 		PropertiesHandler.quenfoData = quenfoData;
 		
-		splittedCompounds = quenfoData + "/resources/compounds/splittedCompounds.txt";
-		possibleCompounds = quenfoData + "/resources/compounds/possibleCompounds.txt";
+		splittedCompounds = quenfoData + "/resources/nlp/compounds/splittedCompounds.txt";
+		possibleCompounds = quenfoData + "/resources/nlp/compounds/possibleCompounds.txt";
 		regex = quenfoData + "/resources/classification/regex.txt";
-		stopwords = quenfoData + "/resources/classification/stopwords.txt";		
+		stopwords = quenfoData + "/resources/classification/stopwords.txt";
+		
+		lemmatizerModel = quenfoData + "/resources/nlp/matetools/lemma-ger-3.6.model";
+		taggerModel = quenfoData + "/resources/nlp/matetools/tag-ger-3.6.model";
 		
 		generalProps = loadPropertiesFile(quenfoData + "/config/general.properties");
 		ieProps = loadPropertiesFile(quenfoData + "/config/informationextraction.properties");
@@ -59,6 +65,14 @@ public class PropertiesHandler {
 
 	public static String getStopwords() {
 		return stopwords;
+	}
+	
+	public static String getLemmatizerModel() {
+		return lemmatizerModel;
+	}
+	
+	public static String getTaggerModel() {
+		return taggerModel;
 	}
 	
 	

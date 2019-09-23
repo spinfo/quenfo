@@ -12,6 +12,7 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
+import quenfo.de.uni_koeln.spinfo.core.helpers.PropertiesHandler;
 import quenfo.de.uni_koeln.spinfo.information_extraction.applicationsjpa.MatchCompetences;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.IEType;
 import quenfo.de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
@@ -124,42 +125,28 @@ public class MatchTools {
 					+ "\nPlease change configuration and start again.");
 			System.exit(0);
 		}
-		String quenfoData = configFolder.getParent();
-
-		// load general properties (db path etc.)
-		Properties generalProps = loadPropertiesFile(configFolder.getAbsolutePath() + "/general.properties");
-
-		paraInputDB = quenfoData + "/sqlite/classification/" + generalProps.getProperty("classifiedParagraphs");// + jahrgang + ".db";
+		
+		//initialize and load all properties files
+		String quenfoData = configFolder.getParent();		
+		PropertiesHandler.initialize(quenfoData);
 		
 		
-		// load matching properties (tools list etc.)
-		Properties matchProps = loadPropertiesFile(configFolder.getAbsolutePath() + "/matching.properties");
 		
-		maxCount = Integer.parseInt(matchProps.getProperty("maxCount"));
-		startPos = Integer.parseInt(matchProps.getProperty("startPos"));
-		expandCoordinates = Boolean.parseBoolean(matchProps.getProperty("expandCoordinates"));
+		paraInputDB = quenfoData + "/sqlite/classification/" + PropertiesHandler.getStringProperty("general", "classifiedParagraphs");
 		
-		tools = new File(quenfoData + "/information_extraction/data/tools/" + matchProps.getProperty("tools"));
+		maxCount = PropertiesHandler.getIntProperty("matching", "maxCount");
+		startPos = PropertiesHandler.getIntProperty("matching", "startPos");
+		expandCoordinates = PropertiesHandler.getBoolProperty("matching", "expandCoordinates");
 		
-		statisticsFile = new File(quenfoData + "/information_extraction/data/tools/" + matchProps.getProperty("toolMatchingStats"));
+		String toolsFolder = quenfoData + "/resources/information_extraction/tools/";
+		
+		
+		tools = new File(toolsFolder + PropertiesHandler.getStringProperty("matching", "tools"));
+		
+		statisticsFile = new File(toolsFolder + PropertiesHandler.getStringProperty("matching", "toolsMatchingStats"));
 		
 		toolMOutputFolder = quenfoData + "/sqlite/matching/tools/";
-		toolMOutputDB = matchProps.getProperty("toolMOutputDB");
+		toolMOutputDB = PropertiesHandler.getStringProperty("matching", "toolMOutputDB");
 		
-	}
-
-	private static Properties loadPropertiesFile(String path) throws IOException {
-
-		File propsFile = new File(path);
-		if (!propsFile.exists()) {
-			System.err.println(
-					"Config File " + path + " does not exist." + "\nPlease change configuration and start again.");
-			System.exit(0);
-		}
-
-		Properties properties = new Properties();
-		InputStream is = new FileInputStream(propsFile);
-		properties.load(is);
-		return properties;
 	}
 }

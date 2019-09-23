@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+import quenfo.de.uni_koeln.spinfo.core.helpers.PropertiesHandler;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.IEType;
 import quenfo.de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
 import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
@@ -101,6 +102,7 @@ public class ExtractNewCompetences {
 		if (!outputfile.exists()) {
 			outputfile.createNewFile();
 		}
+
 		outputConnection = IE_DBConnector.connect(compIEoutputFolder + compIEOutputDB);
 
 		// Start der Extraktion:
@@ -132,53 +134,28 @@ public class ExtractNewCompetences {
 					+ "\nPlease change configuration and start again.");
 			System.exit(0);
 		}
+		
+		//initialize and load all properties files
 		String quenfoData = configFolder.getParent();
+		PropertiesHandler.initialize(quenfoData);
 
-		// load general properties (db path etc.)
-		Properties generalProps = loadPropertiesFile(configFolder.getAbsolutePath() + "/general.properties");
 
-//		String jahrgang = props.getProperty("jahrgang");
-		paraInputDB = quenfoData + "/sqlite/classification/" + generalProps.getProperty("classifiedParagraphs");// + jahrgang + ".db";
+		paraInputDB = quenfoData + "/sqlite/classification/" + PropertiesHandler.getStringProperty("general", "classifiedParagraphs");// + jahrgang + ".db";
 		
-		/**
-		 * 
-		 * TODO 18.09.
-		 * Config-File variablen anpassen
-		 * 
-		 * Auch für Matching etc.
-		 * 
-		 * 
-		 */
+		maxCount = PropertiesHandler.getIntProperty("matching", "maxCount");
+		startPos = PropertiesHandler.getIntProperty("matching", "startPos");
+		expandCoordinates = PropertiesHandler.getBoolProperty("matching", "expandCoordinates");
 		
 		
-		Properties ieProps = loadPropertiesFile(configFolder.getAbsolutePath() + "/informationextraction.properties");
-		
-		maxCount = Integer.parseInt(ieProps.getProperty("maxCount"));
-		startPos = Integer.parseInt(ieProps.getProperty("startPos"));
-		expandCoordinates = Boolean.parseBoolean(ieProps.getProperty("expandCoordinates"));
-		
-		competences = new File(quenfoData + "/information_extraction/data/competences/" + ieProps.getProperty("competences"));
-		noCompetences = new File(quenfoData + "/information_extraction/data/competences/" + ieProps.getProperty("noCompetences"));
-		modifier = new File(quenfoData + "/information_extraction/data/competences/" + ieProps.getProperty("modifier"));
-		compPatterns = new File(quenfoData + "/information_extraction/data/competences/" + ieProps.getProperty("compPatterns"));
+		String competencesFolder = quenfoData + "/resources/information_extraction/competences/";
+		competences = new File(competencesFolder + PropertiesHandler.getStringProperty("ie", "competences"));
+		noCompetences = new File(competencesFolder + PropertiesHandler.getStringProperty("ie", "noCompetences"));
+		modifier = new File(competencesFolder + PropertiesHandler.getStringProperty("ie", "modifier"));
+		compPatterns = new File(competencesFolder + PropertiesHandler.getStringProperty("ie", "compPatterns"));
 		
 		compIEoutputFolder = quenfoData + "/sqlite/information_extraction/competences/";
-		compIEOutputDB = ieProps.getProperty("compIEOutputDB");
+		compIEOutputDB = PropertiesHandler.getStringProperty("ie", "compIEOutputDB");
 		
 	}
 
-	private static Properties loadPropertiesFile(String path) throws IOException {
-
-		File propsFile = new File(path);
-		if (!propsFile.exists()) {
-			System.err.println(
-					"Config File " + path + " does not exist." + "\nPlease change configuration and start again.");
-			System.exit(0);
-		}
-
-		Properties properties = new Properties();
-		InputStream is = new FileInputStream(propsFile);
-		properties.load(is);
-		return properties;
-	}
 }
