@@ -17,8 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-
 import org.apache.log4j.Logger;
 
 import quenfo.de.uni_koeln.spinfo.classification.core.classifier.model.Model;
@@ -38,7 +36,7 @@ public class ConfigurableDatabaseClassifier {
 	
 	private static Logger log = Logger.getLogger(ConfigurableDatabaseClassifier.class);
 
-	private Connection inputDb, /*corrConnection,*/ origConnection/*, trainingDb*/;
+	private Connection inputDb, origConnection;
 	int queryLimit, fetchSize, currentId;
 
 	private String trainingDataFileName;
@@ -109,18 +107,11 @@ public class ConfigurableDatabaseClassifier {
 		// build model
 		Model model = jobs.getNewModelForClassifier(trainingData, config);
 
-//		if (config.getModelFileName().contains("/myModels/")) {
-//			jobs.exportModel(config.getModelFile(), model);
-//		}
-
 		log.info("...classifying...");	
 		// get data from db
 		int done = 0;
 		String query = null;
 		int zeilenNr = 0, jahrgang = 0;
-		;
-//		int jobAdCount = 0;
-//		int paraCount = 0;
 		query = "SELECT ZEILENNR, Jahrgang, STELLENBESCHREIBUNG FROM " + tableName + " WHERE LANG='de' LIMIT ? OFFSET ?;";
 		//TODO JB: LANG bezieht sich nur auf text kernel
 		
@@ -147,15 +138,13 @@ public class ConfigurableDatabaseClassifier {
 		}
 
 		boolean goOn = true;
-		boolean askAgain = true;
-//		long start = System.currentTimeMillis();	
+		boolean askAgain = true;	
 		
 		Map<Integer, String> unsplitted = new HashMap<>();
 		
 
 		while (queryResult.next() && goOn) {			
-			
-//			jobAdCount++;
+
 			String jobAd = null;
 			zeilenNr = queryResult.getInt("ZEILENNR");
 			jahrgang = queryResult.getInt("Jahrgang");
@@ -198,7 +187,6 @@ public class ConfigurableDatabaseClassifier {
 			}
 			List<ClassifyUnit> classifyUnits = new ArrayList<ClassifyUnit>();
 			for (String string : paragraphs) {
-//				paraCount++;
 				classifyUnits.add(new JASCClassifyUnit(string, jahrgang, zeilenNr));
 			}
 			// prepare ClassifyUnits
@@ -224,35 +212,15 @@ public class ConfigurableDatabaseClassifier {
 			List<ClassifyUnit> results = new ArrayList<ClassifyUnit>();
 			for (ClassifyUnit cu : classified.keySet()) {
 				((JASCClassifyUnit) cu).setClassIDs(classified.get(cu));
-//				 System.out.println();
-//				 System.out.println(cu.getContent());
-//				 System.out.print("-----> CLASS: ");
-				boolean[] ids = ((JASCClassifyUnit) cu).getClassIDs();
-				boolean b = false;
-				for (int i = 0; i < ids.length; i++) {
-					if (ids[i]) {
-						if (b) {
-//							 System.out.print("& " + (i + 1));
-						} else {
-//							 System.out.println((i + 1));
-						}
-						b = true;
-					}
-				}
-
 				results.add(cu);
 			}
-//			Class_DBConnector.insertClassifiedParagraphsinDB(corrConnection, results, jahrgang, zeilenNr/*, true*/);
-			Class_DBConnector.insertClassifiedParagraphsinDB(origConnection, results, jahrgang, zeilenNr/*, false*/);
-			// progressbar
+
+			Class_DBConnector.insertClassifiedParagraphsinDB(origConnection, results, jahrgang, zeilenNr);
 			done++;
-			// ProgressBar.updateProgress((float) done/queryLimit);
+
 
 			// time needed
 			if (done % fetchSize == 0) {
-//				long end = System.currentTimeMillis();
-//				long time = (end - start) / 1000;
-
 				// continue?
 				if (askAgain) {
 
@@ -282,15 +250,10 @@ public class ConfigurableDatabaseClassifier {
 						}
 					}
 				}
-//				start = System.currentTimeMillis();
 			}
 		
 		}
-//		for (Map.Entry<Integer, String> e : unsplitted.entrySet()) {
-//			System.out.println("ZEILENNR: " + e.getKey());
-//		}
-		Class_DBConnector.writeUnsplittedJobAds(origConnection, unsplitted);
-		
+		Class_DBConnector.writeUnsplittedJobAds(origConnection, unsplitted);		
 	}
 
 

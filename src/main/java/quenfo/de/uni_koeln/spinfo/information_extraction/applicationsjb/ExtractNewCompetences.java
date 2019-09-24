@@ -1,28 +1,26 @@
 package quenfo.de.uni_koeln.spinfo.information_extraction.applicationsjb;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
-
 import quenfo.de.uni_koeln.spinfo.core.helpers.PropertiesHandler;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.IEType;
 import quenfo.de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
 import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
 
 /**
- * @author geduldia
+ * @author jbinnewi
  * 
  *         Workflow to extract new competences
  * 
  *         Input: to class 3 (= applicants profile) classified paragraphs
  * 
  *         Output: extracted competences
+ *         
+ *         Uses configurations defined in config files
  *
  */
 public class ExtractNewCompetences {
@@ -47,6 +45,7 @@ public class ExtractNewCompetences {
 	// txt-File mit den Extraktionspatterns
 	static File compPatterns;
 
+	// txt-File mit bekannten modifiern ("vorausgesetzt" etc.)
 	static File modifier;
 
 	// falls nicht alle Paragraphen aus der Input-DB verwendet werden sollen:
@@ -137,10 +136,10 @@ public class ExtractNewCompetences {
 		
 		//initialize and load all properties files
 		String quenfoData = configFolder.getParent();
-		PropertiesHandler.initialize(quenfoData);
+		PropertiesHandler.initialize(configFolder);
 
 
-		paraInputDB = quenfoData + "/sqlite/classification/" + PropertiesHandler.getStringProperty("general", "classifiedParagraphs");// + jahrgang + ".db";
+		paraInputDB = quenfoData + "/sqlite/classification/" + PropertiesHandler.getStringProperty("general", "classifiedParagraphs");
 		
 		maxCount = PropertiesHandler.getIntProperty("matching", "maxCount");
 		startPos = PropertiesHandler.getIntProperty("matching", "startPos");

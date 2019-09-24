@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -74,6 +73,14 @@ public class Extractor {
 	 * @param type      type of information
 	 * @throws IOException
 	 */
+	/**
+	 * Constructor to match Tools
+	 * @param entities
+	 * @param modifiers
+	 * @param type
+	 * @param resolveCoordinations
+	 * @throws IOException
+	 */
 	public Extractor(File entities, File modifiers, IEType type, boolean resolveCoordinations) throws IOException {
 		this.resolveCoordinations = resolveCoordinations;
 		this.entitiesFile = entities;
@@ -86,6 +93,16 @@ public class Extractor {
 
 	}
 
+	/**
+	 * Constructor to match Competences
+	 * @param entities
+	 * @param modifiers
+	 * @param amsComps
+	 * @param category
+	 * @param type
+	 * @param resolveCoordinations
+	 * @throws IOException
+	 */
 	public Extractor(File entities, File modifiers, File amsComps, String category, IEType type,
 			boolean resolveCoordinations) throws IOException {
 		this.resolveCoordinations = resolveCoordinations;
@@ -375,8 +392,7 @@ public class Extractor {
 				String outputPath = outputConnection.getMetaData().getURL().replace("jdbc:sqlite:", "");
 				log.info("write results in output-DB: " + outputPath);
 				if (jobs.type == IEType.COMPETENCE) {
-//					IE_DBConnector.writeCompetenceExtractions(stringMatches, outputConnection, false, false);
-					IE_DBConnector.writeCompetenceExtractions2(stringMatches, outputConnection, false, false);
+					IE_DBConnector.writeCompetenceExtractions(stringMatches, outputConnection, false);
 				}
 				if (jobs.type == IEType.TOOL) {
 					IE_DBConnector.writeToolExtractions(stringMatches, outputConnection, false);

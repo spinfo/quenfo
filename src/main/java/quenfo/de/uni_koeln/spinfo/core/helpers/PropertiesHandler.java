@@ -28,9 +28,9 @@ public class PropertiesHandler {
 	
 	
 	
-	public static void initialize(String quenfoData) throws IOException {
+	public static void initialize(File configFolder) throws IOException {
 		
-		PropertiesHandler.quenfoData = quenfoData;
+		PropertiesHandler.quenfoData = configFolder.getParent();
 		
 		splittedCompounds = quenfoData + "/resources/nlp/compounds/splittedCompounds.txt";
 		possibleCompounds = quenfoData + "/resources/nlp/compounds/possibleCompounds.txt";
@@ -40,10 +40,10 @@ public class PropertiesHandler {
 		lemmatizerModel = quenfoData + "/resources/nlp/matetools/lemma-ger-3.6.model";
 		taggerModel = quenfoData + "/resources/nlp/matetools/tag-ger-3.6.model";
 		
-		generalProps = loadPropertiesFile(quenfoData + "/config/general.properties");
-		ieProps = loadPropertiesFile(quenfoData + "/config/informationextraction.properties");
-		classificationProps = loadPropertiesFile(quenfoData + "/config/classification.properties");
-		matchingProps = loadPropertiesFile(quenfoData + "/config/matching.properties");
+		generalProps = loadPropertiesFile(configFolder.getAbsolutePath() + "/general.properties");
+		ieProps = loadPropertiesFile(configFolder.getAbsolutePath() + "/informationextraction.properties");
+		classificationProps = loadPropertiesFile(configFolder.getAbsolutePath() + "/classification.properties");
+		matchingProps = loadPropertiesFile(configFolder.getAbsolutePath() + "/matching.properties");
 	}
 
 	

@@ -7,15 +7,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.UUID;
-
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.ExtractionUnit;
@@ -46,30 +43,6 @@ public class IE_DBConnector {
 		Class.forName("org.sqlite.JDBC");
 		connection = DriverManager.getConnection("jdbc:sqlite:" + dbFilePath);
 		return connection;
-	}
-
-	@Deprecated
-	public static void createCoordinationOutputTable(Connection connection, IEType type) throws SQLException {
-		String sql = null;
-		connection.setAutoCommit(false);
-		Statement stmt = connection.createStatement();
-		if (type == IEType.COMPETENCE) {
-			sql = "DROP TABLE IF EXISTS Competences";
-		}
-		if (type == IEType.TOOL) {
-			sql = "DROP TABLE IF EXISTS Tools";
-		}
-		stmt.executeUpdate(sql);
-		if (type == IEType.COMPETENCE) {
-			sql = "CREATE TABLE Competences (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, Sentence TEXT NOT NULL, Comp TEXT, Coordinations TEXT, Notes TEXT)";
-		}
-		if (type == IEType.TOOL) {
-			sql = "CREATE TABLE Tools (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, Sentence TEXT NOT NULL, Tool TEXT NOT NULL, Coordinations TEXT, Notes TEXT)";
-		}
-
-		stmt.executeUpdate(sql);
-		stmt.close();
-		connection.commit();
 	}
 
 	/**
@@ -104,39 +77,6 @@ public class IE_DBConnector {
 			}
 			if (type == IEType.TOOL) {
 				sql = "CREATE TABLE Tools (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, SentenceID TEXT NOT NULL, Lemmata TEXT NOT NULL ,Sentence TEXT NOT NULL, Tool TEXT NOT NULL)";
-
-			}
-		}
-		stmt.executeUpdate(sql);
-		stmt.close();
-		connection.commit();
-	}
-
-	public static void createExtractionOutputTable2(Connection connection, IEType type, boolean correctable)
-			throws SQLException {
-		String sql = null;
-		connection.setAutoCommit(false);
-		Statement stmt = connection.createStatement();
-		if (type == IEType.COMPETENCE) {
-			sql = "DROP TABLE IF EXISTS Competences";
-		}
-		if (type == IEType.TOOL) {
-			sql = "DROP TABLE IF EXISTS Tools";
-		}
-		stmt.executeUpdate(sql);
-		if (correctable) {
-			if (type == IEType.COMPETENCE) {
-				sql = "CREATE TABLE Competences (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, JobAdJPAID INT NOT NULL, CUJPAID TEXT NOT NULL, Sentence TEXT NOT NULL, Comp TEXT, Contexts INT, ContextDescriptions TEXT NOT NULL, isCompetence INT NOT NULL, Notes TEXT)";
-			}
-			if (type == IEType.TOOL) {
-				sql = "CREATE TABLE Tools (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, JobAdJPAID INT NOT NULL, CUJPAID TEXT NOT NULL, Sentence TEXT NOT NULL, Tool TEXT NOT NULL, Contexts TEXT NOT NULL, ContextDescriptions TEXT NOT NULL, isTool INT NOT NULL, Notes TEXT)";
-			}
-		} else {
-			if (type == IEType.COMPETENCE) {
-				sql = "CREATE TABLE Competences (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, JobAdJPAID INT NOT NULL, CUJPAID TEXT NOT NULL, EUJPAID TEXT NOT NULL, Lemmata TEXT NOT NULL, Sentence TEXT NOT NULL, Label TEXT, Comp TEXT, Importance TEXT)";
-			}
-			if (type == IEType.TOOL) {
-				sql = "CREATE TABLE Tools (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, JobAdJPAID INT NOT NULL, CUJPAID TEXT NOT NULL, EUJPAID TEXT NOT NULL, Lemmata TEXT NOT NULL ,Sentence TEXT NOT NULL, Tool TEXT NOT NULL)";
 
 			}
 		}
@@ -411,206 +351,6 @@ public class IE_DBConnector {
 		prepStmt.executeBatch();
 		prepStmt.close();
 		connection.commit();
-	}
-
-	public static void writeCompetenceExtractions2(
-			Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> extractions, Connection connection,
-			boolean correctable, boolean gold) throws SQLException {
-		Set<String> types = new HashSet<String>();
-		connection.setAutoCommit(false);
-		PreparedStatement prepStmt;
-		if (correctable) {
-			// für den Output der Extraktions-Workflows
-			if (gold)
-				prepStmt = connection.prepareStatement(
-						"INSERT INTO Competences (Jahrgang, JobAdJPAID, CUJPAID, Sentence, Comp, FirstIndex, Contexts, ContextDescriptions, isCompetence) VALUES(?,?,?,?,?,?,?,?,-1)");
-			else
-				prepStmt = connection.prepareStatement(
-						"INSERT INTO Competences (Jahrgang, JobAdJPAID, CUJPAID, Sentence, Comp, Contexts, ContextDescriptions, isCompetence) VALUES(?,?,?,?,?,?,?,-1)");
-		} else {
-			// Für den Output der Matching-Workflows
-			prepStmt = connection.prepareStatement(
-					"INSERT INTO Competences (Jahrgang, JobAdJPAID, CUJPAID, EUJPAID, Lemmata, Sentence, Label, Comp,  Importance) VALUES(?,?,?,?,?,?,?,?,?)");
-		}
-		for (ExtractionUnit extractionUnit : extractions.keySet()) {
-
-			Map<InformationEntity, List<Pattern>> ies = extractions.get(extractionUnit);
-			long jobAdJPAID = extractionUnit.getJobAdjpaID();
-			int jahrgang = extractionUnit.getJobAdID();
-			String cuJPAID = extractionUnit.getClassifyUnitjpaID() + "";
-			String sentence = extractionUnit.getSentence();
-			StringBuffer lemmata = null;
-			if (!correctable) {
-				lemmata = new StringBuffer();
-				for (int i = 1; i < extractionUnit.getLemmata().length; i++) {
-					String string = extractionUnit.getLemmata()[i];
-					lemmata.append(string + " ");
-				}
-			}
-
-			for (InformationEntity ie : ies.keySet()) {
-
-				if (correctable) {
-					// write only unique types
-					String expression = ie.toString();
-					if (types.contains(expression)) {
-						PreparedStatement update = connection.prepareStatement(
-								"UPDATE Competences SET Sentence = sentence || '  |  ' || ? WHERE Comp = ?");
-						update.setString(1, sentence);
-						update.setString(2, expression);
-						update.executeUpdate();
-						update.close();
-						continue;
-					}
-					types.add(expression);
-				}
-				prepStmt.setInt(1, jahrgang);
-				prepStmt.setFloat(2, jobAdJPAID);
-				prepStmt.setString(3, cuJPAID);
-
-				if (correctable) {
-
-					int indexAdder = 0;
-					if (gold)
-						indexAdder = 1;
-
-					prepStmt.setString(4, sentence);
-					prepStmt.setString(5, ie.toString());
-					if (gold)
-						prepStmt.setInt(6, ie.getFirstIndex());
-					prepStmt.setInt(6 + indexAdder, ies.get(ie).size()); // 6
-					if (!ies.get(ie).isEmpty()) {
-						StringBuffer sb = new StringBuffer();
-						for (Pattern pattern : ies.get(ie)) {
-							sb.append("[" + pattern.getDescription() + "]  ");
-						}
-						prepStmt.setString(7 + indexAdder, sb.toString()); // 7
-					} else {
-						prepStmt.setString(7 + indexAdder, "StringMatch"); // 7
-					}
-				} else {
-					StringBuilder sb = new StringBuilder();
-					String labels = "";
-					if (ie.getLabels() != null) { // TODO warum getLabels == null ?
-						for (String l : ie.getLabels())
-							sb.append(l + "|");
-						labels = sb.toString();
-						labels = labels.substring(0, labels.length() - 1);
-					}
-					prepStmt.setString(4, extractionUnit.getJpaID() + "");
-					prepStmt.setString(5, lemmata.toString());
-					prepStmt.setString(6, sentence);
-					prepStmt.setString(7, labels);
-					prepStmt.setString(8, ie.toString());
-					prepStmt.setString(9, ie.getModifier());
-				}
-				prepStmt.addBatch();
-			}
-		}
-		prepStmt.executeBatch();
-		prepStmt.close();
-		connection.commit();
-
-	}
-
-	/**
-	 * liest alle InformationEntites, die eine Morphemkoordination enthalten und
-	 * somit für die Koordinationsauflösung relevant sind
-	 * 
-	 * @param type
-	 * @param connection
-	 * @param type
-	 * @param startPos
-	 * @param maxCount
-	 * @return
-	 * @throws SQLException
-	 */
-	public static Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> readGoldstandard(Connection connection,
-			IEType type, int startPos, int maxCount) throws SQLException {
-
-		Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> toReturn = new HashMap<ExtractionUnit, Map<InformationEntity, List<Pattern>>>();
-		connection.setAutoCommit(false);
-		String query = null;
-		String topic = null;
-		String typeString = null;
-
-		if (type.equals(IEType.COMPETENCE)) {
-			topic = "Comp";
-			typeString = "Competences";
-		} else {
-			topic = "Tool";
-			typeString = "Tools";
-		}
-
-		query = "SELECT Jahrgang, Zeilennr, ParaID, Sentence, " + topic + ", FirstIndex, ContextDescriptions, " + topic
-				+ "Resolved FROM " + typeString + " LIMIT ? OFFSET ?;";
-
-//		int queryLimit = -1;
-//		int currentId = 1;
-		int fetchSize = 100;
-
-		PreparedStatement prepStmt = connection.prepareStatement(query);
-		prepStmt.setInt(1, maxCount);
-		prepStmt.setInt(2, startPos);
-		prepStmt.setFetchSize(fetchSize);
-		// execute
-		ResultSet result = prepStmt.executeQuery();
-
-		// total entries to process:
-		if (maxCount < 0) {
-
-			String countQuery = "SELECT COUNT(*) FROM " + typeString + ";";
-			Statement stmt = connection.createStatement();
-			ResultSet countResult = stmt.executeQuery(countQuery);
-			int tableSize = countResult.getInt(1);
-			stmt.close();
-			stmt = connection.createStatement();
-			ResultSet rs = null;
-			rs = stmt.executeQuery("SELECT COALESCE(" + tableSize + "+1, 0) FROM " + typeString + ";");
-
-			maxCount = rs.getInt(1);
-		}
-
-		ExtractionUnit eu = null;
-		String[] entity = null;
-		InformationEntity ie = null;
-		int firstIndex = 0;
-		String resolvedCoo = null;
-		String patternString = null;
-
-		while (result.next()) {
-
-			eu = new ExtractionUnit(result.getString("Sentence"));
-			// TODO IDs vergeben
-			eu.setSecondJobAdID(0);
-			eu.setJobAdID(0);
-			eu.setClassifyUnitID(UUID.randomUUID());
-			entity = result.getString(topic).split("\\s");
-			firstIndex = result.getInt("FirstIndex");
-			resolvedCoo = result.getString(topic + "Resolved");
-			patternString = result.getString("ContextDescriptions");
-			if (resolvedCoo == null) // sammelt nur IEs mit Koordination
-				continue;
-
-			ie = new InformationEntity(entity[0], false, firstIndex);
-			ie.setLemmata(Arrays.asList(entity));
-			ie.setCoordinates(resolvedCoo);
-			List<Pattern> patterns = new ArrayList<Pattern>();
-			String[] descriptions = patternString.split("\\]\\s\\[");
-			for (int i = 0; i < descriptions.length; i++) {
-				String d = descriptions[i].replaceAll("[\\[\\]]", "");
-				Pattern p = new Pattern();
-				p.setDescription(d);
-				patterns.add(p);
-			}
-			Map<InformationEntity, List<Pattern>> patternMap = new HashMap<InformationEntity, List<Pattern>>();
-			patternMap.put(ie, patterns);
-			toReturn.put(eu, patternMap);
-
-		}
-		result.close();
-
-		return toReturn;
 	}
 
 	/**

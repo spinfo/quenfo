@@ -1,15 +1,11 @@
 package quenfo.de.uni_koeln.spinfo.information_extraction.applicationsjb;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
-
 import quenfo.de.uni_koeln.spinfo.core.helpers.PropertiesHandler;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.IEType;
 import quenfo.de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
@@ -26,47 +22,37 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
  */
 public class MatchCompetences {
 
-	// wird an den Namen der Output-DB angehängt
-//	static String jahrgang = null;//"2011";
-
 	// Pfad zur Input-DB mit den klassifizierten Paragraphen
-	//static String pararaphsDB = /* "D:/Daten/sqlite/CorrectableParagraphs.db"; */"C:/sqlite/classification/CorrectableParagraphs_"
-	//		+ jahrgang + ".db"; //
-	static String paraInputDB;//"C:/sqlite/classification/CorrectableParagraphs_textkernel.db";
+	static String paraInputDB;
 
 	// Ordner in dem die neue Output-DB angelegt werden soll
-	static String outputFolder;///* "D:/Daten/sqlite/"; */"C:/sqlite/matching/competences/";
+	static String outputFolder;
 
 	// Name der Output-DB
-	static String outputDB;//"CompetenceMatches_textkernel.db";
+	static String outputDB;
 
 	// txt-File mit den validierten Kompetenzen
-	static File notCatComps;//new File("information_extraction/data/competences/competences.txt");
-//	static File notCatComps = new File("information_extraction/data/competences/esco/esco_v1.0.3.ttl");//new File("information_extraction/data/competences/notCategorized.txt"); //TODO refactoring
-//	static File notCatComps = new File("information_extraction/data/competences/esco/ict_skills_collection.ttl");
+	static File notCatComps;
 	
 	// tei-File mit kategorisierten Kompetenzen
-	static File catComps;//new File("information_extraction/data/competences/tei_index/compdict.tei");
-//	static File catComps = null;
+	static File catComps;
 	
 	// Ebene, auf der die Kompetenz zugeordnet werden soll(div1, div2, div3, entry, form, orth)
-	static String category;//"div3";
+	static String category;
 
 	// txt-File mit allen 'Modifier'-Ausdrücken
-	static File modifier;//new File("information_extraction/data/competences/modifier.txt");
-	
-	//static File tokensToRemove = new File("information_extraction/data/competences/fuellwoerter.txt");
+	static File modifier;
 
 	// txt-File zur Speicherung der Match-Statistiken
-	static File statisticsFile;//new File("information_extraction/data/competences/matchingStats.txt");
+	static File statisticsFile;
 
 	// Anzahl der Paragraphen aus der Input-DB, gegen die gematcht werden soll
 	// (-1 = alle)
-	static int maxCount;//4000;
+	static int maxCount;
 
 	// Falls nicht alle Paragraphen gematcht werden sollen, hier die
 	// Startposition angeben
-	static int startPos;//0;
+	static int startPos;
 	
 	// true, falls Koordinationen  in Informationseinheit aufgelöst werden sollen
 	static boolean expandCoordinates;
@@ -137,9 +123,10 @@ public class MatchCompetences {
 		
 		//initialize and load all properties files
 		String quenfoData = configFolder.getParent();		
-		PropertiesHandler.initialize(quenfoData);
+		PropertiesHandler.initialize(configFolder);
 
 
+		// get values from properties files
 		paraInputDB = quenfoData + "/sqlite/classification/" + PropertiesHandler.getStringProperty("general", "classifiedParagraphs");// + jahrgang + ".db";
 		
 		maxCount = PropertiesHandler.getIntProperty("matching", "maxCount");

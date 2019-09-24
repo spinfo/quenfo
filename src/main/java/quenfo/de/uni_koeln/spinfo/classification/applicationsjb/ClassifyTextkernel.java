@@ -1,13 +1,9 @@
 package quenfo.de.uni_koeln.spinfo.classification.applicationsjb;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Properties;
-
 import quenfo.de.uni_koeln.spinfo.classification.core.classifier.AbstractClassifier;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ExperimentConfiguration;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.FeatureUnitConfiguration;
@@ -142,7 +138,7 @@ public class ClassifyTextkernel {
 		}
 		
 		String quenfoData = configFolder.getParent();
-		PropertiesHandler.initialize(quenfoData);
+		PropertiesHandler.initialize(configFolder);
 		
 		inputDB = quenfoData + "/sqlite/jobads/" + PropertiesHandler.getStringProperty("general", "jobAdsDB");
 		inputTable = PropertiesHandler.getStringProperty("general", "jobAds_inputTable");

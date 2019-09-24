@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,21 +13,19 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 
 import quenfo.de.uni_koeln.spinfo.classification.core.classifier.model.Model;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ExperimentConfiguration;
-import quenfo.de.uni_koeln.spinfo.classification.core.data.FeatureUnitConfiguration;
 import quenfo.de.uni_koeln.spinfo.classification.core.helpers.EncodingProblemTreatment;
 import quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.jasc.preprocessing.ClassifyUnitSplitter;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.RegexClassifier;
-import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.model.ZoneKNNModel;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.helpers.SingleToMultiClassConverter;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.workflow.ZoneJobs;
 import quenfo.de.uni_koeln.spinfo.core.data.JobAd;
+import quenfo.de.uni_koeln.spinfo.core.helpers.PropertiesHandler;
 
 public class DerbyDBClassifier {
 
@@ -113,8 +110,6 @@ public class DerbyDBClassifier {
 			if (jobAds.isEmpty())
 				break;
 
-			// log.info("Process " + jobAds.size() + " JobAds ...");
-
 			em.getTransaction().begin();
 			List<JASCClassifyUnit> result;
 			for (JobAd job : jobAds) {
@@ -164,7 +159,6 @@ public class DerbyDBClassifier {
 			throws IOException {
 		// 1. Split into paragraphs and create a ClassifyUnit per paragraph
 		Set<String> paragraphs = ClassifyUnitSplitter.splitIntoParagraphs(job.getContent());
-		// TODO unsplitted?
 
 		// if treat enc
 		if (config.getFeatureConfiguration().isTreatEncoding()) {
@@ -172,7 +166,6 @@ public class DerbyDBClassifier {
 		}
 		List<ClassifyUnit> classifyUnits = new ArrayList<ClassifyUnit>();
 		for (String string : paragraphs) {
-//			paraCount++;
 			//TODO JB: ZoneCU oder JASCCU??
 //			classifyUnits.add(new ZoneClassifyUnit(string, job.getJahrgang(), job.getZeilenNr(), job.getJpaID()));
 			classifyUnits.add(new JASCClassifyUnit(string, job.getJahrgang(), job.getZeilenNr(), job.getJpaID()));
@@ -184,10 +177,9 @@ public class DerbyDBClassifier {
 		classifyUnits = jobs.setFeatureVectors(classifyUnits, config.getFeatureQuantifier(), model.getFUOrder());
 
 		// 2. Classify
-		RegexClassifier regexClassifier = new RegexClassifier("src/main/resources/classification/regex.txt");
+		RegexClassifier regexClassifier = new RegexClassifier(PropertiesHandler.getRegex());
 		Map<ClassifyUnit, boolean[]> preClassified = new HashMap<ClassifyUnit, boolean[]>();
 		for (ClassifyUnit cu : classifyUnits) {
-//			System.out.println(cu.getClass());
 			boolean[] classes = regexClassifier.classify(cu, model);
 			preClassified.put(cu, classes);
 		}
