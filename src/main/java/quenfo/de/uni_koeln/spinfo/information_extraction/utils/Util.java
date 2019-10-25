@@ -4,9 +4,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -27,8 +29,19 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
+import org.languagetool.AnalyzedToken;
+import org.languagetool.AnalyzedTokenReadings;
+import org.languagetool.tagging.TaggedWord;
+import org.languagetool.tagging.de.GermanTagger;
 
+import com.opencsv.CSVReader;
+
+import is2.data.SentenceData09;
+import is2.lemmatizer.Lemmatizer;
+import is2.tools.Tool;
+import quenfo.de.uni_koeln.spinfo.core.helpers.PropertiesHandler;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.InformationEntity;
+import quenfo.de.uni_koeln.spinfo.information_extraction.preprocessing.IETokenizer;
 
 /**
  * utility class that contains methods for data processing, e.g. string
@@ -107,7 +120,6 @@ public final class Util {
 	public static Map<String, Set<InformationEntity>> readRDF(File rdfFile,
 			Map<String, Set<InformationEntity>> entities) {
 
-		System.out.println("Read RDF Model ...");
 		Model model = ModelFactory.createDefaultModel();
 		model = model.read(rdfFile.getAbsolutePath());
 
@@ -129,23 +141,16 @@ public final class Util {
 //			System.out.println(skill);
 			// broaderTrans (Hyperonym) parsen
 
-			
-
 			List<String> broaderLabels = new ArrayList<>();
 			
 			StmtIterator broaderIter = skill.listProperties(broaderTrans);
 			while (broaderIter.hasNext()) {
-
 				Resource r = broaderIter.next()
 						.getObject()
-						.asResource();
-				
+						.asResource();				
 				String broaderLabel = r.getProperty(prefLabel, "de").getString();
-//				System.out.println(broaderLabel);
-				broaderLabels.add(broaderLabel);
-				
-			}
-			
+				broaderLabels.add(broaderLabel);				
+			}			
 			if(broaderLabels.isEmpty()) {
 				broaderIter = skill.listProperties(broader);
 				while (broaderIter.hasNext()) {
@@ -155,9 +160,7 @@ public final class Util {
 							.asResource();
 					
 					String broaderLabel = r.getProperty(prefLabel, "de").getString();
-//					System.out.println(broaderLabel);
-					broaderLabels.add(broaderLabel);
-					
+					broaderLabels.add(broaderLabel);					
 				}
 			}
 
@@ -271,6 +274,99 @@ public final class Util {
 
 		}
 
+		return entities;
+	}
+
+	public static Map<String, Set<InformationEntity>> readCSV(File entitiesFile,
+			Map<String, Set<InformationEntity>> entities) throws IOException {
+		
+		IETokenizer tokenizer = new IETokenizer();
+		CSVReader reader = new CSVReader(new FileReader(entitiesFile));		
+		GermanTagger tagger = new GermanTagger();
+
+		String keyword;
+		for (String[] line : reader) {
+			String uri = line[1];
+			if (uri.equals("conceptUri")) //Kopfzeile
+				continue;
+			
+			List<String> skills = new ArrayList<>(Arrays.asList(line[5].split("\n")));
+			skills.add(line[4]);
+			
+			for(String skill : skills) {
+				
+				if (skill.isEmpty())
+					continue;
+				
+				List<String> tokens = Arrays.asList(tokenizer.tokenizeSentence(skill));
+				
+				List<String> lemmas = new ArrayList<>();
+				for (String token : tokens) {
+					System.out.println(token);
+					List<TaggedWord> readings = tagger.tag(token);
+					if(readings.size() == 0)
+						lemmas.add(token.toLowerCase());
+					else
+						lemmas.add(readings.get(0).getLemma().toLowerCase());
+				}
+				
+				System.out.println("Tokens: " + tokens + "Lemmas: " + lemmas);
+				
+				keyword = Util.normalizeLemma(lemmas.get(0));
+				Set<InformationEntity> iesForKeyword = entities.get(keyword);
+				if (iesForKeyword == null)
+					iesForKeyword = new HashSet<InformationEntity>();
+				InformationEntity ie = new InformationEntity(keyword, lemmas.size() == 1, uri);
+				if (!ie.isSingleWordEntity()) {
+					for (String lemma : lemmas) {
+						ie.addLemma(Util.normalizeLemma(lemma));
+
+					}
+				}
+				if (iesForKeyword.contains(ie)) {
+					for (InformationEntity curr : iesForKeyword) {
+						if (curr.equals(ie)) {
+							curr.addLabel(uri);
+							iesForKeyword.add(curr);
+						}
+					}
+				} else
+					iesForKeyword.add(ie);
+				
+				//System.out.println(ie.getLemmata() + " " + ie.getLabels());
+				entities.put(keyword, iesForKeyword);
+				
+				
+//				List<AnalyzedTokenReadings> tagged = tagger.tag(tokens);
+//							
+//				List<String> lemmaList = new ArrayList<>();
+//				
+//				for(AnalyzedTokenReadings readings : tagged) {
+//					
+//					Set<String> lemmas = new HashSet<>();
+//					
+//					List<AnalyzedToken> currReadings = readings.getReadings();
+//					String prefReading = currReadings.get(0).getLemma();
+//					if (prefReading != null)
+//						lemmaList.add(prefReading);
+//					else
+//						System.out.println(readings);
+//					
+//					for (AnalyzedToken t : currReadings) {						
+//						lemmas.add(t.getLemma());
+//					}
+//					if(lemmas.size() > 1)
+//						System.out.println(lemmas);				
+//					// TODO JB: richtiges Lemma auswählen				
+//				}
+//				
+//				
+				
+				
+
+			}
+		}
+		reader.close();
 		return entities;
 	}
 

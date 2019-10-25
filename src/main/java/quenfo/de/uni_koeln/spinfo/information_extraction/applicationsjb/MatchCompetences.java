@@ -142,6 +142,8 @@ public class MatchCompetences {
 		outputFolder = quenfoData + "/sqlite/matching/competences/";
 		outputDB = PropertiesHandler.getStringProperty("matching", "compMOutputDB");
 		
+		
+		
 	}
 
 	

@@ -106,7 +106,8 @@ public class IEJobs {
 	}
 
 	public IEJobs(File competences, File noCompetences, File amsComps, String category, File importanceTerms,
-			File patterns, IEType type, boolean resolveCoordinations, File possCompoundsFile, File splittedCompoundsFile) throws IOException {
+			File patterns, IEType type, boolean resolveCoordinations, File possCompoundsFile,
+			File splittedCompoundsFile) throws IOException {
 		this.type = type;
 		initialize(competences, noCompetences, amsComps, category, importanceTerms, patterns, resolveCoordinations,
 				possCompoundsFile, splittedCompoundsFile);
@@ -125,12 +126,12 @@ public class IEJobs {
 	// liest die verschiedenen Files ein und initialisiert die zugehörigen
 	// Felder
 	private void initialize(File knownEntities, File negativeEntities, File teiFile, String category,
-			File modifiersFile, File patternsFile, boolean resolveCoordinations, File possCoordinates, File splittedCompoundsFile)
-			throws IOException {
-		
-		
+			File modifiersFile, File patternsFile, boolean resolveCoordinations, File possCoordinates,
+			File splittedCompoundsFile) throws IOException {
+
 		if (resolveCoordinations)
-			this.ce = new CoordinateExpander(possCoordinates, splittedCompoundsFile); //
+			this.ce = new CoordinateExpander(possCoordinates, splittedCompoundsFile); 
+
 
 		this.knownEntities = 0;
 		entities = new HashMap<String, Set<InformationEntity>>();
@@ -169,9 +170,13 @@ public class IEJobs {
 	 * @throws IOException
 	 */
 	private void readKnownEntitiesFromFile(File entitiesFile) throws IOException {
-		
+
 		String extension = Files.getFileExtension(entitiesFile.getAbsolutePath());
-		if(extension.equals("txt")) {
+		
+		log.info("Read Skills: " + entitiesFile.getAbsolutePath());
+		
+		if (extension.equals("txt")) {
+			log.info("Read Skills from txt-File");
 			BufferedReader in = new BufferedReader(new FileReader(entitiesFile));
 			String line = in.readLine();
 			while (line != null) {
@@ -207,14 +212,15 @@ public class IEJobs {
 			}
 			in.close();
 		} else if (extension.equals("ttl")) {
+			log.info("Read Skills from RDF Model");
 			entities = Util.readRDF(entitiesFile, entities);
+		} else if (extension.equals("csv")) {
+			log.info("Read Skills from CSV");
+			entities = Util.readCSV(entitiesFile, entities);
 		} else {
 			System.err.println("unbekanntes Dateiformat: " + entitiesFile.getAbsolutePath());
 		}
-		
-		
-		
-		
+
 	}
 
 	// Liest die Begriffe (Modifizierer oder Falsch-Extraktionen) aus dem
@@ -334,7 +340,7 @@ public class IEJobs {
 	// prüft die Tokens auf bereits bekannte Kompetenzen/Tools und zeichnet sie
 	// als solche aus
 	private void annotateEntities(List<TextToken> tokens) {
-		
+
 		for (int t = 0; t < tokens.size(); t++) {
 			Token currentToken = tokens.get(t);
 			String lemma = Util.normalizeLemma(currentToken.getLemma());
@@ -460,8 +466,6 @@ public class IEJobs {
 		TextToken entityToken;
 
 		for (ExtractionUnit extractionUnit : extractionUnits) {
-			
-			
 
 			ieTokens = extractionUnit.getTokenObjects();
 
@@ -554,16 +558,14 @@ public class IEJobs {
 									}
 								}
 
-								ie = new InformationEntity(entities.get(0), false,
-										entityPointer);
+								ie = new InformationEntity(entities.get(0), false, entityPointer);
 								ie.setLemmata(entities);
 
 							} else if (completeEntity.size() < 1) { // Entität besteht aus weniger als einem Token
 								ie = null;
 								continue;
 							} else { // Entität besteht aus genau einem Token
-								ie = new InformationEntity(completeEntity.get(0).getToken(), true,
-										entityPointer);
+								ie = new InformationEntity(completeEntity.get(0).getToken(), true, entityPointer);
 								log.info(ie.toString());
 							}
 							informationEntities.add(ie);
@@ -713,7 +715,7 @@ public class IEJobs {
 	 * finds known entities in unknown s and returns both
 	 * 
 	 * @param extractionUnits
-	 * @param lemmatizer 
+	 * @param lemmatizer
 	 * @param patternExtractions
 	 * @return
 	 */
@@ -722,8 +724,7 @@ public class IEJobs {
 		Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> extractions = new HashMap<ExtractionUnit, Map<InformationEntity, List<Pattern>>>();
 		List<Pattern> List = new ArrayList<Pattern>();
 		for (ExtractionUnit extractionUnit : extractionUnits) {
-			
-			
+
 			List<TextToken> tokens = extractionUnit.getTokenObjects();
 			int skip = 0;
 			for (int t = 0; t < tokens.size(); t++) {
@@ -745,24 +746,25 @@ public class IEJobs {
 
 							continue;
 						}
-						
-						
-						//speichert Token-Objekte, die die InformationEntity enthalten und ihre POS gesondert
+
+						// speichert Token-Objekte, die die InformationEntity enthalten und ihre POS
+						// gesondert
 						List<Token> completeEntity = new ArrayList<Token>();
 						List<String> posList = new ArrayList<String>();
-						
+
 						boolean matches = false;
 						for (int c = 0; c < ie.getLemmata().size(); c++) {
 							if (tokens.size() <= t + c) {
 								matches = false;
 								break;
 							}
-							matches = ie.getLemmata().get(c).equals(Util.normalizeLemma(tokens.get(t + c+ skip).getLemma()));
+							matches = ie.getLemmata().get(c)
+									.equals(Util.normalizeLemma(tokens.get(t + c + skip).getLemma()));
 							if (!matches) {
 								break;
 							}
-							
-							TextToken tt = tokens.get(t+c);
+
+							TextToken tt = tokens.get(t + c);
 							completeEntity.add(tt);
 							posList.add(tt.getPosTag());
 						}
@@ -779,9 +781,9 @@ public class IEJobs {
 								iesForUnit = new HashMap<InformationEntity, List<Pattern>>();
 							iesForUnit.put(newIE, List);
 							extractions.put(extractionUnit, iesForUnit);
-							
-							//TODO match auf koordinierte Ausdrücke überprüfen
-							if(posList.contains("KON"))
+
+							// TODO match auf koordinierte Ausdrücke überprüfen
+							if (posList.contains("KON"))
 								System.out.println(extractionUnit.getSentence() + "\n" + newIE + "\n");
 						}
 					}
@@ -791,8 +793,7 @@ public class IEJobs {
 //					System.out.println("skip: " +skip);
 //				}
 			}
-			
-			
+
 		}
 		return extractions;
 	}
@@ -871,11 +872,10 @@ public class IEJobs {
 			boolean isnew = iesForKeyword.add(ie);
 			if (isnew) {
 				knownEntities++;
-			} 
+			}
 			this.entities.put(keyword, iesForKeyword);
 		}
-		
-		
+
 	}
 
 	/**

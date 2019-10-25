@@ -34,11 +34,11 @@ public class ClassifyTextkernel {
 
 	// Anzahl der Stellenanzeigen, die klassifiziert werden sollen (-1 = gesamte
 	// Tabelle)
-	static int queryLimit = -2;
+	static int queryLimit;
 
 	// falls nur eine begrenzte Anzahl von SteAs klassifiziert werden soll
 	// (s.o.): hier die Startosition angeben
-	static int startId = -1;
+	static int startId;
 
 	// Die SteAs werden (aus Speichergründen) nicht alle auf einmal ausgelesen,
 	// sondern Päckchenweise - hier angeben, wieviele jeweils in einem Schwung
@@ -46,7 +46,7 @@ public class ClassifyTextkernel {
 	// nach dem ersten Schwung erscheint in der Konsole ein Dialog, in dem man
 	// das Programm nochmal stoppen (s), die nächsten xx SteAs klassifizieren
 	// (c), oder ohne Unterbrechung zu Ende klassifizieren lassen kann (d)
-	static int fetchSize = -1;
+	static int fetchSize;
 
 	static boolean normalize = false;
 
