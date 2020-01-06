@@ -71,12 +71,13 @@ public class ConfigurableDatabaseClassifier {
 		classify(config, tableName);
 	}
 
+	@Deprecated
 	public void classify(StringBuffer sb, String tableName) throws ClassNotFoundException, IOException, SQLException {
 		// get ExperimentConfiguration
 		ExperimentSetupUI ui = new ExperimentSetupUI();
 		ExperimentConfiguration expConfig = ui.getExperimentConfiguration(trainingDataFileName);
 		if (sb != null) {
-			System.out.println(sb.toString());
+			log.info("Configuration: " + sb.toString());
 		}
 		classify(expConfig, tableName);
 	}
@@ -101,6 +102,7 @@ public class ConfigurableDatabaseClassifier {
 			
 
 		trainingData = jobs.initializeClassifyUnits(trainingData);
+		log.info("Configuration: " + config.getFeatureConfiguration());
 		trainingData = jobs.setFeatures(trainingData, config.getFeatureConfiguration(), true);
 		trainingData = jobs.setFeatureVectors(trainingData, config.getFeatureQuantifier(), null);
 
@@ -112,8 +114,10 @@ public class ConfigurableDatabaseClassifier {
 		int done = 0;
 		String query = null;
 		int zeilenNr = 0, jahrgang = 0;
-		query = "SELECT ZEILENNR, Jahrgang, STELLENBESCHREIBUNG FROM " + tableName + " WHERE LANG='de' LIMIT ? OFFSET ?;";
-		//TODO JB: LANG bezieht sich nur auf text kernel
+		if (tableName.equals("jobs_textkernel"))
+			query = "SELECT ZEILENNR, Jahrgang, STELLENBESCHREIBUNG FROM " + tableName + " WHERE LANG='de' LIMIT ? OFFSET ?;";
+		else
+			query = "SELECT ZEILENNR, Jahrgang, STELLENBESCHREIBUNG FROM " + tableName + " LIMIT ? OFFSET ?;";
 		
 		PreparedStatement prepStmt = inputDb.prepareStatement(query);
 		prepStmt.setInt(1, queryLimit);

@@ -29,17 +29,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
-import org.languagetool.AnalyzedToken;
-import org.languagetool.AnalyzedTokenReadings;
 import org.languagetool.tagging.TaggedWord;
 import org.languagetool.tagging.de.GermanTagger;
 
 import com.opencsv.CSVReader;
 
-import is2.data.SentenceData09;
-import is2.lemmatizer.Lemmatizer;
-import is2.tools.Tool;
-import quenfo.de.uni_koeln.spinfo.core.helpers.PropertiesHandler;
 import quenfo.de.uni_koeln.spinfo.information_extraction.data.InformationEntity;
 import quenfo.de.uni_koeln.spinfo.information_extraction.preprocessing.IETokenizer;
 
@@ -302,7 +296,7 @@ public final class Util {
 				
 				List<String> lemmas = new ArrayList<>();
 				for (String token : tokens) {
-					System.out.println(token);
+//					System.out.println(token);
 					List<TaggedWord> readings = tagger.tag(token);
 					if(readings.size() == 0)
 						lemmas.add(token.toLowerCase());
@@ -310,7 +304,7 @@ public final class Util {
 						lemmas.add(readings.get(0).getLemma().toLowerCase());
 				}
 				
-				System.out.println("Tokens: " + tokens + "Lemmas: " + lemmas);
+//				System.out.println("Tokens: " + tokens + "Lemmas: " + lemmas);
 				
 				keyword = Util.normalizeLemma(lemmas.get(0));
 				Set<InformationEntity> iesForKeyword = entities.get(keyword);

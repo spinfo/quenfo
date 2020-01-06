@@ -6,7 +6,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import quenfo.de.uni_koeln.spinfo.classification.core.classifier.AbstractClassifier;
 import quenfo.de.uni_koeln.spinfo.classification.core.feature_engineering.feature_weighting.AbstractFeatureQuantifier;
-import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.WekaClassifier;
 
 
 /**
@@ -160,13 +159,7 @@ public class ExperimentConfiguration {
 			//buff.append("_");
 			buff.append(fq.getClass().getSimpleName());
 		}
-		buff.append("_");
-		if(classifier instanceof WekaClassifier){
-			buff.append(((WekaClassifier) classifier).getClassifier().getClass().getSimpleName());
-		}
-		else{
-			buff.append(classifier.getClass().getSimpleName());
-		}
+		buff.append("_" + classifier.getClass().getSimpleName());		
 		if (classifier.getDistance() != null) {
 			buff.append("_");
 			buff.append(classifier.getDistance());

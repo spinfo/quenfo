@@ -91,6 +91,9 @@ public class PropertiesHandler {
 	}
 	
 	public static int[] getIntArrayProperty(String domain, String key) {
+		if (getProperty(domain, key).equals("")) {
+			return null;
+		}
 		String[] nGramString = getProperty(domain, key).split(",");
 		int[] nGrams = new int[nGramString.length];
 		// TODO JB: leere Strings abfangen ( , , )

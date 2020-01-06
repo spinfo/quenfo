@@ -135,9 +135,9 @@ public class ExtractNewTools {
 
 		paraInputDB = quenfoData + "/sqlite/classification/" + PropertiesHandler.getStringProperty("general", "classifiedParagraphs");// + jahrgang + ".db";
 		
-		maxCount = PropertiesHandler.getIntProperty("matching", "maxCount");
-		startPos = PropertiesHandler.getIntProperty("matching", "startPos");
-		expandCoordinates = PropertiesHandler.getBoolProperty("matching", "expandCoordinates");
+		maxCount = PropertiesHandler.getIntProperty("ie", "queryLimit");
+		startPos = PropertiesHandler.getIntProperty("ie", "startPos");
+		expandCoordinates = PropertiesHandler.getBoolProperty("ie", "expandCoordinates");
 		
 		String toolsFolder = quenfoData + "/resources/information_extraction/tools/";
 		

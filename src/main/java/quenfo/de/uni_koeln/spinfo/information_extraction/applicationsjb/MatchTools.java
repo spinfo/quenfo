@@ -126,12 +126,13 @@ public class MatchTools {
 		// get values from properties files
 		paraInputDB = quenfoData + "/sqlite/classification/" + PropertiesHandler.getStringProperty("general", "classifiedParagraphs");
 		
-		maxCount = PropertiesHandler.getIntProperty("matching", "maxCount");
+		maxCount = PropertiesHandler.getIntProperty("matching", "queryLimit");
 		startPos = PropertiesHandler.getIntProperty("matching", "startPos");
 		expandCoordinates = PropertiesHandler.getBoolProperty("matching", "expandCoordinates");
 		
 		String toolsFolder = quenfoData + "/resources/information_extraction/tools/";	
 		tools = new File(toolsFolder + PropertiesHandler.getStringProperty("matching", "tools"));	
+		
 		statisticsFile = new File(toolsFolder + PropertiesHandler.getStringProperty("matching", "toolsMatchingStats"));
 		
 		toolMOutputFolder = quenfoData + "/sqlite/matching/tools/";

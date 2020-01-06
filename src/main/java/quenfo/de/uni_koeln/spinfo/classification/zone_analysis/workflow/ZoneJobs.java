@@ -1,24 +1,18 @@
 package quenfo.de.uni_koeln.spinfo.classification.zone_analysis.workflow;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.IntStream;
-
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 
 import quenfo.de.uni_koeln.spinfo.classification.core.classifier.model.Model;
@@ -37,7 +31,6 @@ import quenfo.de.uni_koeln.spinfo.classification.core.helpers.ClassifyUnitFilter
 import quenfo.de.uni_koeln.spinfo.classification.core.helpers.EncodingProblemTreatment;
 import quenfo.de.uni_koeln.spinfo.classification.jasc.data.JASCClassifyUnit;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.ZoneAbstractClassifier;
-import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.svm.SVMClassifier;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.helpers.SingleToMultiClassConverter;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.preprocessing.TrainingDataGenerator;
 import quenfo.de.uni_koeln.spinfo.core.helpers.PropertiesHandler;
@@ -48,7 +41,7 @@ public class ZoneJobs {
 
 	@Deprecated
 	public ZoneJobs() throws IOException {
-		System.out.println("ZoneJobs: Achtung - keine Translations gesetzt");
+		log.info("ZoneJobs: Achtung - keine Translations gesetzt");
 		sw_filter = new StopwordFilter(new File(PropertiesHandler.getStopwords()));
 		normalizer = new Normalizer();
 		stemmer = new Stemmer();
@@ -58,7 +51,7 @@ public class ZoneJobs {
 
 	public ZoneJobs(SingleToMultiClassConverter stmc) throws IOException {
 		if (stmc == null) {
-			System.out.println("ZoneJobs: Achtung - keine Translations gesetzt");
+			log.info("ZoneJobs: Achtung - keine Translations gesetzt");
 		}
 		this.stmc = stmc;
 		sw_filter = new StopwordFilter(new File(PropertiesHandler.getStopwords()));
@@ -247,47 +240,6 @@ public class ZoneJobs {
 		return paragraphs;
 	}
 
-	/**
-	 * @param cus       the classify units
-	 * @param expConfig the experiment configuration
-	 * @return a model for the specified experiment configuration
-	 * @throws IOException
-	 */
-	@Deprecated
-	public Model getModelForClassifier(List<ClassifyUnit> cus, ExperimentConfiguration expConfig) throws IOException {
-		File modelFile = expConfig.getModelFile();
-		// modelFile.createNewFile();
-		Model model;
-		if (expConfig.getClassifier() instanceof SVMClassifier) {
-			SVMClassifier svmC = (SVMClassifier) expConfig.getClassifier();
-			svmC.buildModel(expConfig, cus);
-			return null;
-		}
-
-		if (!modelFile.exists()) {
-			// build model...
-			model = expConfig.getClassifier().buildModel(cus, expConfig.getFeatureConfiguration(),
-					expConfig.getFeatureQuantifier(), expConfig.getDataFile());
-			// store model
-			// exportModel(expConfig.getModelFile(), model);
-			return model;
-		} else {
-			log.info("read model..");
-			// read model...
-			FileInputStream fis = new FileInputStream(modelFile);
-			ObjectInputStream in = new ObjectInputStream(fis);
-			try {
-				Object o = in.readObject();
-				model = (Model) o;
-				in.close();
-				return model;
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-				in.close();
-				return null;
-			}
-		}
-	}
 
 	/**
 	 * @param cus       the classify units
@@ -299,13 +251,13 @@ public class ZoneJobs {
 			throws IOException {		
 		
 		Model model;
-		if (expConfig.getClassifier() instanceof SVMClassifier) {
-			SVMClassifier svmC = (SVMClassifier) expConfig.getClassifier();
-			svmC.buildModel(expConfig, cus);
-			model = new Model();
-			model.setFUOrder(expConfig.getFeatureQuantifier().getFeatureUnitOrder());
-			return model;
-		}
+//		if (expConfig.getClassifier() instanceof SVMClassifier) {
+//			SVMClassifier svmC = (SVMClassifier) expConfig.getClassifier();
+//			svmC.buildModel(expConfig, cus);
+//			model = new Model();
+//			model.setFUOrder(expConfig.getFeatureQuantifier().getFeatureUnitOrder());
+//			return model;
+//		}
 		// build model...
 		model = expConfig.getClassifier().buildModel(cus, expConfig.getFeatureConfiguration(),
 				expConfig.getFeatureQuantifier(), expConfig.getDataFile());
@@ -344,17 +296,17 @@ public class ZoneJobs {
 	public Map<ClassifyUnit, boolean[]> classify(List<ClassifyUnit> paragraphs, ExperimentConfiguration expConfig,
 			Model model) {
 		ZoneAbstractClassifier classifier = (ZoneAbstractClassifier) expConfig.getClassifier();
-		if (classifier instanceof SVMClassifier) {
-			try {
-				Map<ClassifyUnit, boolean[]> classified = ((SVMClassifier) classifier).predict(paragraphs, expConfig,
-						stmc);
-				// TODO ....
-				return classified;
-			} catch (IOException e) {
-
-				e.printStackTrace();
-			}
-		}
+//		if (classifier instanceof SVMClassifier) {
+//			try {
+//				Map<ClassifyUnit, boolean[]> classified = ((SVMClassifier) classifier).predict(paragraphs, expConfig,
+//						stmc);
+//				// TODO ....
+//				return classified;
+//			} catch (IOException e) {
+//
+//				e.printStackTrace();
+//			}
+//		}
 		Map<ClassifyUnit, boolean[]> classified = new HashMap<ClassifyUnit, boolean[]>();
 		for (ClassifyUnit cu : paragraphs) {
 			boolean[] classes = ((ZoneAbstractClassifier) classifier).classify((JASCClassifyUnit) cu, model);

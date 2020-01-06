@@ -16,10 +16,15 @@ import quenfo.de.uni_koeln.spinfo.classification.core.feature_engineering.featur
 import quenfo.de.uni_koeln.spinfo.classification.core.feature_engineering.feature_weighting.LogLikeliHoodFeatureQuantifier;
 import quenfo.de.uni_koeln.spinfo.classification.jasc.workflow.DerbyDBClassifier;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.ZoneKNNClassifier;
-
+/**
+ * 
+ * @author Johanna Binnewitt
+ *
+ */
 public class ClassifyDerbyDB {
 
 	// Pfad zur Datei mit den Trainingsdaten
+	// TODO JB Pfad anpassen
 	static String trainingdataFile = "classification/data/trainingSets/trainingdata_anonymized.tsv";
 
 	// Anzahl der Stellenanzeigen, die klassifiziert werden sollen (-1 = gesamte

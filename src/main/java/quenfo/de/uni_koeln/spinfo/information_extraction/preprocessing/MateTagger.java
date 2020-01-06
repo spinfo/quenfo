@@ -1,7 +1,6 @@
 package quenfo.de.uni_koeln.spinfo.information_extraction.preprocessing;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import is2.data.SentenceData09;

@@ -51,7 +51,7 @@ public class ExtractNewCompetences {
 	// falls nicht alle Paragraphen aus der Input-DB verwendet werden sollen:
 	// hier Anzahl der zu lesenden Paragraphen festlegen
 	// -1 = alle
-	static int maxCount;
+	static int queryLimit;
 
 	// falls nur eine bestimmte Anzahl gelesen werden soll, hier die startID
 	// angeben
@@ -88,8 +88,8 @@ public class ExtractNewCompetences {
 			System.out.println("please select a new startPosition and try again");
 			System.exit(0);
 		}
-		if (maxCount > tableSize - startPos) {
-			maxCount = tableSize - startPos;
+		if (queryLimit > tableSize - startPos) {
+			queryLimit = tableSize - startPos;
 		}
 
 		// Verbindung zur Output-DB
@@ -110,10 +110,10 @@ public class ExtractNewCompetences {
 		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTHREE");
 		Extractor extractor = new Extractor(outputConnection, competences, noCompetences, compPatterns, modifier,
 				IEType.COMPETENCE, expandCoordinates);
-		if (maxCount == -1) {
-			maxCount = tableSize;
+		if (queryLimit == -1) {
+			queryLimit = tableSize;
 		}
-		extractor.extract(startPos, maxCount, tableSize, inputConnection, outputConnection);
+		extractor.extract(startPos, queryLimit, tableSize, inputConnection, outputConnection);
 		long after = System.currentTimeMillis();
 		Double time = (((double) after - before) / 1000) / 60;
 		if (time > 60.0) {
@@ -141,9 +141,9 @@ public class ExtractNewCompetences {
 
 		paraInputDB = quenfoData + "/sqlite/classification/" + PropertiesHandler.getStringProperty("general", "classifiedParagraphs");
 		
-		maxCount = PropertiesHandler.getIntProperty("matching", "maxCount");
-		startPos = PropertiesHandler.getIntProperty("matching", "startPos");
-		expandCoordinates = PropertiesHandler.getBoolProperty("matching", "expandCoordinates");
+		queryLimit = PropertiesHandler.getIntProperty("ie", "queryLimit");
+		startPos = PropertiesHandler.getIntProperty("ie", "startPos");
+		expandCoordinates = PropertiesHandler.getBoolProperty("ie", "expandCoordinates");
 		
 		
 		String competencesFolder = quenfoData + "/resources/information_extraction/competences/";

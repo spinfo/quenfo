@@ -1,6 +1,5 @@
 package quenfo.de.uni_koeln.spinfo.information_extraction.preprocessing;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -29,7 +28,8 @@ public class IETokenizer {
 	public IETokenizer() {
 		
 		setTokenizeModel(ClassLoader.getSystemResourceAsStream("nlp/openNLPmodels/de-token.bin"));
-		setSentenceSplittingModel(ClassLoader.getSystemResourceAsStream("nlp/openNLPmodels/de-sent.bin"));
+		// TODO JB: custom sentence model
+		setSentenceSplittingModel(ClassLoader.getSystemResourceAsStream("nlp/openNLPmodels/de-sent-custom.bin"));
 	}
 	
 	/**

@@ -17,6 +17,13 @@ public class PatternToken extends Token {
 
 	
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
+
+	/**
 	 * @param string
 	 * @param lemma
 	 * @param posTag
@@ -35,24 +42,11 @@ public class PatternToken extends Token {
 		super(string, lemma, posTag, isInformationEntity);
 	}
 	
-//	public void setLemma(String lemma){
-//		this.lemma = lemma;
-//	}
-//	
-//	public void setPosTag(String posTag){
-//		this.posTag = posTag;
-//	}
-//	public void setString(String string){
-//		this.token = string;
-//	}
-	
 	@Override
 	public String getLemma(){
 		if(isModifier()) return "IMPORTANCE";
 		return this.lemma;
 	}
-	
-	
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()

@@ -129,7 +129,7 @@ public class MatchCompetences {
 		// get values from properties files
 		paraInputDB = quenfoData + "/sqlite/classification/" + PropertiesHandler.getStringProperty("general", "classifiedParagraphs");// + jahrgang + ".db";
 		
-		maxCount = PropertiesHandler.getIntProperty("matching", "maxCount");
+		maxCount = PropertiesHandler.getIntProperty("matching", "queryLimit");
 		startPos = PropertiesHandler.getIntProperty("matching", "startPos");
 		expandCoordinates = PropertiesHandler.getBoolProperty("matching", "expandCoordinates");
 		

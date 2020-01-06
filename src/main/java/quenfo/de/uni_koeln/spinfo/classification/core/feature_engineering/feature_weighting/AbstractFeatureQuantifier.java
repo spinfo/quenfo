@@ -7,8 +7,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.commons.lang3.builder.HashCodeExclude;
-
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
 
 /**

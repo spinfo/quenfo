@@ -23,7 +23,6 @@ import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.ZoneAb
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.ZoneKNNClassifier;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.ZoneNaiveBayesClassifier;
 import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.ZoneRocchioClassifier;
-import quenfo.de.uni_koeln.spinfo.classification.zone_analysis.classifier.svm.SVMClassifier;
 
 public class ExperimentSetupUI {
 	
@@ -37,7 +36,6 @@ public class ExperimentSetupUI {
 		classifiers.add(new ZoneKNNClassifier());
 		classifiers.add(new ZoneNaiveBayesClassifier());
 		classifiers.add(new ZoneRocchioClassifier());
-		classifiers.add(new SVMClassifier());
 
 		quantifiers.add(new LogLikeliHoodFeatureQuantifier());
 		quantifiers.add(new AbsoluteFrequencyFeatureQuantifier());
@@ -114,7 +112,7 @@ public class ExperimentSetupUI {
 			getExperimentConfiguration(dataFileName);
 		}
 		// get ExperimnentConfig
-		if(!(classifier instanceof ZoneNaiveBayesClassifier) && !(classifier instanceof SVMClassifier)){
+		if(!(classifier instanceof ZoneNaiveBayesClassifier) /*&& !(classifier instanceof SVMClassifier)*/){
 			Distance dist = getDistance(in);
 			classifier.setDistance(dist);
 		}
