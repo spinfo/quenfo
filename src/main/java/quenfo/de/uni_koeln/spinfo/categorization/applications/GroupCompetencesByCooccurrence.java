@@ -92,7 +92,7 @@ public class GroupCompetencesByCooccurrence {
 		System.out.println("\nread all valid competences inkl. contexts from DB "
 				+ validMatches.substring(validMatches.lastIndexOf("/") + 1));
 		Map<Entity, Set<Sentence>> validSentencesByComp = Cat_DBConnector.getSentencesByEntity(connection, categories,
-				IEType.COMPETENCE, true, trimSentences);
+				IEType.COMPETENCE_IN_3, true, trimSentences);
 		categories = null;
 		System.out.println("--> " + validSentencesByComp.keySet().size()+" different competences");
 
@@ -101,7 +101,7 @@ public class GroupCompetencesByCooccurrence {
 		System.out.println("\nread all not validated competences inkl. contexts from DB "
 				+ notValidMatches.substring(notValidMatches.lastIndexOf("/") + 1));
 		Map<Entity, Set<Sentence>> notValidSentencesByComp = Cat_DBConnector.getSentencesByEntity(connection, null,
-				IEType.COMPETENCE, false, trimSentences);
+				IEType.COMPETENCE_IN_3, false, trimSentences);
 		System.out.println("--> " + notValidSentencesByComp.keySet().size()+" different competences");
 
 		// Zusammenfügen aller eingelesenen Kompetenzen/Kontexte
@@ -135,14 +135,14 @@ public class GroupCompetencesByCooccurrence {
 			new File(outputFolder).mkdirs();
 		}
 		connection = Cat_DBConnector.connect(outputFolder + outputDB);
-		String tableName = Cat_DBConnector.createPairsTable(connection, IEType.COMPETENCE, trimSentences, contextSize);
+		String tableName = Cat_DBConnector.createPairsTable(connection, IEType.COMPETENCE_IN_3, trimSentences, contextSize);
 		Map<Double,List<Entity>> cooccurringComps;
 		if(trimSentences){
-			cooccurringComps = Cat_Jobs.getTrimmedCooccurrencePairs(allSentencesByComp, allCompsBySentence, connection, IEType.COMPETENCE, tableName);
+			cooccurringComps = Cat_Jobs.getTrimmedCooccurrencePairs(allSentencesByComp, allCompsBySentence, connection, IEType.COMPETENCE_IN_3, tableName);
 		}
 		else{
 			cooccurringComps = Cat_Jobs.getCooccurrencePairs(allSentencesByComp, allCompsBySentence, connection,
-					IEType.COMPETENCE, tableName);
+					IEType.COMPETENCE_IN_3, tableName);
 		
 		}
 		allCompsBySentence = null;
@@ -160,8 +160,8 @@ public class GroupCompetencesByCooccurrence {
 			Map<Integer, List<Entity>> cooccurrenceGroups = Cat_Jobs.buildCooccurrenceGroups(cooccurringComps,
 					minChiSquare, pairs);
 			System.out.println("write results");
-			tableName = Cat_DBConnector.createGroupTables(connection, IEType.COMPETENCE, Integer.toString(level), trimSentences, contextSize);
-			Cat_DBConnector.writeGroups(connection, cooccurrenceGroups, IEType.COMPETENCE, Integer.toString(level), tableName);
+			tableName = Cat_DBConnector.createGroupTables(connection, IEType.COMPETENCE_IN_3, Integer.toString(level), trimSentences, contextSize);
+			Cat_DBConnector.writeGroups(connection, cooccurrenceGroups, IEType.COMPETENCE_IN_3, Integer.toString(level), tableName);
 		}
 		long after = System.currentTimeMillis();
 		double time = (((double) after - before) / 1000) / 60;

@@ -9,6 +9,12 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.applicationsjb.ExtractN
 import quenfo.de.uni_koeln.spinfo.information_extraction.applicationsjb.MatchCompetences;
 import quenfo.de.uni_koeln.spinfo.information_extraction.applicationsjb.MatchTools;
 
+/**
+ * Class contains an application to run different workflows from command line
+ * workflows: classify, extractCompetences, extractTools, matchCompetences, matchTools
+ * @author Johanna Binnewitt
+ *
+ */
 public class Launcher {
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {

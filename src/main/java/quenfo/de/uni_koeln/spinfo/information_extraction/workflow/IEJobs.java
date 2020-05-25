@@ -584,7 +584,7 @@ public class IEJobs {
 								e = null;
 								continue;
 							}
-							if (type == IEType.COMPETENCE) {
+							if (type != IEType.TOOL) {
 								removeModifier(e);
 							}
 							if (e.getLemmata().size() < 1) {

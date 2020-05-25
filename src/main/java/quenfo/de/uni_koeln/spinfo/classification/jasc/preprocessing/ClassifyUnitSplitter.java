@@ -18,7 +18,7 @@ public class ClassifyUnitSplitter {
 		return toReturn;
 	}
 
-	public static List<String> splitAtEmptyLine(String toSplit) {
+	private static List<String> splitAtEmptyLine(String toSplit) {
 		List<String> toReturn = new ArrayList<String>();
 		List<String> splitted = splitAtNewLine(toSplit);
 		StringBuffer merged = new StringBuffer();
@@ -126,7 +126,7 @@ public class ClassifyUnitSplitter {
 		return listMatcher.matches();
 	}
 
-	public static List<String> mergeWhatBelongsTogether(List<String> strings) {
+	private static List<String> mergeWhatBelongsTogether(List<String> strings) {
 		List<String> toReturn = new ArrayList<String>();
 		String previous = "", next;
 		int i = 0;

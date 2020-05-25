@@ -102,7 +102,7 @@ public class GroupCompetencesByStringSimilarity {
 		connection = Cat_DBConnector.connect(notValidatedComps);
 		System.out.println("\nread all not validated competences from DB "
 				+ notValidatedComps.substring(notValidatedComps.lastIndexOf("/") + 1));
-		Set<Entity> notValidatedCompetences = Cat_DBConnector.readEntities(connection, IEType.COMPETENCE);
+		Set<Entity> notValidatedCompetences = Cat_DBConnector.readEntities(connection, IEType.COMPETENCE_IN_3);
 		System.out.println("--> " + notValidatedCompetences.size()+" competences");
 
 		// Zusammenfügen aller eingelesenen Kompetenzen
@@ -123,10 +123,10 @@ public class GroupCompetencesByStringSimilarity {
 			new File(outputFolder).mkdirs();
 		}
 		connection = Cat_DBConnector.connect(outputFolder + outputDB);
-		Cat_DBConnector.createPairsTable(connection, IEType.COMPETENCE);
+		Cat_DBConnector.createPairsTable(connection, IEType.COMPETENCE_IN_3);
 		SimilarityCalculator sc = new SimilarityCalculator(match, mismatch, gap);
 		Map<Double,List<Entity>> similarComps = Cat_Jobs.getSimilarityPairs(new ArrayList<Entity>(allCompetences), 
-				sc, minPairSimilarity, connection, IEType.COMPETENCE);
+				sc, minPairSimilarity, connection, IEType.COMPETENCE_IN_3);
 		System.out.println("--> number of similar competences: " + similarComps.size());
 
 		// Gruppenbildung
@@ -138,9 +138,9 @@ public class GroupCompetencesByStringSimilarity {
 			Map<Integer, List<Entity>> similarityGroups = Cat_Jobs.buildStringSimilarityGroups(similarComps, minSimilarity,
 					sc);
 			System.out.println("number of Groups: " + similarityGroups.keySet().size());
-			String tableName = Cat_DBConnector.createGroupTables(connection, IEType.COMPETENCE, Integer.toString(level));
+			String tableName = Cat_DBConnector.createGroupTables(connection, IEType.COMPETENCE_IN_3, Integer.toString(level));
 			System.out.println("write groups in Output-DB Table 'Groups_level_" + level + "'");
-			Cat_DBConnector.writeGroups(connection, similarityGroups, IEType.COMPETENCE, Integer.toString(level), tableName);
+			Cat_DBConnector.writeGroups(connection, similarityGroups, IEType.COMPETENCE_IN_3, Integer.toString(level), tableName);
 		}
 
 		long after = System.currentTimeMillis();

@@ -75,6 +75,7 @@ public class Extractor {
 	 */
 	/**
 	 * Constructor to match Tools
+	 * 
 	 * @param entities
 	 * @param modifiers
 	 * @param type
@@ -87,14 +88,15 @@ public class Extractor {
 		this.type = type;
 		this.possCompoundsFile = new File(PropertiesHandler.getPossibleCompounds());
 		this.splittedCompoundsFile = new File(PropertiesHandler.getSplittedCompounds());
-		this.jobs = new IEJobs(entities, null, modifiers, null, type, resolveCoordinations, 
-				possCompoundsFile, splittedCompoundsFile);
+		this.jobs = new IEJobs(entities, null, modifiers, null, type, resolveCoordinations, possCompoundsFile,
+				splittedCompoundsFile);
 		initialize();
 
 	}
 
 	/**
 	 * Constructor to match Competences
+	 * 
 	 * @param entities
 	 * @param modifiers
 	 * @param amsComps
@@ -212,7 +214,7 @@ public class Extractor {
 		Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> extractions = null;
 		Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> allExtractions = new HashMap<ExtractionUnit, Map<InformationEntity, List<Pattern>>>();
 
-		int paragraphsPerRound = 10000;
+		int paragraphsPerRound = 10; // TODO JB paragraphs per Round als ConfigVariable
 		int readParagraphs = 0;
 		int offset = startPos;
 		if (maxCount > -1 && paragraphsPerRound > maxCount) {
@@ -294,13 +296,14 @@ public class Extractor {
 			// Speichern der Extraktionsergebnisse in der Output-DB
 			String outputPath = outputConnection.getMetaData().getURL().replace("jdbc:sqlite:", "");
 			log.info("write extracted " + type.name().toLowerCase() + "s in output-DB " + outputPath);
-				IE_DBConnector.createExtractionOutputTable(outputConnection, type, true);
-			if (type == IEType.COMPETENCE) {
-				IE_DBConnector.writeCompetenceExtractions(allExtractions, outputConnection, true);
-			}
+			IE_DBConnector.createExtractionOutputTable(outputConnection, type, true);
 			if (type == IEType.TOOL) {
 				IE_DBConnector.writeToolExtractions(allExtractions, outputConnection, true);
+			} else {
+//				if (type == IEType.COMPETENCE_IN_3) {
+				IE_DBConnector.writeCompetenceExtractions(allExtractions, outputConnection, true);
 			}
+
 		}
 		// schreibt die txt-Files (competences.txt & noCompetences.txt) neu, da
 		// zu Beginn evtl. neue manuell annotierte eingelesen wurden
@@ -315,34 +318,36 @@ public class Extractor {
 	}
 
 	private Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> matchBatch(List<ExtractionUnit> extractionUnits,
-			Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> stringMatches, Tool lemmatizer) throws SQLException, IOException {
+			Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> stringMatches, Tool lemmatizer)
+			throws SQLException, IOException {
 
 		stringMatches = jobs.extractByStringMatch(extractionUnits, lemmatizer);
 		stringMatches = jobs.mergeInformationEntities(stringMatches);
 
 		// set Modifiers
-		if (jobs.type == IEType.COMPETENCE) {
+//		if (jobs.type == IEType.COMPETENCE_IN_3) {
+		if (jobs.type != IEType.TOOL) {
 			jobs.setModifiers(stringMatches);
 		}
 
-		
 		return stringMatches;
 	}
 
 	/**
 	 * Match Information Entities in ClassifyUnits from DerbyDB
+	 * 
 	 * @param statisticsFile
 	 * @param outputConnection
 	 * @param em
 	 * @param startPos
 	 * @param queryLimit
-	 * @param competence 
+	 * @param competence
 	 * @throws SQLException
 	 * @throws IOException
 	 */
 	@SuppressWarnings("unchecked")
-	public void stringMatch(File statisticsFile, Connection outputConnection, EntityManager em, int startPos, int queryLimit)
-			throws SQLException, IOException {
+	public void stringMatch(File statisticsFile, Connection outputConnection, EntityManager em, int startPos,
+			int queryLimit) throws SQLException, IOException {
 
 		Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> stringMatches = null;
 
@@ -350,7 +355,7 @@ public class Extractor {
 		Query query = em.createNamedQuery("getClassXExtractionUnits");
 		log.info("build query");
 		switch (jobs.type) {
-		case COMPETENCE:
+		case COMPETENCE_IN_3:
 			query.setParameter("class", 3);
 			break;
 		case TOOL:
@@ -358,16 +363,16 @@ public class Extractor {
 		default:
 			break;
 		}
-		
-		//TODO JB: Tools: Class 2 & 3?
-		
-		//int startPos = 0;
+
+		// TODO JB: PersistenceAPI search in Class 2 & 3
+
+		// int startPos = 0;
 		if (queryLimit < 0)
-			queryLimit = Integer.MAX_VALUE; //TODO maxCount default = 50000
-		
-		int batch = 200;//TODO break wenn limit maxCount erreicht ist		
-		
-		if (queryLimit < batch) 
+			queryLimit = Integer.MAX_VALUE; // TODO maxCount default = 50000
+
+		int batch = 200;// TODO break wenn limit maxCount erreicht ist
+
+		if (queryLimit < batch)
 			batch = queryLimit;
 
 		List<ExtractionUnit> currentEUs;
@@ -375,31 +380,31 @@ public class Extractor {
 		while (startPos < queryLimit) {
 			query.setFirstResult(startPos);
 			query.setMaxResults(batch);
-			
+
 			currentEUs = query.getResultList();
-			
+
 			if (currentEUs.isEmpty())
 				break;
-			
+
 			jobs.annotateTokens(currentEUs);
-			
+
 			stringMatches = matchBatch(currentEUs, stringMatches, null);
-			
+
 			// write results in DB
 			if (stringMatches.isEmpty()) {
 				log.info("no " + jobs.type.name() + " matches found\n");
 			} else {
 				String outputPath = outputConnection.getMetaData().getURL().replace("jdbc:sqlite:", "");
 				log.info("write results in output-DB: " + outputPath);
-				if (jobs.type == IEType.COMPETENCE) {
+				if (jobs.type == IEType.COMPETENCE_IN_3) {
 					IE_DBConnector.writeCompetenceExtractions(stringMatches, outputConnection, false);
 				}
 				if (jobs.type == IEType.TOOL) {
 					IE_DBConnector.writeToolExtractions(stringMatches, outputConnection, false);
 				}
 			}
-			updateMatchCount(stringMatches, matchCounts);		
-			
+			updateMatchCount(stringMatches, matchCounts);
+
 			startPos += currentEUs.size();
 
 		}
@@ -415,6 +420,7 @@ public class Extractor {
 
 	/**
 	 * Match InformationEntities in ClassifyUnits from SQLite DB
+	 * 
 	 * @param statisticsFile
 	 * @param inputConnection
 	 * @param outputConnection
@@ -437,7 +443,7 @@ public class Extractor {
 		Class_DBConnector.addColumn(inputConnection, "POSTags", "ClassifiedParagraphs");
 		// Lemmatizer (nur für den Fall, dass noch Lemmata generiert werden
 		// müssen)
-		Tool lemmatizer = new Lemmatizer(PropertiesHandler.getLemmatizerModel(),false);
+		Tool lemmatizer = new Lemmatizer(PropertiesHandler.getLemmatizerModel(), false);
 
 		List<ClassifyUnit> classifyUnits = null;
 		List<ExtractionUnit> extractionUnits = null;
@@ -446,6 +452,7 @@ public class Extractor {
 		// Aus Speichergründen werden jeweils nur 50000 Paragraphen eingelesen
 		// und verarbeitet
 		int paragraphsPerRound = 50000;
+		// TODO JB fetchSize als Variable
 		int readParagraphs = 0;
 		int offset = startPos;
 
@@ -478,19 +485,20 @@ public class Extractor {
 			jobs.annotateTokens(extractionUnits);
 
 			stringMatches = matchBatch(extractionUnits, stringMatches, lemmatizer);
-			
+
 			// write results in DB
 			if (stringMatches.isEmpty()) {
 				log.info("no " + jobs.type.name() + " matches found\n");
 			} else {
 				String outputPath = outputConnection.getMetaData().getURL().replace("jdbc:sqlite:", "");
 				log.info("write results in output-DB: " + outputPath);
-				if (jobs.type == IEType.COMPETENCE) {
-					IE_DBConnector.writeCompetenceExtractions(stringMatches, outputConnection, false);
-				}
 				if (jobs.type == IEType.TOOL) {
 					IE_DBConnector.writeToolExtractions(stringMatches, outputConnection, false);
+				} else {
+//				if (jobs.type == IEType.COMPETENCE_IN_3) {
+					IE_DBConnector.writeCompetenceExtractions(stringMatches, outputConnection, false);
 				}
+
 			}
 
 			updateMatchCount(stringMatches, matchCounts);

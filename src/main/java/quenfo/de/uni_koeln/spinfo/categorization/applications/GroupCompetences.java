@@ -75,8 +75,8 @@ public class GroupCompetences {
 			Map<Integer,List<Entity>> cooccGroups = Cat_DBConnector.readGroups(cooccConnection, cooccTable);
 			Map<Integer,List<Entity>> simGroups = Cat_DBConnector.readGroups(simConnection, "Groups_level_"+level);
 			Map<Integer, List<Entity>> groups = Cat_Jobs.buildMergedGroups(cooccGroups, simGroups);
-			String tableName = Cat_DBConnector.createGroupTables(outputConnection, IEType.COMPETENCE, Integer.toString(level), trimSentences, contextSize);
-			Cat_DBConnector.writeGroups(outputConnection, groups, IEType.COMPETENCE,
+			String tableName = Cat_DBConnector.createGroupTables(outputConnection, IEType.COMPETENCE_IN_3, Integer.toString(level), trimSentences, contextSize);
+			Cat_DBConnector.writeGroups(outputConnection, groups, IEType.COMPETENCE_IN_3,
 					Integer.toString(level), tableName);
 		}
 		long after = System.currentTimeMillis();

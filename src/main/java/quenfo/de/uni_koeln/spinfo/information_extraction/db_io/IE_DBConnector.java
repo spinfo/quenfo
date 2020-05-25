@@ -46,7 +46,7 @@ public class IE_DBConnector {
 	}
 
 	/**
-	 * Creates the Output-Tables for the extracted competenes/tools
+	 * Creates the Output-Tables for the extracted competences/tools
 	 * 
 	 * @param connection
 	 * @param type       type of Information (competences or tools)
@@ -57,28 +57,34 @@ public class IE_DBConnector {
 		String sql = null;
 		connection.setAutoCommit(false);
 		Statement stmt = connection.createStatement();
-		if (type == IEType.COMPETENCE) {
-			sql = "DROP TABLE IF EXISTS Competences";
-		}
 		if (type == IEType.TOOL) {
 			sql = "DROP TABLE IF EXISTS Tools";
+		} else { // bei allen anderen Comptence-Fällen
+			sql = "DROP TABLE IF EXISTS Competences";
 		}
+		
+//		if (type == IEType.COMPETENCE_IN_3) {
+//			sql = "DROP TABLE IF EXISTS Competences";
+//		}
+		
 		stmt.executeUpdate(sql);
 		if (correctable) {
-			if (type == IEType.COMPETENCE) {
-				sql = "CREATE TABLE Competences (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, Sentence TEXT NOT NULL, Comp TEXT, Contexts INT, ContextDescriptions TEXT NOT NULL, isCompetence INT NOT NULL, Notes TEXT)";
-			}
 			if (type == IEType.TOOL) {
 				sql = "CREATE TABLE Tools (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, Sentence TEXT NOT NULL, Tool TEXT NOT NULL, Contexts TEXT NOT NULL, ContextDescriptions TEXT NOT NULL, isTool INT NOT NULL, Notes TEXT)";
 			}
-		} else {
-			if (type == IEType.COMPETENCE) {
-				sql = "CREATE TABLE Competences (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, SentenceID TEXT NOT NULL, Lemmata TEXT NOT NULL, Sentence TEXT NOT NULL, Label TEXT, Comp TEXT, Importance TEXT)";
+			else {
+//			if (type == IEType.COMPETENCE_IN_3) {
+				sql = "CREATE TABLE Competences (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, Sentence TEXT NOT NULL, Comp TEXT, Contexts INT, ContextDescriptions TEXT NOT NULL, isCompetence INT NOT NULL, Notes TEXT)";
 			}
+		} else {
 			if (type == IEType.TOOL) {
 				sql = "CREATE TABLE Tools (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, SentenceID TEXT NOT NULL, Lemmata TEXT NOT NULL ,Sentence TEXT NOT NULL, Tool TEXT NOT NULL)";
 
+			} else {
+//			if (type == IEType.COMPETENCE_IN_3) {
+				sql = "CREATE TABLE Competences (ID INTEGER PRIMARY KEY AUTOINCREMENT, Jahrgang INT NOT NULL, Zeilennr INT NOT NULL, ParaID TEXT NOT NULL, SentenceID TEXT NOT NULL, Lemmata TEXT NOT NULL, Sentence TEXT NOT NULL, Label TEXT, Comp TEXT, Importance TEXT)";
 			}
+			
 		}
 		stmt.executeUpdate(sql);
 		stmt.close();
@@ -99,18 +105,25 @@ public class IE_DBConnector {
 	 */
 	public static List<ClassifyUnit> readClassifyUnits(int count, int startPos, Connection connection, IEType type)
 			throws SQLException {
+
 		connection.setAutoCommit(false);
 		String query = null;
-		if (type == IEType.COMPETENCE) {
+		if (type == IEType.COMPETENCE_IN_3) {
 			query = "SELECT * FROM ClassifiedParagraphs WHERE(ClassTHREE = '1') LIMIT ? OFFSET ?;";
+		} else if (type == IEType.COMPETENCE_IN_2) {
+			query = "SELECT * FROM ClassifiedParagraphs WHERE(ClassTWO = '1') LIMIT ? OFFSET ?;";
+		} else if (type == IEType.COMPETENCE_IN_23) {
+			query = "SELECT * FROM ClassifiedParagraphs WHERE (ClassTWO = '1' OR ClassTHREE = '1') LIMIT ? OFFSET ?;";
 		}
-		if (type == IEType.TOOL) {
+		else if (type == IEType.TOOL) {
 			query = "SELECT * FROM ClassifiedParagraphs WHERE(ClassTHREE = '1' OR ClassTWO = '1') LIMIT ? OFFSET ?;";
 		}
+		
 		ResultSet result;
 		PreparedStatement prepStmt = connection.prepareStatement(query);
 		prepStmt.setInt(1, count);
 		prepStmt.setInt(2, startPos);
+		prepStmt.setFetchSize(100); //TODO fetchSize
 		result = prepStmt.executeQuery();
 		List<ClassifyUnit> classifyUnits = new ArrayList<ClassifyUnit>();
 		ClassifyUnit classifyUnit;
@@ -368,14 +381,6 @@ public class IE_DBConnector {
 		Set<String> toReturn = new TreeSet<String>();
 		connection.setAutoCommit(false);
 		String sql = null;
-		if (type == IEType.COMPETENCE) {
-			if (annotated == -1) {
-				sql = "SELECT Comp FROM Competences";
-			} else {
-				sql = "SELECT Comp FROM Competences WHERE(isCompetence = '" + annotated + "')";
-			}
-
-		}
 		if (type == IEType.TOOL) {
 			if (annotated == -1) {
 				sql = "SELECT Tool FROM Tools";
@@ -383,7 +388,16 @@ public class IE_DBConnector {
 				sql = "SELECT Tool FROM Tools WHERE(isTool = '" + annotated + "')";
 			}
 
+		} else {
+//		if (type == IEType.COMPETENCE_IN_3) {
+			if (annotated == -1) {
+				sql = "SELECT Comp FROM Competences";
+			} else {
+				sql = "SELECT Comp FROM Competences WHERE(isCompetence = '" + annotated + "')";
+			}
+
 		}
+		
 		Statement stmt = connection.createStatement();
 		ResultSet result = stmt.executeQuery(sql);
 		while (result.next()) {

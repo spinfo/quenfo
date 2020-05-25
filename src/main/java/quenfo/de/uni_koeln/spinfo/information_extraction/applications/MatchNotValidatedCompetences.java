@@ -75,7 +75,7 @@ public class MatchNotValidatedCompetences {
 			new File(outputFolder).mkdirs();
 		}
 		Connection outputConnection = IE_DBConnector.connect(outputFolder + outputDB);
-		IE_DBConnector.createExtractionOutputTable(outputConnection, IEType.COMPETENCE, false);
+		IE_DBConnector.createExtractionOutputTable(outputConnection, IEType.COMPETENCE_IN_3, false);
 
 		// Prüfe ob maxCount und startPos gültige Werte haben
 		String query = "SELECT COUNT(*) FROM ClassifiedParagraphs;";
@@ -95,7 +95,7 @@ public class MatchNotValidatedCompetences {
 		// Einlesen der extrahierten Kompetenzvorschläge
 		System.out.println("read not validated Competences from DB");
 		Connection extractionsConnection = IE_DBConnector.connect(extratedCompsDB);
-		Set<String> extractions = IE_DBConnector.readEntities(extractionsConnection, IEType.COMPETENCE);
+		Set<String> extractions = IE_DBConnector.readEntities(extractionsConnection, IEType.COMPETENCE_IN_3);
 		// Kompetenz-Vorschläge in eine txt-Datei schreiben
 		// (Der Umweg über den txt-File wird genommen, um den bereits
 		// bestehenden Workflow zum Matchen der validierten Kompetenzen nutzen
@@ -112,7 +112,7 @@ public class MatchNotValidatedCompetences {
 		// erzeugt einen Index auf die Spalte 'ClassTHREE' (falls noch nicht
 		// vorhanden)
 		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTHREE");
-		Extractor extractor = new Extractor(notValidatedCompetences, modifier, IEType.COMPETENCE, expandCoordinates);
+		Extractor extractor = new Extractor(notValidatedCompetences, modifier, IEType.COMPETENCE_IN_3, expandCoordinates);
 		extractor.stringMatch(statisticsFile, inputConnection, outputConnection, maxCount, startPos);
 		long after = System.currentTimeMillis();
 		double time = (((double) after - before) / 1000) / 60;

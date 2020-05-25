@@ -83,7 +83,7 @@ public class MatchCompetences {
 			new File(outputFolder).mkdirs();
 		}
 		Connection outputConnection = IE_DBConnector.connect(outputFolder + outputDB);
-		IE_DBConnector.createExtractionOutputTable(outputConnection, IEType.COMPETENCE, false);
+		IE_DBConnector.createExtractionOutputTable(outputConnection, IEType.COMPETENCE_IN_3, false);
 		
 		// Prüfe ob maxCount und startPos gültige Werte haben
 		String query = "SELECT COUNT(*) FROM ClassifiedParagraphs;";
@@ -104,7 +104,7 @@ public class MatchCompetences {
 		long before = System.currentTimeMillis();
 		//erzeugt einen Index auf die Spalte 'ClassTHREE' (falls noch nicht vorhanden)
 		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTHREE");
-		Extractor extractor = new Extractor(notCatComps, modifier, catComps, category, IEType.COMPETENCE, resolveCoordinations);
+		Extractor extractor = new Extractor(notCatComps, modifier, catComps, category, IEType.COMPETENCE_IN_3, resolveCoordinations);
 		extractor.stringMatch(statisticsFile, inputConnection, outputConnection, maxCount, startPos);
 		long after = System.currentTimeMillis();
 		double time = (((double) after - before) / 1000) / 60;

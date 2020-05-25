@@ -24,6 +24,8 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
  *
  */
 public class ExtractNewCompetences {
+	
+	static IEType ieType;
 
 	// Pfad zur Input-DB mit den klassifizierten Paragraphen
 	static String paraInputDB;
@@ -109,7 +111,7 @@ public class ExtractNewCompetences {
 		// Index für die Spalte 'ClassTHREE' anlegen für schnelleren Zugriff
 		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTHREE");
 		Extractor extractor = new Extractor(outputConnection, competences, noCompetences, compPatterns, modifier,
-				IEType.COMPETENCE, expandCoordinates);
+				ieType, expandCoordinates);
 		if (queryLimit == -1) {
 			queryLimit = tableSize;
 		}
@@ -137,6 +139,8 @@ public class ExtractNewCompetences {
 		//initialize and load all properties files
 		String quenfoData = configFolder.getParent();
 		PropertiesHandler.initialize(configFolder);
+		
+		ieType = PropertiesHandler.getSearchType("ie");
 
 
 		paraInputDB = quenfoData + "/sqlite/classification/" + PropertiesHandler.getStringProperty("general", "classifiedParagraphs");

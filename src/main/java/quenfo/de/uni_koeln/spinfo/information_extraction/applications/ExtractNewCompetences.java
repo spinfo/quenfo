@@ -104,7 +104,7 @@ public class ExtractNewCompetences {
 		// Index für die Spalte 'ClassTHREE' anlegen für schnelleren Zugriff
 		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTHREE");
 		Extractor extractor = new Extractor(outputConnection, competences, noCompetences, patternsFile, modifierFile,
-				IEType.COMPETENCE, resolveCoordinations);
+				IEType.COMPETENCE_IN_3, resolveCoordinations);
 		if (maxCount == -1) {
 			maxCount = tableSize;
 		}

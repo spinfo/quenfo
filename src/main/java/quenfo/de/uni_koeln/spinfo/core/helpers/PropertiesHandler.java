@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import quenfo.de.uni_koeln.spinfo.information_extraction.data.IEType;
+
 
 public class PropertiesHandler {
 	
@@ -102,6 +104,29 @@ public class PropertiesHandler {
 		}
 		
 		return nGrams;
+	}
+	
+	public static IEType getSearchType(String domain) {
+		String value = getProperty(domain, "search");
+		IEType ieType;
+		
+		switch (value) {
+		case "2":
+			ieType = IEType.COMPETENCE_IN_2;
+			break;
+		case "3":
+			ieType = IEType.COMPETENCE_IN_3;
+			break;
+		case "23":
+			ieType = IEType.COMPETENCE_IN_23;
+			break;
+		default:
+			System.out.println("default: search in Class 3");
+			ieType = IEType.COMPETENCE_IN_3;
+			break;
+		}
+		
+		return ieType;
 	}
 	
 
