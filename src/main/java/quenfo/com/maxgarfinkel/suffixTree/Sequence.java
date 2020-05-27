@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 public class Sequence<I, S extends Iterable<I>> implements Iterable<Object> {
 
 	private List<Object> masterSequence = new ArrayList<Object>();
-	Logger logger = Logger.getLogger(Sequence.class);
+	Logger logger = Logger.getLogger(getClass());
 
 	Sequence(){
 	}

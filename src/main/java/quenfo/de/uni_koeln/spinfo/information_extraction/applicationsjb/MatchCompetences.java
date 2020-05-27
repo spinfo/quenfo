@@ -12,7 +12,7 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
 import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
 
 /**
- * @author geduldia
+ * @author jbinnewi
  * 
  *         workflow to match the already validated competences (from competences.txt) against the as class 3 classified paragraphs
  *         

@@ -12,12 +12,12 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
 import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
 
 /**
- * @author geduldia
+ * @author jbinnewi
  * 
  *         Workflow to extract new tools
  * 
  *         Input: in class 3 (= applicants profile) and/or class 2 (=
- *         jobbdescription) classified paragraphs
+ *         job description) classified paragraphs
  * 
  *         Output: extracted tools
  *

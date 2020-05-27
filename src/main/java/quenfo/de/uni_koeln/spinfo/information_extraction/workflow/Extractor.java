@@ -264,7 +264,7 @@ public class Extractor {
 
 			// Informationsextraktion
 			jobs.annotateTokens(extractionUnits);
-			log.info("extract " + type.name().toLowerCase() + "s");
+			log.info("extract " + type.name().toLowerCase());
 			extractions = jobs.extractEntities(extractionUnits, lemmatizer);
 
 			possCompoundSplits.putAll(jobs.getNewCompounds());

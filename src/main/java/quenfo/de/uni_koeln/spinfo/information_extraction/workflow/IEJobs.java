@@ -13,8 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import com.google.common.io.Files;
 
@@ -66,8 +65,9 @@ public class IEJobs {
 	// private CoordinationResolver cr;
 	private CoordinateExpander ce;
 
-	private static Logger log = LoggerFactory.getLogger(IEJobs.class);
-
+	//private static Logger log = LoggerFactory.getLogger(IEJobs.class);
+	Logger log = Logger.getLogger(getClass());
+	
 	/**
 	 * @param competences
 	 * @param noCompetences

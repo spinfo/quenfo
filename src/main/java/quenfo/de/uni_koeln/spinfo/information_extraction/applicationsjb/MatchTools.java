@@ -14,7 +14,7 @@ import quenfo.de.uni_koeln.spinfo.information_extraction.db_io.IE_DBConnector;
 import quenfo.de.uni_koeln.spinfo.information_extraction.workflow.Extractor;
 
 /**
- * @author geduldia
+ * @author jbinnewi
  * 
  *         workflow to match the already validated tools (from tools.txt)
  *         against all as class 3 and/or class 2 classified paragraphs

@@ -71,7 +71,7 @@
 		<weka.version>3.8.2</weka.version>
 		<jsoup.version>1.8.3</jsoup.version>
 		<log4j.version>1.2.17</log4j.version>
-		<slf4j.version>1.7.5</slf4j.version>
+		<!-- <slf4j.version>1.7.5</slf4j.version> -->
 		<opencsv.version>4.0</opencsv.version>
 		<jena.version>3.10.0</jena.version>
 		<lombok.version>1.18.8</lombok.version>
@@ -128,6 +128,7 @@
 			<version>${opencsv.version}</version>
 		</dependency>
 
+		<!-- RDF -->
 		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>apache-jena-libs</artifactId>
@@ -141,8 +142,8 @@
 			<version>${jsoup.version}</version>
 		</dependency>
 
-		<dependency>
-			<!-- Deprecated (Excel Parsing) -->
+		<!--  Deprecated (Excel Parsing) -->
+		<dependency>		
 			<groupId>net.sourceforge.jexcelapi</groupId>
 			<artifactId>jxl</artifactId>
 			<version>${jxl.version}</version>
@@ -151,11 +152,11 @@
 
 
 		<!-- Logging -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>${log4j.version}</version>
-		</dependency>
+		</dependency> -->
 
 		<!-- NLP -->
 		<dependency>
