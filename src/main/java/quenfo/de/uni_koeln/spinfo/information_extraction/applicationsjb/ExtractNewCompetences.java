@@ -58,6 +58,8 @@ public class ExtractNewCompetences {
 	// falls nur eine bestimmte Anzahl gelesen werden soll, hier die startID
 	// angeben
 	static int startPos;
+	
+	static int fetchSize;
 
 	// true, falls Koordinationen in Informationseinheit aufgelöst werden sollen
 	static boolean expandCoordinates;
@@ -115,7 +117,7 @@ public class ExtractNewCompetences {
 		if (queryLimit == -1) {
 			queryLimit = tableSize;
 		}
-		extractor.extract(startPos, queryLimit, tableSize, inputConnection, outputConnection);
+		extractor.extract(startPos, queryLimit, fetchSize, tableSize, inputConnection, outputConnection);
 		long after = System.currentTimeMillis();
 		Double time = (((double) after - before) / 1000) / 60;
 		if (time > 60.0) {
@@ -147,6 +149,7 @@ public class ExtractNewCompetences {
 		
 		queryLimit = PropertiesHandler.getIntProperty("ie", "queryLimit");
 		startPos = PropertiesHandler.getIntProperty("ie", "startPos");
+		fetchSize = PropertiesHandler.getIntProperty("ie", "fetchSize");
 		expandCoordinates = PropertiesHandler.getBoolProperty("ie", "expandCoordinates");
 		
 		

@@ -16,9 +16,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
 import org.apache.log4j.Logger;
 
 import quenfo.de.uni_koeln.spinfo.classification.core.data.ClassifyUnit;
@@ -58,13 +55,8 @@ public class Extractor {
 	private Set<String> noEntities = new HashSet<String>();
 	private Map<String, String> possCompoundSplits = new HashMap<String, String>();
 	private File possCompoundsFile, splittedCompoundsFile;
-	private boolean resolveCoordinations;
 	private File entitiesFile;
-	// private File amsComps;
 	private File noEntitiesFile;
-	private File contexts;
-	private File modifier;
-
 	// TODO Konstruktoren refactoring
 	// Konstruktor für die Matching-Workflows
 	/**
@@ -83,7 +75,6 @@ public class Extractor {
 	 * @throws IOException
 	 */
 	public Extractor(File entities, File modifiers, IEType type, boolean resolveCoordinations) throws IOException {
-		this.resolveCoordinations = resolveCoordinations;
 		this.entitiesFile = entities;
 		this.type = type;
 		this.possCompoundsFile = new File(PropertiesHandler.getPossibleCompounds());
@@ -107,7 +98,6 @@ public class Extractor {
 	 */
 	public Extractor(File entities, File modifiers, File amsComps, String category, IEType type,
 			boolean resolveCoordinations) throws IOException {
-		this.resolveCoordinations = resolveCoordinations;
 		this.entitiesFile = entities;
 		this.type = type;
 		this.possCompoundsFile = new File(PropertiesHandler.getPossibleCompounds());
@@ -134,8 +124,6 @@ public class Extractor {
 			IEType type, boolean resolveCoordinations) throws IOException, SQLException {
 		this.entitiesFile = entitiesFile;
 		this.noEntitiesFile = noEntitiesFile;
-		this.modifier = modifier;
-		this.contexts = contexts;
 		this.type = type;
 		this.possCompoundsFile = new File(PropertiesHandler.getPossibleCompounds());
 		this.splittedCompoundsFile = new File(PropertiesHandler.getSplittedCompounds());
@@ -192,8 +180,8 @@ public class Extractor {
 	 * @throws IOException
 	 * @throws SQLException
 	 */
-	public Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> extract(int startPos, int maxCount, int tablesize,
-			Connection inputConnection, Connection outputConnection) throws IOException, SQLException {
+	public Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> extract(int startPos, int maxCount, int paragraphsPerRound,
+			int tablesize, Connection inputConnection, Connection outputConnection) throws IOException, SQLException {
 
 		// Falls die lexikalischen Infos (lemmata, POS-Tags etc.) noch nicht in
 		// der Input-DB hinterlegt sind, dann werden Sie in diesem Workflow
@@ -214,7 +202,6 @@ public class Extractor {
 		Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> extractions = null;
 		Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> allExtractions = new HashMap<ExtractionUnit, Map<InformationEntity, List<Pattern>>>();
 
-		int paragraphsPerRound = 10; // TODO JB paragraphs per Round als ConfigVariable
 		int readParagraphs = 0;
 		int offset = startPos;
 		if (maxCount > -1 && paragraphsPerRound > maxCount) {
@@ -226,10 +213,6 @@ public class Extractor {
 		double time;
 		boolean finished = false;
 
-		// Aus Speichergründen werden jeweils nur 10000 Paragraphen eingelesen,
-		// zu ExtractionUnits verarbeitet und zur Extraktion weitergegeben
-		// Die Extraktionen aus jeder Runde werden in der Map AllExtractions
-		// gesammelt
 		while (!finished) {
 			before = System.currentTimeMillis();
 
@@ -280,8 +263,9 @@ public class Extractor {
 			classifyUnits = null;
 			extractions = null;
 			extractionUnits = null;
-			this.jobs = new IEJobs(entitiesFile, noEntitiesFile, modifier, contexts, type, resolveCoordinations,
-					possCompoundsFile, splittedCompoundsFile);
+//			this.jobs = new IEJobs(entitiesFile, noEntitiesFile, modifier, contexts, type, resolveCoordinations,
+//					possCompoundsFile, splittedCompoundsFile);
+			// TODO JB: warum IEJobs neu instanziiert?
 			jobs.addKnownEntities(knownEntities);
 			jobs.addNoEntities(noEntities);
 		}
@@ -334,91 +318,6 @@ public class Extractor {
 	}
 
 	/**
-	 * Match Information Entities in ClassifyUnits from DerbyDB
-	 * 
-	 * @param statisticsFile
-	 * @param outputConnection
-	 * @param em
-	 * @param startPos
-	 * @param queryLimit
-	 * @param competence
-	 * @throws SQLException
-	 * @throws IOException
-	 */
-	@SuppressWarnings("unchecked")
-	public void stringMatch(File statisticsFile, Connection outputConnection, EntityManager em, int startPos,
-			int queryLimit) throws SQLException, IOException {
-
-		Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> stringMatches = null;
-
-		Map<String, Integer> matchCounts = new HashMap<String, Integer>();
-		Query query = em.createNamedQuery("getClassXExtractionUnits");
-		log.info("build query");
-		switch (jobs.type) {
-		case COMPETENCE_IN_3:
-			query.setParameter("class", 3);
-			break;
-		case TOOL:
-			query.setParameter("class", 2);
-		default:
-			break;
-		}
-
-		// TODO JB: PersistenceAPI search in Class 2 & 3
-
-		// int startPos = 0;
-		if (queryLimit < 0)
-			queryLimit = Integer.MAX_VALUE; // TODO maxCount default = 50000
-
-		int batch = 200;// TODO break wenn limit maxCount erreicht ist
-
-		if (queryLimit < batch)
-			batch = queryLimit;
-
-		List<ExtractionUnit> currentEUs;
-
-		while (startPos < queryLimit) {
-			query.setFirstResult(startPos);
-			query.setMaxResults(batch);
-
-			currentEUs = query.getResultList();
-
-			if (currentEUs.isEmpty())
-				break;
-
-			jobs.annotateTokens(currentEUs);
-
-			stringMatches = matchBatch(currentEUs, stringMatches, null);
-
-			// write results in DB
-			if (stringMatches.isEmpty()) {
-				log.info("no " + jobs.type.name() + " matches found\n");
-			} else {
-				String outputPath = outputConnection.getMetaData().getURL().replace("jdbc:sqlite:", "");
-				log.info("write results in output-DB: " + outputPath);
-				if (jobs.type == IEType.COMPETENCE_IN_3) {
-					IE_DBConnector.writeCompetenceExtractions(stringMatches, outputConnection, false);
-				}
-				if (jobs.type == IEType.TOOL) {
-					IE_DBConnector.writeToolExtractions(stringMatches, outputConnection, false);
-				}
-			}
-			updateMatchCount(stringMatches, matchCounts);
-
-			startPos += currentEUs.size();
-
-		}
-
-		// write statisticsFile
-		log.info("write Statistics-File to: " + statisticsFile.getAbsolutePath());
-		writeStatistics(matchCounts, statisticsFile);
-		if (possCompoundSplits.size() > 0) {
-			log.info("write new compounds to evaluate in: " + possCompoundsFile.getAbsolutePath());
-			writeNewCoordinations();
-		}
-	}
-
-	/**
 	 * Match InformationEntities in ClassifyUnits from SQLite DB
 	 * 
 	 * @param statisticsFile
@@ -430,7 +329,7 @@ public class Extractor {
 	 * @throws IOException
 	 */
 	public void stringMatch(File statisticsFile, Connection inputConnection,
-			Connection outputConnection/* , String outputDBPath */, int maxCount, int startPos)
+			Connection outputConnection/* , String outputDBPath */, int maxCount, int startPos, int paragraphsPerRound)
 			throws SQLException, IOException {
 
 		// Falls die lexikalischen Infos (sentences, lemmata) noch nicht in der
@@ -449,10 +348,6 @@ public class Extractor {
 		List<ExtractionUnit> extractionUnits = null;
 		Map<ExtractionUnit, Map<InformationEntity, List<Pattern>>> stringMatches = null;
 
-		// Aus Speichergründen werden jeweils nur 50000 Paragraphen eingelesen
-		// und verarbeitet
-		int paragraphsPerRound = 50000;
-		// TODO JB fetchSize als Variable
 		int readParagraphs = 0;
 		int offset = startPos;
 
@@ -481,7 +376,6 @@ public class Extractor {
 			log.info("--> " + extractionUnits.size() + " ExtractionUnits");
 
 			// Matching
-			log.info("match");
 			jobs.annotateTokens(extractionUnits);
 
 			stringMatches = matchBatch(extractionUnits, stringMatches, lemmatizer);
@@ -491,7 +385,7 @@ public class Extractor {
 				log.info("no " + jobs.type.name() + " matches found\n");
 			} else {
 				String outputPath = outputConnection.getMetaData().getURL().replace("jdbc:sqlite:", "");
-				log.info("write results in output-DB: " + outputPath);
+				log.info("write results in output-DB: " + outputPath + "\n");
 				if (jobs.type == IEType.TOOL) {
 					IE_DBConnector.writeToolExtractions(stringMatches, outputConnection, false);
 				} else {

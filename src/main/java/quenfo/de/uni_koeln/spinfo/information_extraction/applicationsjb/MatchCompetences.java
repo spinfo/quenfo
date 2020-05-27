@@ -56,6 +56,8 @@ public class MatchCompetences {
 	// Startposition angeben
 	static int startPos;
 	
+	static int fetchSize;
+	
 	// true, falls Koordinationen  in Informationseinheit aufgelöst werden sollen
 	static boolean expandCoordinates;
 
@@ -103,7 +105,7 @@ public class MatchCompetences {
 		//erzeugt einen Index auf die Spalte 'ClassTHREE' (falls noch nicht vorhanden)
 		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTHREE");
 		Extractor extractor = new Extractor(notCatComps, modifier, catComps, category, ieType, expandCoordinates);
-		extractor.stringMatch(statisticsFile, inputConnection, outputConnection, maxCount, startPos);
+		extractor.stringMatch(statisticsFile, inputConnection, outputConnection, maxCount, startPos, fetchSize);
 		long after = System.currentTimeMillis();
 		double time = (((double) after - before) / 1000) / 60;
 		if (time > 60.0) {
@@ -136,6 +138,7 @@ public class MatchCompetences {
 		
 		maxCount = PropertiesHandler.getIntProperty("matching", "queryLimit");
 		startPos = PropertiesHandler.getIntProperty("matching", "startPos");
+		fetchSize = PropertiesHandler.getIntProperty("matching", "fetchSize");
 		expandCoordinates = PropertiesHandler.getBoolProperty("matching", "expandCoordinates");
 		
 		String competencesFolder = quenfoData + "/resources/information_extraction/competences/";

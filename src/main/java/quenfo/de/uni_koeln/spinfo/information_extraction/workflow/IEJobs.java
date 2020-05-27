@@ -173,10 +173,9 @@ public class IEJobs {
 
 		String extension = Files.getFileExtension(entitiesFile.getAbsolutePath());
 		
-		log.info("Read Skills: " + entitiesFile.getAbsolutePath());
 		
 		if (extension.equals("txt")) {
-			log.info("Read Skills from txt-File");
+			log.info("Read Skills from txt-File: " + entitiesFile.getAbsolutePath());
 			BufferedReader in = new BufferedReader(new FileReader(entitiesFile));
 			String line = in.readLine();
 			while (line != null) {
@@ -212,10 +211,10 @@ public class IEJobs {
 			}
 			in.close();
 		} else if (extension.equals("ttl")) {
-			log.info("Read Skills from RDF Model");
+			log.info("Read Skills from RDF Model: " + entitiesFile.getAbsolutePath());
 			entities = Util.readRDF(entitiesFile, entities);
 		} else if (extension.equals("csv")) {
-			log.info("Read Skills from CSV");
+			log.info("Read Skills from CSV: " + entitiesFile.getAbsolutePath());
 			entities = Util.readCSV(entitiesFile, entities);
 		} else {
 			System.err.println("unbekanntes Dateiformat: " + entitiesFile.getAbsolutePath());
@@ -609,7 +608,7 @@ public class IEJobs {
 		}
 		ieTokens = null;
 		if (ce != null)
-			System.out.println(ce.getPossResolvations().size() + " new Compounds");
+			log.info(ce.getPossResolvations().size() + " new Compounds");
 
 		return toReturn;
 	}

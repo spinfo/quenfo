@@ -50,6 +50,8 @@ public class MatchTools {
 	// Falls nicht alle Paragraphen gematcht werden sollen, hier die
 	// Startposition angeben
 	static int startPos;
+	
+	static int fetchSize;
 
 	// true, falls Koordinationen in Informationseinheit aufgelöst werden sollen
 	static boolean expandCoordinates;
@@ -97,7 +99,7 @@ public class MatchTools {
 		IE_DBConnector.createIndex(inputConnection, "ClassifiedParagraphs", "ClassTWO, ClassTHREE");
 		Extractor extractor = new Extractor(tools, null, IEType.TOOL, expandCoordinates);
 		extractor.stringMatch(statisticsFile, inputConnection, outputConnection, maxCount,
-				startPos);
+				startPos, fetchSize);
 		long after = System.currentTimeMillis();
 		double time = (((double) after - before) / 1000) / 60;
 		if (time > 60.0) {
@@ -128,12 +130,13 @@ public class MatchTools {
 		
 		maxCount = PropertiesHandler.getIntProperty("matching", "queryLimit");
 		startPos = PropertiesHandler.getIntProperty("matching", "startPos");
+		fetchSize = PropertiesHandler.getIntProperty("matching", "fetchSize");
 		expandCoordinates = PropertiesHandler.getBoolProperty("matching", "expandCoordinates");
 		
 		String toolsFolder = quenfoData + "/resources/information_extraction/tools/";	
 		tools = new File(toolsFolder + PropertiesHandler.getStringProperty("matching", "tools"));	
 		
-		statisticsFile = new File(toolsFolder + PropertiesHandler.getStringProperty("matching", "toolsMatchingStats"));
+		statisticsFile = new File(toolsFolder + PropertiesHandler.getStringProperty("matching", "toolMatchingStats"));
 		
 		toolMOutputFolder = quenfoData + "/sqlite/matching/tools/";
 		toolMOutputDB = PropertiesHandler.getStringProperty("matching", "toolMOutputDB");

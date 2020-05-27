@@ -52,6 +52,8 @@ public class ExtractNewTools {
 	// falls nur eine bestimmte Anzahl gelesen werden soll, hier die startID
 	// angeben
 	static int startPos = 0;
+	
+	static int fetchSize;
 
 	// true, falls Koordinationen in Informationseinheit aufgelöst werden sollen
 	static boolean expandCoordinates = true;
@@ -108,7 +110,7 @@ public class ExtractNewTools {
 		if (maxCount == -1) {
 			maxCount = tableSize;
 		}
-		extractor.extract(startPos, maxCount, tableSize, inputConnection, outputConnection);
+		extractor.extract(startPos, maxCount, fetchSize, tableSize, inputConnection, outputConnection);
 		long after = System.currentTimeMillis();
 		double time = (((double) after - before) / 1000) / 60;
 		if (time > 60.0) {
@@ -137,6 +139,7 @@ public class ExtractNewTools {
 		
 		maxCount = PropertiesHandler.getIntProperty("ie", "queryLimit");
 		startPos = PropertiesHandler.getIntProperty("ie", "startPos");
+		fetchSize = PropertiesHandler.getIntProperty("ie", "fetchSize");
 		expandCoordinates = PropertiesHandler.getBoolProperty("ie", "expandCoordinates");
 		
 		String toolsFolder = quenfoData + "/resources/information_extraction/tools/";
