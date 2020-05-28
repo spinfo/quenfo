@@ -56,7 +56,7 @@ public class ClassifyDatabase {
 
 	// falls nur eine begrenzte Anzahl von SteAs klassifiziert werden soll
 	// (s.o.): hier die Startosition angeben
-	static int startId;
+	static int startPos;
 
 	// Die SteAs werden (aus Speichergründen) nicht alle auf einmal ausgelesen,
 	// sondern Päckchenweise - hier angeben, wieviele jeweils in einem Schwung
@@ -121,7 +121,7 @@ public class ClassifyDatabase {
 		long before = System.currentTimeMillis();
 		ConfigurableDatabaseClassifier dbClassify = new ConfigurableDatabaseClassifier(inputConnection, 
 				outputConnection, queryLimit, fetchSize,
-				startId, trainingdataFile);
+				startPos, trainingdataFile);
 		try {
 			FeatureUnitConfiguration fuc = new FeatureUnitConfiguration(normalize, stem, filterSW, nGrams,
 					continousNGrams, miScore, suffixTree);
@@ -165,7 +165,7 @@ public class ClassifyDatabase {
 		
 		trainingdataFile = quenfoData + "/resources/classification/trainingSets/" + PropertiesHandler.getStringProperty("classification", "trainingDataFile");
 		
-		startId = PropertiesHandler.getIntProperty("classification", "startID");
+		startPos = PropertiesHandler.getIntProperty("classification", "startPos");
 		queryLimit = PropertiesHandler.getIntProperty("classification", "queryLimit");
 		fetchSize = PropertiesHandler.getIntProperty("classification", "fetchSize");
 

@@ -1,4 +1,4 @@
-package quenfo.de.uni_koeln.spinfo.information_extraction.applicationsjb;
+package quenfo.de.uni_koeln.spinfo.information_extraction.applications;
 
 import java.io.File;
 import java.io.IOException;

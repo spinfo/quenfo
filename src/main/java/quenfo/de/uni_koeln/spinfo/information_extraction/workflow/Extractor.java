@@ -279,7 +279,7 @@ public class Extractor {
 		} else {
 			// Speichern der Extraktionsergebnisse in der Output-DB
 			String outputPath = outputConnection.getMetaData().getURL().replace("jdbc:sqlite:", "");
-			log.info("write extracted " + type.name().toLowerCase() + "s in output-DB " + outputPath);
+			log.info("write extracted " + type.name().toLowerCase() + "in output-DB " + outputPath);
 			IE_DBConnector.createExtractionOutputTable(outputConnection, type, true);
 			if (type == IEType.TOOL) {
 				IE_DBConnector.writeToolExtractions(allExtractions, outputConnection, true);

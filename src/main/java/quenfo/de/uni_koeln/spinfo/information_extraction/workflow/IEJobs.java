@@ -565,7 +565,6 @@ public class IEJobs {
 								continue;
 							} else { // Entität besteht aus genau einem Token
 								ie = new InformationEntity(completeEntity.get(0).getToken(), true, entityPointer);
-								log.info(ie.toString());
 							}
 							informationEntities.add(ie);
 
