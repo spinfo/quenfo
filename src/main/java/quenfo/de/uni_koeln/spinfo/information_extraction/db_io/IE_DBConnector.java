@@ -1,5 +1,9 @@
 package quenfo.de.uni_koeln.spinfo.information_extraction.db_io;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -506,6 +510,47 @@ public class IE_DBConnector {
 		}
 		stmt.close();
 		connection.commit();
+	}
+
+	/**
+	 * 
+	 * Reads the extractions (competence, no competence) from .txt file.
+	 * @author Christine Schaefer
+	 * 
+	 * @param path
+	 * @return extractions
+	 * @throws IOException
+	 */
+	public static List<String> readCompetences(File file) throws IOException {
+
+		BufferedReader br = new BufferedReader(new FileReader(file));
+
+		String line;
+		List<String> extractions = new ArrayList<String>();
+		while ((line = br.readLine()) != null) {
+			extractions.add(line);
+		}
+		br.close();
+
+		return extractions;
+	}
+
+	/**
+	 * Create list of validated competences if no file is given.
+	 * @author Christine Schaefer
+	 * 
+	 * @param entities
+	 * @return list of validated competences
+	 */
+	public static List<String> saveValidatedCompetences(Map<ExtractionUnit, List<String>> entities) {
+		List<String> validatedCompetences = new ArrayList<String>();
+		for (ExtractionUnit ie : entities.keySet()) {
+			for (String competence : entities.get(ie)) {
+				if (!validatedCompetences.contains(competence))
+					validatedCompetences.add(competence);
+			}
+		}
+		return validatedCompetences;
 	}
 
 }

@@ -58,6 +58,9 @@ public class InformationEntity {
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
 	private List<TextToken> originalEntity;
+
+	//Confidence-Wert der Entität
+	private Double conf;
 	
 
 	/**
@@ -132,5 +135,39 @@ public class InformationEntity {
 		return sb.toString().trim();
 	}
 
+	/**
+	 * @author ChristineSchaefer
+	 * 
+	 * @return confidence of an extraction
+	 */
+	public Double getConf(){
+		return conf;
+	}
+
+	/**
+	 * @author ChristineSchaefer
+	 * 
+	 * @param usedPattern
+	 */
+	public Double setConf(List<Pattern> usedPattern){
+		this.conf = 0d;
+		double product = 0d;
+
+		List<Double> confValue = new ArrayList<Double>();
+
+		for(Pattern p : usedPattern){
+			confValue.add(1 - p.getConf());
+		}
+
+		for(int i = 1; i <= confValue.size(); i++){
+			if(product == 0d){
+				product = confValue.get(i - 1);
+			} else {
+				product = product * confValue.get(i - 1);
+			}
+		}
+		conf = 1 - product;
+		return conf;
+	}
 
 }
