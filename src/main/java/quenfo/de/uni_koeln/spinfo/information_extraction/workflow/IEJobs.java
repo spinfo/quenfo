@@ -65,9 +65,9 @@ public class IEJobs {
 	// private CoordinationResolver cr;
 	private CoordinateExpander ce;
 
-	//private static Logger log = LoggerFactory.getLogger(IEJobs.class);
+	// private static Logger log = LoggerFactory.getLogger(IEJobs.class);
 	Logger log = Logger.getLogger(getClass());
-	
+
 	/**
 	 * @param competences
 	 * @param noCompetences
@@ -130,8 +130,7 @@ public class IEJobs {
 			File splittedCompoundsFile) throws IOException {
 
 		if (resolveCoordinations)
-			this.ce = new CoordinateExpander(possCoordinates, splittedCompoundsFile); 
-
+			this.ce = new CoordinateExpander(possCoordinates, splittedCompoundsFile);
 
 		this.knownEntities = 0;
 		entities = new HashMap<String, Set<InformationEntity>>();
@@ -172,8 +171,7 @@ public class IEJobs {
 	private void readKnownEntitiesFromFile(File entitiesFile) throws IOException {
 
 		String extension = Files.getFileExtension(entitiesFile.getAbsolutePath());
-		
-		
+
 		if (extension.equals("txt")) {
 			log.info("Read Skills from txt-File: " + entitiesFile.getAbsolutePath());
 			BufferedReader in = new BufferedReader(new FileReader(entitiesFile));
@@ -469,137 +467,140 @@ public class IEJobs {
 			ieTokens = extractionUnit.getTokenObjects();
 
 			for (Pattern pattern : patterns) {
-				for (int t = 0; t <= ieTokens.size() - pattern.getSize(); t++) {
-					match = false;
-					entityPointer = 0;
-					requiredForModifier = 0;
-					requiredForEntity = 0;
-					for (int c = 0; c < pattern.getSize(); c++) {
-						int i = t + requiredForModifier + requiredForEntity;
-						if (i + c >= ieTokens.size())
-							continue;
-						token = ieTokens.get(i + c);
+				//check if pattern is new (conf value isn't yet given) and if pattern has conf >= 1.0
+				if (pattern.getConf() == null || pattern.getConf() >= 1.0) {
+					for (int t = 0; t <= ieTokens.size() - pattern.getSize(); t++) {
+						match = false;
+						entityPointer = 0;
+						requiredForModifier = 0;
+						requiredForEntity = 0;
+						for (int c = 0; c < pattern.getSize(); c++) {
+							int i = t + requiredForModifier + requiredForEntity;
+							if (i + c >= ieTokens.size())
+								continue;
+							token = ieTokens.get(i + c);
 
-						patternToken = pattern.getTokenAt(c);
-						match = ((TextToken) token).isEqualsPatternToken((PatternToken) patternToken);
-						if (!match) {
-							break;
+							patternToken = pattern.getTokenAt(c);
+							match = ((TextToken) token).isEqualsPatternToken((PatternToken) patternToken);
+							if (!match) {
+								break;
+							}
+							// token und patternToken matchen
+							if (pattern.getExtractionPointer().get(0) == c) {
+								entityPointer = i + c;
+							}
+							if (patternToken.isInformationEntity()) {
+								requiredForEntity = ((TextToken) token).getTokensToCompleteInformationEntity();
+							}
+							if (patternToken.isModifier()) {
+								requiredForModifier = ((TextToken) token).getTokensToCompleteModifier();
+							}
 						}
-						// token und patternToken matchen
-						if (pattern.getExtractionPointer().get(0) == c) {
-							entityPointer = i + c;
-						}
-						if (patternToken.isInformationEntity()) {
-							requiredForEntity = ((TextToken) token).getTokensToCompleteInformationEntity();
-						}
-						if (patternToken.isModifier()) {
-							requiredForModifier = ((TextToken) token).getTokensToCompleteModifier();
-						}
-					}
-					if (match) {
-						List<InformationEntity> informationEntities = new ArrayList<InformationEntity>();
-						entityToken = ieTokens.get(entityPointer);
-						String normLemma = Util.normalizeLemma(entityToken.getLemma());
+						if (match) {
+							List<InformationEntity> informationEntities = new ArrayList<InformationEntity>();
+							entityToken = ieTokens.get(entityPointer);
+							String normLemma = Util.normalizeLemma(entityToken.getLemma());
 
-						int entity_size = pattern.getExtractionPointer().size();
-						if (entity_size == 1) {
-							if (entityToken.isModifier() || entityToken.isNoEntity()) {
-								ie = null;
-								continue;
-							}
-							if (normLemma.length() > 1 && !(entityToken.getLemma().equals("--"))) {
-								ie = new InformationEntity(normLemma, true);
-							} else {
-								ie = null;
-								continue;
-							}
-						} else {
-							if (normLemma.length() > 1 && !(entityToken.getLemma().equals("--"))) {
-								ie = new InformationEntity(normLemma, false);
-							} else {
-								ie = null;
-								continue;
-							}
-							List<Token> completeEntity = new ArrayList<>();
-							for (int p = 0; p < pattern.getExtractionPointer().size(); p++) {
-								TextToken currentToken = ieTokens.get(entityPointer + p);
-								String s = Util.normalizeLemma(currentToken.getLemma());
-								if (!s.trim().equals("") && !s.trim().equals("--")) {
-									completeEntity.add(currentToken);
+							int entity_size = pattern.getExtractionPointer().size();
+							if (entity_size == 1) {
+								if (entityToken.isModifier() || entityToken.isNoEntity()) {
+									ie = null;
+									continue;
 								}
-							}
-							if (completeEntity.size() > 1) { // Entität besteht aus mehr als eine Token
-								List<String> entities = new ArrayList<String>();
-
-//								boolean isMorphemCoordination = false;
-
-								// prüfen, ob es sich um eine morphemkoordination handelt
-								for (Token tt : completeEntity) {
-									// solange kein TRUNC auftaucht, werden alle Lemmas dem Ausdruck hinzugefügt
-									entities.add(Util.normalizeLemma(tt.getLemma()));
-
-									// sobald ein KON auftaucht, wird die morphemkoordination aufgelöst
-									if (ce != null && tt.getPosTag().equals("KON")) {
-//										isMorphemCoordination = true;
-										List<Token> euTokens = new ArrayList<Token>(ieTokens);
-										List<List<Token>> combinations = ce.resolve(completeEntity, euTokens,
-												lemmatizer, false);
-										// für jede Expansion wird eine InformationEntity erzeugt
-										for (List<Token> list : combinations) {
-											List<String> lemmata = new ArrayList<String>();
-											for (Token currTT : list) {
-												lemmata.add(currTT.getLemma());
-											}
-											ie = new InformationEntity(lemmata.get(0), false);
-											ie.setLemmata(lemmata);
-											informationEntities.add(ie);
-										}
+								if (normLemma.length() > 1 && !(entityToken.getLemma().equals("--"))) {
+									ie = new InformationEntity(normLemma, true);
+								} else {
+									ie = null;
+									continue;
+								}
+							} else {
+								if (normLemma.length() > 1 && !(entityToken.getLemma().equals("--"))) {
+									ie = new InformationEntity(normLemma, false);
+								} else {
+									ie = null;
+									continue;
+								}
+								List<Token> completeEntity = new ArrayList<>();
+								for (int p = 0; p < pattern.getExtractionPointer().size(); p++) {
+									TextToken currentToken = ieTokens.get(entityPointer + p);
+									String s = Util.normalizeLemma(currentToken.getLemma());
+									if (!s.trim().equals("") && !s.trim().equals("--")) {
+										completeEntity.add(currentToken);
 									}
 								}
+								if (completeEntity.size() > 1) { // Entität besteht aus mehr als eine Token
+									List<String> entities = new ArrayList<String>();
 
-								ie = new InformationEntity(entities.get(0), false, entityPointer);
-								ie.setLemmata(entities);
+									// boolean isMorphemCoordination = false;
 
-							} else if (completeEntity.size() < 1) { // Entität besteht aus weniger als einem Token
-								ie = null;
-								continue;
-							} else { // Entität besteht aus genau einem Token
-								ie = new InformationEntity(completeEntity.get(0).getToken(), true, entityPointer);
-							}
-							informationEntities.add(ie);
+									// prüfen, ob es sich um eine morphemkoordination handelt
+									for (Token tt : completeEntity) {
+										// solange kein TRUNC auftaucht, werden alle Lemmas dem Ausdruck hinzugefügt
+										entities.add(Util.normalizeLemma(tt.getLemma()));
 
-						}
+										// sobald ein KON auftaucht, wird die morphemkoordination aufgelöst
+										if (ce != null && tt.getPosTag().equals("KON")) {
+											// isMorphemCoordination = true;
+											List<Token> euTokens = new ArrayList<Token>(ieTokens);
+											List<List<Token>> combinations = ce.resolve(completeEntity, euTokens,
+													lemmatizer, false);
+											// für jede Expansion wird eine InformationEntity erzeugt
+											for (List<Token> list : combinations) {
+												List<String> lemmata = new ArrayList<String>();
+												for (Token currTT : list) {
+													lemmata.add(currTT.getLemma());
+												}
+												ie = new InformationEntity(lemmata.get(0), false);
+												ie.setLemmata(lemmata);
+												informationEntities.add(ie);
+											}
+										}
+									}
 
-						for (InformationEntity e : informationEntities) {
-							// check if full entity is listed in negExamples
-							boolean isNoEntity = false;
-							if (negExamples.containsKey(e.getStartLemma())) {
-								if (negExamples.get(e.getStartLemma()).contains(e.getLemmata())) {
-									isNoEntity = true;
+									ie = new InformationEntity(entities.get(0), false, entityPointer);
+									ie.setLemmata(entities);
+
+								} else if (completeEntity.size() < 1) { // Entität besteht aus weniger als einem Token
+									ie = null;
+									continue;
+								} else { // Entität besteht aus genau einem Token
+									ie = new InformationEntity(completeEntity.get(0).getToken(), true, entityPointer);
 								}
-							}
-							if (isNoEntity) {
-								e = null;
-								continue;
-							}
-							if (type != IEType.TOOL) {
-								removeModifier(e);
-							}
-							if (e.getLemmata().size() < 1) {
-								e = null;
-								continue;
-							}
-							Map<InformationEntity, List<Pattern>> map = toReturn.get(extractionUnit);
-							if (map == null)
-								map = new HashMap<InformationEntity, List<Pattern>>();
-							List<Pattern> list = map.get(e);
-							if (list == null)
-								list = new ArrayList<Pattern>();
-							list.add(pattern);
-							map.put(e, list);
-							extractionUnit.deleteData();
+								informationEntities.add(ie);
 
-							toReturn.put(extractionUnit, map);
+							}
+
+							for (InformationEntity e : informationEntities) {
+								// check if full entity is listed in negExamples
+								boolean isNoEntity = false;
+								if (negExamples.containsKey(e.getStartLemma())) {
+									if (negExamples.get(e.getStartLemma()).contains(e.getLemmata())) {
+										isNoEntity = true;
+									}
+								}
+								if (isNoEntity) {
+									e = null;
+									continue;
+								}
+								if (type != IEType.TOOL) {
+									removeModifier(e);
+								}
+								if (e.getLemmata().size() < 1) {
+									e = null;
+									continue;
+								}
+								Map<InformationEntity, List<Pattern>> map = toReturn.get(extractionUnit);
+								if (map == null)
+									map = new HashMap<InformationEntity, List<Pattern>>();
+								List<Pattern> list = map.get(e);
+								if (list == null)
+									list = new ArrayList<Pattern>();
+								list.add(pattern);
+								map.put(e, list);
+								extractionUnit.deleteData();
+
+								toReturn.put(extractionUnit, map);
+							}
 						}
 					}
 				}
@@ -769,9 +770,9 @@ public class IEJobs {
 						if (matches) {
 							token.setIEToken(true);
 							((TextToken) token).setTokensToCompleteInformationEntity(ie.getLemmata().size() - 1);
-//							System.out.println(token);
-//							System.out.println(extractionUnit.getSentence());
-//							System.out.println(ie.getLemmata());
+							// System.out.println(token);
+							// System.out.println(extractionUnit.getSentence());
+							// System.out.println(ie.getLemmata());
 							InformationEntity newIE = new InformationEntity(ie.getStartLemma(), false);
 							newIE.setLemmata(ie.getLemmata());
 							Map<InformationEntity, List<Pattern>> iesForUnit = extractions.get(extractionUnit);
@@ -786,10 +787,10 @@ public class IEJobs {
 						}
 					}
 				}
-//				if (token.isInformationEntity()) {
-//					skip += ((TextToken) token).getTokensToCompleteInformationEntity();
-//					System.out.println("skip: " +skip);
-//				}
+				// if (token.isInformationEntity()) {
+				// skip += ((TextToken) token).getTokensToCompleteInformationEntity();
+				// System.out.println("skip: " +skip);
+				// }
 			}
 
 		}
