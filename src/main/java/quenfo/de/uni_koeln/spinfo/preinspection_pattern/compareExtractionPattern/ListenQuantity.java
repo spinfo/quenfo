@@ -15,7 +15,7 @@ public class ListenQuantity {
      * Lists the number of extractions of a pattern in a map and exports it to a
      * .txt file.
      * 
-     * @author christine schaefer
+     * @author ChristineSchaefer
      *
      */
 
@@ -24,9 +24,9 @@ public class ListenQuantity {
     private static Map<String, Integer> patternQuantity = new HashMap<String, Integer>();
 
     // Pfad zur genutzten Datenbank mit Extraktionen
-    private static String dbPath = "input\\text_kernel_schaefer_ex.db";
+    private static String dbPath;
 
-    private static String outputPath = "output\\patternQuantity.txt";
+    private static String outputPath;
 
     // Liste mit allen genutzten Mustern (auch Dopplungen)
     private static List<String> usedPattern = new ArrayList<String>();
@@ -52,7 +52,7 @@ public class ListenQuantity {
 
         fillMap(usedPattern);
         sorted_map.putAll(patternQuantity);
-        System.out.println(sorted_map);
+        //System.out.println(sorted_map);
 
         // export of the sorted map to a .txt file
         IO.writeQuantityToTxt(outputPath, sorted_map);

@@ -5,7 +5,7 @@ import java.util.Map;
 
 /**
  * 
- * @author christine schaefer
+ * @author ChristineSchaefer
  * 
  * @implNote Compare the values of a map and sorts the map according to these
  *           values. Source:

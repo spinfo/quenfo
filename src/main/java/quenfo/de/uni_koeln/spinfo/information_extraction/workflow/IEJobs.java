@@ -467,7 +467,7 @@ public class IEJobs {
 			ieTokens = extractionUnit.getTokenObjects();
 
 			for (Pattern pattern : patterns) {
-				//check if pattern is new (conf value isn't yet given) and if pattern has conf >= 1.0
+				//check if pattern is new (conf value isn't yet given) and if pattern has conf >= 1.0 (Wert kann beliebig verändert werden)
 				if (pattern.getConf() == null || pattern.getConf() >= 1.0) {
 					for (int t = 0; t <= ieTokens.size() - pattern.getSize(); t++) {
 						match = false;

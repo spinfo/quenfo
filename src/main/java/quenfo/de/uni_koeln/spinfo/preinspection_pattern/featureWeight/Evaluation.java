@@ -14,13 +14,19 @@ import java.util.TreeSet;
 
 import quenfo.de.uni_koeln.spinfo.preinspection_pattern.io.IO;
 
+/**
+ * @author ChristineSchaefer
+ * 
+ * Application of the main methods.
+ * 
+ */
 public class Evaluation {
     // Pfade zu Dateien mit validierten Extraktionen (Goldstandard)
-    public static String competencesPath = "input\\competences.txt";
-    public static String noCompetencesPath = "input\\noCompetences.txt";
+    public static String competencesPath;
+    public static String noCompetencesPath;
 
     // Pfad zur genutzten Datenbank mit Extraktionen
-    public static String dbPath = "input\\text_kernel_schaefer_ex.db";
+    public static String dbPath;
 
     // Liste mit extrahierten Strings
     public static List<String> competences = new ArrayList<String>();
@@ -56,16 +62,16 @@ public class Evaluation {
         }
 
         usedPattern = IO.readPatternToSet(inputConnection);
-        System.out.println(usedPattern);
+        //System.out.println(usedPattern);
 
         confPattern = evaluatePattern(usedPattern, competences, noCompetences, inputConnection);
-        System.out.println(confPattern);
+        //System.out.println(confPattern);
 
         IO.writeMapToCsv("output\\tpPattern.csv", tpPattern);
         IO.writeMapToCsv("output\\fpPattern.csv", fpPattern);
 
         extractions = IO.readExtractionToSet(inputConnection);
-        System.out.println(extractions);
+        //System.out.println(extractions);
 
         // Muster mit Confidence in .csv Datei
         IO.writeConfidenceMapToCsv("output\\patternConfidence.csv", confPattern);
@@ -74,7 +80,7 @@ public class Evaluation {
         IO.writeConfToTxt("output\\patternConfidence.txt", confPattern);
 
         confSeed = evaluateSeed(extractions, inputConnection, confPattern);
-        System.out.println(confSeed);
+        //System.out.println(confSeed);
 
         IO.writeConfToTxt("output\\seedConfidence.txt", confSeed);
 
@@ -95,7 +101,7 @@ public class Evaluation {
             List<String> noCompetences, Connection connection) throws Exception {
         // Was ist, wenn Extraktion noch nicht in der Liste vorhanden, aber trotzdem
         // richtig extrahiert ist?
-        // Die Liste kann ja kaum vollst�ndig sein. In diesem Fall: manuelle
+        // Die Liste kann ja kaum vollständig sein. In diesem Fall: manuelle
         // Berarbeitung?
 
         Map<String, Double> confP = new HashMap<String, Double>();
@@ -154,11 +160,6 @@ public class Evaluation {
             connection.commit();
         }
         return confP;
-
-        // TODO
-        // Hinzufügen des Conf in bestehende .txt Datei: String-Matching des Namen des
-        // Musters? Aber wie dann Conf ändern? txt Format ist nicht so ideal/nicht
-        // sicher, wie ich die bereits existierenden Strukturen von Geduldig nutzen kann
     }
 
     public static Map<String, Double> evaluateSeed(Set<String> extractions, Connection connection,
@@ -175,33 +176,33 @@ public class Evaluation {
 
         for (String e : extractions) {
 
-            System.err.println(e);
+            //System.err.println(e);
             Set<String> usedPattern = new TreeSet<String>();
 
             // Abfragen
             String query = "SELECT patternString FROM JOINTABLE WHERE (SELECT lemmaExpression = '" + e + "')";
 
-            System.out.println("Anfrage gestellt.");
+            //System.out.println("Anfrage gestellt.");
             // Anfrage läuft über DB
             ResultSet result = stmt.executeQuery(query);
 
-            System.out.println("Anfrage hat Datenbank erreicht.");
+            //System.out.println("Anfrage hat Datenbank erreicht.");
             while (result.next()) {
                 String comp = result.getString(1);
                 usedPattern.add(comp);
 
-                System.out.println("Genutzte Muster hinzugefügt.");
+                //System.out.println("Genutzte Muster hinzugefügt.");
             }
-            System.out.println(usedPattern);
+            //System.out.println(usedPattern);
 
             confS.put(e, getSeedsConfidence(usedPattern, confP));
-            System.out.println("Map gefüllt.");
+            //System.out.println("Map gefüllt.");
 
             // Verbindung schließen
             stmt.close();
             connection.commit();
         }
-        System.out.println("Fertig.");
+        //System.out.println("Fertig.");
         return confS;
     }
 
@@ -219,7 +220,7 @@ public class Evaluation {
         for (String p : usedPattern) {
             System.out.println(p);
             if (patternConf.containsKey(p)) {
-                confValue.add(1 - patternConf.get(p)); // (1 - Conf(P)) = Wahrscheinlichkeit f�r die Fehlerhaftigkeit
+                confValue.add(1 - patternConf.get(p)); // (1 - Conf(P)) = Wahrscheinlichkeit für die Fehlerhaftigkeit
             }
         }
         System.out.println(confValue);

@@ -22,6 +22,11 @@ import org.supercsv.io.CsvListWriter;
 import org.supercsv.io.ICsvListWriter;
 import org.supercsv.prefs.CsvPreference;
 
+/**
+ * @author ChristineSchaefer
+ * 
+ * Includes all necessary Read-/Write- and DB-methods.
+ */
 public class IO {
 
     /**

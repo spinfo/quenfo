@@ -260,7 +260,7 @@ public class Extractor {
 			// Entfernen der bereits bekannten Entitäten
 			extractions = removeKnownEntities(extractions);
 
-			//Bewerten der Muster und Extraktionen und Entfernen der Extraktionen, die conf <= 0.9
+			//Bewerten der Muster und Extraktionen und Entfernen der Extraktionen, die conf <= 0.9 (Wert kann beliebig verändert werden)
 			rater.evaluatePattern(knownCompetences, noCompetences, extractions);
 			rater.evaluateSeed(extractions);
 			extractions = rater.selectBestEntities(extractions);
