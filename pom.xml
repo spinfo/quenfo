@@ -59,7 +59,7 @@
 
 		<!-- Versions -->
 		<jwsplitter.version>4.4</jwsplitter.version>
-		<junit.version>4.11</junit.version>
+		<junit.version>4.13.1</junit.version>
 		<anna.version>3.5</anna.version>
 		<srl.version>4.31</srl.version>
 		<libsvm.version>3.17</libsvm.version>
