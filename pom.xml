@@ -69,7 +69,7 @@
 		<opennlp.version>1.8.4</opennlp.version>
 		<sqlite.version>3.21.0.1</sqlite.version>
 		<weka.version>3.8.2</weka.version>
-		<jsoup.version>1.8.3</jsoup.version>
+		<jsoup.version>1.14.2</jsoup.version>
 		<log4j.version>1.2.17</log4j.version>
 		<!-- <slf4j.version>1.7.5</slf4j.version> -->
 		<opencsv.version>4.0</opencsv.version>
