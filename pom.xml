@@ -77,7 +77,7 @@
 		<lombok.version>1.18.8</lombok.version>
 		<eclipselink.version>2.5.1</eclipselink.version>
 		<persistence.version>2.0.0</persistence.version>
-		<derby.version>10.8.3.0</derby.version>
+		<derby.version>10.14.2.0</derby.version>
 	</properties>
 
 
